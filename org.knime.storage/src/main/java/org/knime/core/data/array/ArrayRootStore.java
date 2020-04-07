@@ -1,12 +1,12 @@
-package org.knime.core.data.inmemory;
+package org.knime.core.data.array;
 
 import java.io.IOException;
 
+import org.knime.core.data.array.types.DoubleArray;
+import org.knime.core.data.array.types.DoubleArrayFactory;
+import org.knime.core.data.array.types.StringArray;
+import org.knime.core.data.array.types.StringArrayFactory;
 import org.knime.core.data.cache.SequentialCache;
-import org.knime.core.data.inmemory.array.NativeDoubleArray;
-import org.knime.core.data.inmemory.array.NativeDoubleArrayFactory;
-import org.knime.core.data.inmemory.array.NativeStringArray;
-import org.knime.core.data.inmemory.array.NativeStringArrayFactory;
 import org.knime.core.data.partition.PartitionStore;
 import org.knime.core.data.partition.Store;
 import org.knime.core.data.table.column.ColumnSchema;
@@ -14,15 +14,15 @@ import org.knime.core.data.table.column.NativeType;
 
 // TODO persistence done with one file per column at the moment. That's not working out will in case of very wide-data with only little rows. Also problematic as so many small files are created.
 // TODO likely better approach: use parquet as persistence layer. can be done on implementation level without API changes.
-class NativeArraysRootStore implements Store {
-
-	private final NativeArraysPartitionStore<?>[] m_stores;
+class ArrayRootStore implements Store {
+	
+	private final ArrayPartitionStore<?>[] m_stores;
 
 	// TODO maybe we can have something like an adaptive batchSize at some point
 	// TODO documentation that vectorCapacity will be adopted.
-	public NativeArraysRootStore(final int batchSize, final ColumnSchema... schemas) {
+	public ArrayRootStore(final int batchSize, final ColumnSchema... schemas) {
 		try {
-			m_stores = new NativeArraysPartitionStore[schemas.length];
+			m_stores = new ArrayPartitionStore[schemas.length];
 
 			// TODO check if there are smarter ways to do this in arrow than that
 			for (int i = 0; i < schemas.length; i++) {
@@ -38,7 +38,7 @@ class NativeArraysRootStore implements Store {
 		}
 	}
 
-	private DefaultNativeArraysPartitionStore<?> create(NativeType type, int capacity) throws IOException {
+	private DefaultArrayPartitionStore<?> create(NativeType type, int capacity) throws IOException {
 		// TODO make sure that vectorCapacity is toThePowerOf2
 
 		// TODO no idea what a good init size or max-size is. Actually it should
@@ -48,11 +48,11 @@ class NativeArraysRootStore implements Store {
 		// TODO last argument for DefaultPartitionStore (batchSize) could also be
 		// retrieved from VectorFactory.
 		case DOUBLE:
-			return new DefaultNativeArraysPartitionStore<>(() -> new NativeDoubleArray.NativeDoubleValue(),
-					() -> new NativeDoubleArrayFactory(capacity).create(), new SequentialCache<>(null, null));
+			return new DefaultArrayPartitionStore<>(() -> new DoubleArray.NativeDoubleValue(),
+					() -> new DoubleArrayFactory(capacity).create(), new SequentialCache<>(null, null));
 		case STRING:
-			return new DefaultNativeArraysPartitionStore<>(() -> new NativeStringArray.NativeStringValue(),
-					() -> new NativeStringArrayFactory(capacity).create(), new SequentialCache<>(null, null));
+			return new DefaultArrayPartitionStore<>(() -> new StringArray.NativeStringValue(),
+					() -> new StringArrayFactory(capacity).create(), new SequentialCache<>(null, null));
 		default:
 			throw new IllegalArgumentException("Unknown or not yet implemented NativeType " + type);
 		}

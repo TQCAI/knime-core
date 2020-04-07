@@ -5,14 +5,19 @@ import java.io.IOException;
 public interface PartitionStore<T> extends AutoCloseable {
 
 	// create linked value
-	PartitionValue<T> createLinkedValue();
+	PartitionValue<T> createValue();
 
 	// create a new partition. not managed by store.
-	Partition<T> createPartition();
+	WritablePartition<T> createPartition();
 
 	// get partition at index
-	Partition<T> get(long index) throws IOException;
+	ReadablePartition<T> getReadablePartition(long index) throws IOException;
+
+	// adds a partition back to store. Partition can be accessed afterwards as
+	// ReadablePartition
+	void addForReading(WritablePartition<T> partition, long numValuesWritten);
 
 	// number managed partition
 	long getNumPartitions();
+
 }

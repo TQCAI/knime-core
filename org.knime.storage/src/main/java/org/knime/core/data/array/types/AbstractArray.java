@@ -1,13 +1,13 @@
-package org.knime.core.data.inmemory.array;
+package org.knime.core.data.array.types;
 
-public class AbstractNativeArray<A> implements NativeArray<A> {
+public class AbstractArray<A> implements Array<A> {
 
 	private long[] m_isMissing;
 	private int m_capacity;
 
 	protected A m_array;
 
-	AbstractNativeArray(A array, int capacity) {
+	AbstractArray(A array, int capacity) {
 		m_capacity = capacity;
 		m_array = array;
 		m_isMissing = new long[((int) capacity / 64) + 1];

@@ -1,16 +1,16 @@
-package org.knime.core.data.inmemory.array;
+package org.knime.core.data.array.types;
 
 import org.knime.core.data.table.value.ReadableDoubleValue;
 import org.knime.core.data.table.value.WritableDoubleValue;
 
-public class NativeDoubleArray extends AbstractNativeArray<double[]> {
+public class DoubleArray extends AbstractArray<double[]> {
 
-	NativeDoubleArray(int capacity) {
+	DoubleArray(int capacity) {
 		super(new double[capacity], capacity);
 	}
 
 	public static final class NativeDoubleValue//
-			extends AbstractNativeValue<double[], NativeDoubleArray> //
+			extends AbstractNativeValue<double[], DoubleArray> //
 			implements ReadableDoubleValue, WritableDoubleValue {
 
 		@Override

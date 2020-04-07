@@ -2,13 +2,12 @@
 package org.knime.core.data.partition;
 
 import org.knime.core.data.table.column.WritableColumnCursor;
-import org.knime.core.data.table.value.WritableValue;
 
 public final class WritablePartitionedColumnCursor<T> implements WritableColumnCursor {
 
 	private final PartitionValue<T> m_linkedValue;
 
-	private Partition<T> m_currentPartition;
+	private WritablePartition<T> m_currentPartition;
 
 	private long m_currentPartitionMaxIndex = -1;
 
@@ -17,7 +16,7 @@ public final class WritablePartitionedColumnCursor<T> implements WritableColumnC
 	private PartitionStore<T> m_store;
 
 	public WritablePartitionedColumnCursor(final PartitionStore<T> store) {
-		m_linkedValue = store.createLinkedValue();
+		m_linkedValue = store.createValue();
 		m_store = store;
 		switchToNextPartition();
 	}
@@ -33,9 +32,9 @@ public final class WritablePartitionedColumnCursor<T> implements WritableColumnC
 
 	private void switchToNextPartition() {
 		try {
-			closeCurrentPartition(m_index);
+			m_store.addForReading(m_currentPartition, m_index - 1);
 			m_currentPartition = m_store.createPartition();
-			m_linkedValue.updatePartition(m_currentPartition);
+			m_linkedValue.updateStorage(m_currentPartition.get());
 			m_currentPartitionMaxIndex = m_currentPartition.getCapacity() - 1;
 		} catch (final Exception e) {
 			// TODO
@@ -43,22 +42,8 @@ public final class WritablePartitionedColumnCursor<T> implements WritableColumnC
 		}
 	}
 
-	private void closeCurrentPartition(long numValues) throws Exception {
-		if (m_currentPartition != null) {
-			m_currentPartition.setNumValuesWritten((int) numValues);
-			// can be closed. we're done writing.
-			m_currentPartition.close();
-			m_currentPartition = null;
-		}
-	}
-
 	@Override
-	public WritableValue getValue() {
+	public PartitionValue<T> getValue() {
 		return m_linkedValue;
-	}
-
-	@Override
-	public void close() throws Exception {
-		closeCurrentPartition(m_index + 1);
 	}
 }

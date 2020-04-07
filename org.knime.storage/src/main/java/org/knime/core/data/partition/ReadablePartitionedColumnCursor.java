@@ -2,13 +2,12 @@
 package org.knime.core.data.partition;
 
 import org.knime.core.data.table.column.ReadableColumnCursor;
-import org.knime.core.data.table.value.ReadableValue;
 
 public final class ReadablePartitionedColumnCursor<T> implements ReadableColumnCursor {
 
 	private final PartitionValue<T> m_linkedAccess;
 
-	private Partition<T> m_currentPartition;
+	private ReadablePartition<T> m_currentPartition;
 
 	private long m_currentPartitionMaxIndex = -1;
 
@@ -19,16 +18,14 @@ public final class ReadablePartitionedColumnCursor<T> implements ReadableColumnC
 	private PartitionStore<T> m_store;
 
 	public ReadablePartitionedColumnCursor(final PartitionStore<T> store) {
-		m_linkedAccess = store.createLinkedValue();
+		m_linkedAccess = store.createValue();
 		m_store = store;
 		switchToNextPartition();
 	}
 
 	@Override
 	public boolean canFwd() {
-		return m_index < m_currentPartitionMaxIndex
-				// TODO
-				|| m_partitionIndex < m_store.getNumPartitions() - 1;
+		return m_index < m_currentPartitionMaxIndex || m_partitionIndex < m_store.getNumPartitions() - 1;
 	}
 
 	@Override
@@ -43,30 +40,17 @@ public final class ReadablePartitionedColumnCursor<T> implements ReadableColumnC
 	private void switchToNextPartition() {
 		try {
 			m_partitionIndex++;
-			closeCurrentPartition();
-			m_currentPartition = m_store.get(m_partitionIndex);
-			m_linkedAccess.updatePartition(m_currentPartition);
-			m_currentPartitionMaxIndex = m_currentPartition.getNumValuesWritten() - 1;
+			m_currentPartition = m_store.getReadablePartition(m_partitionIndex);
+			m_linkedAccess.updateStorage(m_currentPartition.get());
+			m_currentPartitionMaxIndex = m_currentPartition.size() - 1;
 		} catch (final Exception e) {
 			// TODO
 			throw new RuntimeException(e);
 		}
 	}
 
-	private void closeCurrentPartition() throws Exception {
-		if (m_currentPartition != null) {
-			m_currentPartition.close();
-			m_currentPartition = null;
-		}
-	}
-
 	@Override
-	public ReadableValue getValue() {
+	public PartitionValue<T> getValue() {
 		return m_linkedAccess;
-	}
-
-	@Override
-	public void close() throws Exception {
-		closeCurrentPartition();
 	}
 }

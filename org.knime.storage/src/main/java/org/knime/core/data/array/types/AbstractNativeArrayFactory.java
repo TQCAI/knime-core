@@ -1,8 +1,8 @@
 
-package org.knime.core.data.inmemory.array;
+package org.knime.core.data.array.types;
 
 // TODO composition over inheritance? :-(
-abstract class AbstractNativeArrayFactory<A> implements NativeArrayFactory<A> {
+abstract class AbstractNativeArrayFactory<A> implements ArrayFactory<A> {
 
 	private final int m_minCapacity;
 

@@ -15,7 +15,7 @@ import org.apache.arrow.vector.ipc.ArrowStreamWriter;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
 import org.knime.core.data.cache.SequentialCacheFlusher;
-import org.knime.core.data.partition.Partition;
+import org.knime.core.data.partition.ReadablePartition;
 
 import io.netty.buffer.ArrowBuf;
 
@@ -31,7 +31,7 @@ public class ArrowCacheFlusher<F extends FieldVector> implements AutoCloseable, 
 
 	@SuppressWarnings("resource")
 	@Override
-	public void flush(Partition<F> partition) throws IOException {
+	public void flush(ReadablePartition<F> partition) throws IOException {
 
 		if (m_writer == null) {
 			VectorSchemaRoot root = new VectorSchemaRoot(Collections.singletonList(partition.get().getField()),
@@ -47,7 +47,7 @@ public class ArrowCacheFlusher<F extends FieldVector> implements AutoCloseable, 
 
 		// Auto-closing makes sure that ArrowRecordBatch actually releases the buffers
 		// again
-		try (final ArrowRecordBatch batch = new ArrowRecordBatch(partition.getNumValuesWritten(), nodes, buffers)) {
+		try (final ArrowRecordBatch batch = new ArrowRecordBatch((int) partition.size(), nodes, buffers)) {
 			m_vectorLoader.load(batch);
 			m_writer.writeBatch();
 		}

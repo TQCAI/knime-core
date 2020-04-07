@@ -10,8 +10,8 @@ import org.apache.arrow.vector.VectorLoader;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.VectorUnloader;
 import org.apache.arrow.vector.ipc.ArrowStreamReader;
-import org.knime.core.data.cache.RefCountingPartition;
 import org.knime.core.data.cache.SequentialCacheLoader;
+import org.knime.core.data.partition.ReadablePartition;
 
 /* NB: This reader has best performance when data is accessed sequentially row-wise.
 * TODO Maybe different flush / loader combinations are configurable per node later?
@@ -42,7 +42,7 @@ public class ArrowCacheLoader<V extends FieldVector> implements AutoCloseable, S
 	// Assumption for this reader: sequential loading.
 	@SuppressWarnings("resource")
 	@Override
-	public RefCountingPartition<V> load(long index) throws IOException {
+	public ReadablePartition<V> load(long index) throws IOException {
 		if (m_reader == null) {
 			m_reader = new ArrowStreamReader(new RandomAccessFile(m_file, "rw").getChannel(), m_alloc);
 			m_root = m_reader.getVectorSchemaRoot();
@@ -60,10 +60,7 @@ public class ArrowCacheLoader<V extends FieldVector> implements AutoCloseable, S
 
 		@SuppressWarnings("unchecked")
 		final V vector = (V) root.getVector(0);
-		final ArrowPartition<V> partition = new ArrowPartition<>(vector, index);
-		partition.setNumValuesWritten(vector.getValueCount());
-
-		return partition;
+		return new ReadableArrowPartition<>(vector, index, vector.getValueCount());
 	}
 
 	@Override

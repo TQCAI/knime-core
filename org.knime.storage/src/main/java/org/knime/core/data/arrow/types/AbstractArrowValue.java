@@ -1,5 +1,5 @@
 
-package org.knime.core.data.arrow.vector;
+package org.knime.core.data.arrow.types;
 
 import org.apache.arrow.vector.FieldVector;
 import org.knime.core.data.partition.Partition;
@@ -19,7 +19,7 @@ abstract class AbstractArrowValue<V extends FieldVector> //
 	}
 
 	@Override
-	public void updatePartition(final Partition<V> partition) {
+	public void updateStorage(final Partition<V> partition) {
 		m_index = -1;
 		m_vector = partition.get();
 	}

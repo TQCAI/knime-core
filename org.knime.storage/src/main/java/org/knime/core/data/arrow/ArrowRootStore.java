@@ -8,10 +8,9 @@ import java.util.UUID;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
-import org.knime.core.data.arrow.struct.StructArrowPartitionStore;
-import org.knime.core.data.arrow.vector.ArrowBitVectorFactory;
-import org.knime.core.data.arrow.vector.ArrowDoubleVectorFactory;
-import org.knime.core.data.arrow.vector.ArrowStringVectorFactory;
+import org.knime.core.data.arrow.types.ArrowBitVectorFactory;
+import org.knime.core.data.arrow.types.ArrowDoubleVectorFactory;
+import org.knime.core.data.arrow.types.ArrowStringVectorFactory;
 import org.knime.core.data.cache.SequentialCache;
 import org.knime.core.data.partition.PartitionStore;
 import org.knime.core.data.partition.Store;
@@ -45,14 +44,16 @@ class ArrowRootStore implements Store {
 				if (nativeTypes.length == 1) {
 					m_stores[i] = create(nativeTypes[0], "colIdx" + "_" + i + "_childIdx_" + 0, maxSize, vectorCapacity,
 							i, 0);
-				} else {
-					final ArrowPartitionStore<?>[] stores = new ArrowPartitionStore[nativeTypes.length];
-					for (int j = 0; j < nativeTypes.length; j++) {
-						stores[j] = create(nativeTypes[j], "colIdx" + "_" + i + "_childIdx_" + j, maxSize,
-								vectorCapacity, i, j);
-					}
-					m_stores[i] = new StructArrowPartitionStore(i, stores);
 				}
+				// TODO
+//				else {
+//					final ArrowPartitionStore<?>[] stores = new ArrowPartitionStore[nativeTypes.length];
+//					for (int j = 0; j < nativeTypes.length; j++) {
+//						stores[j] = create(nativeTypes[j], "colIdx" + "_" + i + "_childIdx_" + j, maxSize,
+//								vectorCapacity, i, j);
+//					}
+//					m_stores[i] = new StructArrowPartitionStore(i, stores);
+//				}
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);

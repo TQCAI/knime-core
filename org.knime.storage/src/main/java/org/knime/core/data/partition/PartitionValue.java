@@ -6,7 +6,6 @@ import org.knime.core.data.table.value.WritableValue;
 
 // TODO split into Readable / Writable
 public interface PartitionValue<T> extends ReadableValue, WritableValue {
-
 	/**
 	 * Increments the internal index by one.
 	 */
@@ -18,5 +17,5 @@ public interface PartitionValue<T> extends ReadableValue, WritableValue {
 	 *
 	 * @param partition The partition to be accessed by this access.
 	 */
-	void updatePartition(Partition<T> partition);
+	void updateStorage(T storage);
 }

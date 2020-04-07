@@ -22,9 +22,10 @@ public class WritablePartitionedTable implements WritableTable {
 		return new WritableColumn() {
 
 			@Override
-			public WritableColumnCursor createWritableCursor() {
+			public WritableColumnCursor cursor() {
 				return new WritablePartitionedColumnCursor<>(m_root.getStoreAt(columnIndex));
 			}
 		};
 	}
+
 }

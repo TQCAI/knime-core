@@ -35,8 +35,8 @@ public class ReadablePartitionedTable implements ReadableTable {
 		}
 
 		@Override
-		public ReadableColumnCursor createCursor() {
-			return new ReadablePartitionedColumnCursor<D>(m_store);
+		public ReadableColumnCursor cursor() {
+			return new ReadablePartitionedColumnCursor<>(m_store);
 		}
 	}
 }

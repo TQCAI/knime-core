@@ -1,5 +1,5 @@
 
-package org.knime.core.data.arrow.vector;
+package org.knime.core.data.arrow.types;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;

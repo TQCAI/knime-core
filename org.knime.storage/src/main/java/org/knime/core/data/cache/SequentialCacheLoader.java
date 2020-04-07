@@ -3,7 +3,9 @@ package org.knime.core.data.cache;
 
 import java.io.IOException;
 
-public interface SequentialCacheLoader<O> extends AutoCloseable {
+import org.knime.core.data.partition.ReadablePartition;
 
-	RefCountingPartition<O> load(long index) throws IOException;
+public interface SequentialCacheLoader<T> extends AutoCloseable {
+
+	ReadablePartition<T> load(long index) throws IOException;
 }

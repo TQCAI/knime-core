@@ -1,11 +1,11 @@
 
-package org.knime.core.data.inmemory.array;
+package org.knime.core.data.array.types;
 
 import org.knime.core.data.partition.Partition;
 import org.knime.core.data.partition.PartitionValue;
 
 // TODO composition over inheritance? :-(
-abstract class AbstractNativeValue<A, N extends NativeArray<A>> //
+abstract class AbstractNativeValue<A, N extends Array<A>> //
 		implements PartitionValue<N> {
 
 	protected int m_index = -1;
@@ -14,7 +14,7 @@ abstract class AbstractNativeValue<A, N extends NativeArray<A>> //
 	// however, maybe itself is garbage collected?
 	protected A m_array;
 
-	private NativeArray<A> m_proxy;
+	private Array<A> m_proxy;
 
 	@Override
 	public void incIndex() {
@@ -22,7 +22,7 @@ abstract class AbstractNativeValue<A, N extends NativeArray<A>> //
 	}
 
 	@Override
-	public void updatePartition(final Partition<N> partition) {
+	public void updateStorage(final Partition<N> partition) {
 		m_index = -1;
 		m_proxy = partition.get();
 		m_array = m_proxy.get();

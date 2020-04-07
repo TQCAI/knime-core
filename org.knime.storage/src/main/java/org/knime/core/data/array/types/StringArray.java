@@ -1,13 +1,13 @@
-package org.knime.core.data.inmemory.array;
+package org.knime.core.data.array.types;
 
 import org.knime.core.data.table.value.ReadableStringValue;
 import org.knime.core.data.table.value.WritableStringValue;
 
-public class NativeStringArray implements NativeArray<String[]> {
+public class StringArray implements Array<String[]> {
 
 	private String[] m_array;
 
-	NativeStringArray(int capacity) {
+	StringArray(int capacity) {
 		m_array = new String[capacity];
 	}
 
@@ -27,7 +27,7 @@ public class NativeStringArray implements NativeArray<String[]> {
 	}
 
 	public static final class NativeStringValue //
-			extends AbstractNativeValue<String[], NativeStringArray> //
+			extends AbstractNativeValue<String[], StringArray> //
 			implements ReadableStringValue, WritableStringValue {
 
 		@Override

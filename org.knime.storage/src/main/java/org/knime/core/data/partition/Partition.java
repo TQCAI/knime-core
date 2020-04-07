@@ -1,15 +1,7 @@
 package org.knime.core.data.partition;
 
-public interface Partition<T> extends AutoCloseable {
+public interface Partition<T> {
+	long getPartitionIndex();
 
-	long getIndex();
-	
 	T get();
-
-	long getCapacity();
-
-	// TODO can we get rid of this?
-	void setNumValuesWritten(int numValues);
-
-	int getNumValuesWritten();
 }

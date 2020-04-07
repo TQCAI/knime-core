@@ -1,4 +1,4 @@
-package org.knime.core.data.arrow.vector;
+package org.knime.core.data.arrow.types;
 
 public interface ArrowFieldVectorFactory<T> {
 	T create();
