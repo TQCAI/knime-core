@@ -1,0 +1,82 @@
+package org.knime.core.data.array;
+
+import java.util.List;
+
+import org.knime.core.data.ColumnStore;
+import org.knime.core.data.chunk.DataChunk;
+import org.knime.core.data.chunk.DataChunkAccess;
+import org.knime.core.data.chunk.DataChunkCursor;
+import org.knime.core.data.column.Domain;
+
+abstract class AbstractArrayColumnStore<T extends Array<?>, V extends DataChunkAccess<T>> implements ColumnStore<T, V> {
+
+	private final long m_maxCapacity;
+	private List<DataChunk<T>> m_list;
+	private Domain m_domain;
+
+	AbstractArrayColumnStore(long chunkSize) {
+		m_maxCapacity = chunkSize;
+	}
+
+	@Override
+	public void close() throws Exception {
+		m_list.clear();
+	}
+
+	@Override
+	public Domain getDomain() {
+		if (m_domain == null) {
+			m_domain = initDomain();
+		}
+		return m_domain;
+	}
+
+	@Override
+	public void addData(DataChunk<T> data) {
+		// TODO write to disc
+		m_list.add(data);
+	}
+
+	@Override
+	public DataChunk<T> createData() {
+		return new ArrayDataChunk<>(create(m_maxCapacity));
+	}
+
+	@Override
+	public DataChunkCursor<T> cursor() {
+		return new DataChunkCursor<T>() {
+
+			private long m_index = -1;
+
+			@Override
+			public DataChunk<T> get() {
+				// TODO load from disc if required!
+				return m_list.get((int) m_index);
+			}
+
+			@Override
+			public void fwd() {
+				m_index++;
+			}
+
+			@Override
+			public boolean canFwd() {
+				return m_index < m_list.size();
+			}
+
+			@Override
+			public void close() throws Exception {
+				// nothing to do yet.
+			}
+
+			@Override
+			public void move(long steps) {
+				m_index += steps;
+			}
+		};
+	}
+
+	protected abstract T create(long capacity);
+
+	protected abstract Domain initDomain();
+}
