@@ -1,7 +1,5 @@
 package org.knime.core.data;
 
-import org.knime.core.data.chunk.DataChunk;
-import org.knime.core.data.chunk.DataChunkAccess;
 import org.knime.core.data.column.Domain;
 import org.knime.core.data.column.ReadableColumn;
 import org.knime.core.data.column.WritableColumn;
@@ -71,25 +69,7 @@ public class TableUtils {
 		};
 	}
 
-	public static TableStore cache(TableStore store) {
-		return new TableStore() {
-
-			@Override
-			public <T> ColumnStore<DataChunk<T>, DataChunkAccess<T>> getStore(long index) {
-				return new CachedColumnStore<T>(store.getStore(index));
-			}
-
-			@Override
-			public long getNumColumns() {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-
-			@Override
-			public Domain getDomain(long index) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		};
+	public static CachedTableStore cache(TableStore store) {
+		return new CachedTableStore(store);
 	}
 }

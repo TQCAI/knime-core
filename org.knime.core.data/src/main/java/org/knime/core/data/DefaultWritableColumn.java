@@ -2,17 +2,15 @@ package org.knime.core.data;
 
 import org.knime.core.data.chunk.DataChunk;
 import org.knime.core.data.chunk.DataChunkAccess;
-import org.knime.core.data.column.Domain;
 import org.knime.core.data.column.WritableAccess;
 import org.knime.core.data.column.WritableColumn;
 import org.knime.core.data.column.WritableCursor;
 
-class DefaultWritableColumn<T, V extends WritableAccess & DataChunkAccess<T>, D extends Domain>
-		implements WritableColumn<V> {
+class DefaultWritableColumn<T, V extends WritableAccess & DataChunkAccess<T>> implements WritableColumn<V> {
 
-	private ColumnStore<DataChunk<T>, V> m_store;
+	private ColumnStore<T, V> m_store;
 
-	public DefaultWritableColumn(final ColumnStore<DataChunk<T>, V> store) {
+	public DefaultWritableColumn(final ColumnStore<T, V> store) {
 		m_store = store;
 	}
 

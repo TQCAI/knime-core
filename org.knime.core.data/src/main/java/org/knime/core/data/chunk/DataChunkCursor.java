@@ -2,6 +2,6 @@ package org.knime.core.data.chunk;
 
 import org.knime.core.data.column.Cursor;
 
-public interface DataChunkCursor<D extends DataChunk<?>> extends Cursor<D> {
+public interface DataChunkCursor<T> extends Cursor<DataChunk<T>> {
 	void move(long steps);
 }

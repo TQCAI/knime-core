@@ -9,7 +9,6 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.knime.core.data.CachedColumnStore.CachedData;
 import org.knime.core.data.chunk.DataChunk;
 import org.knime.core.data.chunk.DataChunkAccess;
 import org.knime.core.data.chunk.DataChunkCursor;
@@ -18,15 +17,15 @@ import org.knime.core.data.chunk.DataChunkCursor;
 // TODO sequential pre-loading etc
 // TODO there must be smarter sequential caches out there
 // Important: partitions must be flushed in order.
-class CachedColumnStore<T> implements Flushable, ColumnStore<CachedData<T>, DataChunkAccess<T>> {
+class CachedColumnStore<T> implements Flushable, ColumnStore<T, DataChunkAccess<T>> {
 
-	private final Map<Long, CachedData<T>> m_cache = new TreeMap<>();
+	private final Map<Long, CachedDataChunk<T>> m_cache = new TreeMap<>();
 	private final ReentrantReadWriteLock m_cacheLock = new ReentrantReadWriteLock(true);
-	private final ColumnStore<DataChunk<T>, DataChunkAccess<T>> m_delegate;
+	private final ColumnStore<T, DataChunkAccess<T>> m_delegate;
 
 	private long m_dataCounter;
 
-	public CachedColumnStore(final ColumnStore<DataChunk<T>, DataChunkAccess<T>> delegate) {
+	public CachedColumnStore(final ColumnStore<T, DataChunkAccess<T>> delegate) {
 		m_delegate = delegate;
 	}
 
@@ -36,8 +35,8 @@ class CachedColumnStore<T> implements Flushable, ColumnStore<CachedData<T>, Data
 	public void flush() throws IOException {
 		m_cacheLock.writeLock().lock();
 		try {
-			for (final Entry<Long, CachedData<T>> entry : m_cache.entrySet()) {
-				final CachedData<T> data = entry.getValue();
+			for (final Entry<Long, CachedDataChunk<T>> entry : m_cache.entrySet()) {
+				final CachedDataChunk<T> data = entry.getValue();
 				m_delegate.addData(data);
 			}
 			clear();
@@ -55,31 +54,31 @@ class CachedColumnStore<T> implements Flushable, ColumnStore<CachedData<T>, Data
 	}
 
 	@Override
-	public CachedData<T> createData() {
+	public CachedDataChunk<T> createData() {
 		// We have to intercept the 'close()' of data to make sure that it's not
 		// closed after it has been added back to cache.
-		final CachedData<T> referenced = new CachedData<T>(m_delegate.createData());
+		final CachedDataChunk<T> referenced = new CachedDataChunk<T>(m_delegate.createData());
 		referenced.incRefCtr();
 		return referenced;
 	}
 
 	@Override
-	public DataChunkCursor<CachedData<T>> cursor() {
-		return new DataChunkCursor<CachedData<T>>() {
+	public DataChunkCursor<T> cursor() {
+		return new DataChunkCursor<T>() {
 
-			private final DataChunkCursor<DataChunk<T>> m_delegateCursor = m_delegate.cursor();
+			private final DataChunkCursor<T> m_delegateCursor = m_delegate.cursor();
 
 			private long m_index = -1;
 
 			@Override
-			public CachedData<T> get() {
+			public CachedDataChunk<T> get() {
 				// TODO pre-loading
 
 				m_cacheLock.readLock().lock();
 				try {
-					CachedData<T> entry = m_cache.get(m_index);
+					CachedDataChunk<T> entry = m_cache.get(m_index);
 					if (entry == null) {
-						entry = new CachedData<T>(m_delegateCursor.get());
+						entry = new CachedDataChunk<T>(m_delegateCursor.get());
 						m_cache.put(m_index, entry);
 						// TODO thread-safety?
 						// retain for external
@@ -117,18 +116,24 @@ class CachedColumnStore<T> implements Flushable, ColumnStore<CachedData<T>, Data
 	}
 
 	private void clear() throws Exception {
-		for (final CachedData<T> entry : m_cache.values()) {
+		for (final CachedDataChunk<T> entry : m_cache.values()) {
 			entry.close();
 		}
 		m_cache.clear();
 	}
 
 	@Override
-	public void addData(CachedData<T> data) {
+	public void addData(DataChunk<T> data) {
 		m_cacheLock.writeLock().lock();
 		try {
 			// TODO async pre-flushing
-			m_cache.put(m_dataCounter++, data);
+			final CachedDataChunk<T> chunk;
+			if (data instanceof CachedDataChunk) {
+				chunk = (CachedDataChunk<T>) data;
+			} else {
+				chunk = new CachedDataChunk<T>(data);
+			}
+			m_cache.put(m_dataCounter++, chunk);
 		} finally {
 			m_cacheLock.writeLock().unlock();
 		}
@@ -140,12 +145,12 @@ class CachedColumnStore<T> implements Flushable, ColumnStore<CachedData<T>, Data
 		m_delegate.close();
 	}
 
-	static class CachedData<T> implements DataChunk<T> {
+	static class CachedDataChunk<T> implements DataChunk<T> {
 
 		private final AtomicInteger m_refs;
 		private final DataChunk<T> m_delegate;
 
-		public CachedData(DataChunk<T> delegate) {
+		public CachedDataChunk(DataChunk<T> delegate) {
 			m_delegate = delegate;
 			m_refs = new AtomicInteger(1);
 		}

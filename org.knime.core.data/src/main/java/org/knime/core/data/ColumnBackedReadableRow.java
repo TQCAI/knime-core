@@ -8,9 +8,7 @@ import org.knime.core.data.column.ReadableAccess;
 import org.knime.core.data.column.ReadableColumn;
 import org.knime.core.data.column.ReadableCursor;
 
-//TODO: Implemented against KNIME classes ('DataValue', 'DataCell', ...)
-// TODO implement as cursor.
-public final class ColumnBackedReadableRow implements ReadableRowCursor {
+final class ColumnBackedReadableRow implements ReadableRowCursor {
 
 	public static ColumnBackedReadableRow fromReadableTable(final ReadableTable table) {
 		final List<ReadableCursor<?>> columns = new ArrayList<>(Math.toIntExact(table.getNumColumns()));

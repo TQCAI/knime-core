@@ -7,9 +7,7 @@ import java.util.List;
 import org.knime.core.data.column.WritableAccess;
 import org.knime.core.data.column.WritableCursor;
 
-// TODO: Implemented against KNIME classes ('DataValue', 'DataCell', ...)
-// TODO implement as cursor!
-public final class ColumnBackedWritableRow implements WritableRow {
+final class ColumnBackedWritableRow implements WritableRow {
 
 	public static ColumnBackedWritableRow fromWritableTable(final WritableTable table) {
 		final List<WritableCursor<?>> columns = new ArrayList<>(Math.toIntExact(table.getNumColumns()));

@@ -4,7 +4,7 @@ import org.knime.core.data.chunk.DataChunk;
 import org.knime.core.data.chunk.DataChunkAccess;
 import org.knime.core.data.chunk.DataChunkCursor;
 
-interface ColumnStore<T extends DataChunk<?>, V extends DataChunkAccess<?>> extends AutoCloseable {
+interface ColumnStore<T, V extends DataChunkAccess<T>> extends AutoCloseable {
 
 	/**
 	 * @return linked access for this data.
@@ -16,12 +16,12 @@ interface ColumnStore<T extends DataChunk<?>, V extends DataChunkAccess<?>> exte
 	 * 
 	 * @param data
 	 */
-	void addData(T data);
+	void addData(DataChunk<T> data);
 
 	/**
 	 * @return new data.
 	 */
-	T createData();
+	DataChunk<T> createData();
 
 	/**
 	 * @return cursor over all added data.

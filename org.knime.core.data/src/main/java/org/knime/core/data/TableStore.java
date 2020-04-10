@@ -1,12 +1,11 @@
 package org.knime.core.data;
 
-import org.knime.core.data.chunk.DataChunk;
 import org.knime.core.data.chunk.DataChunkAccess;
 import org.knime.core.data.column.Domain;
 
 public interface TableStore {
 
-	<T> ColumnStore<DataChunk<T>, DataChunkAccess<T>> getStore(long index);
+	<T, V extends DataChunkAccess<T>> ColumnStore<T, V> getStore(long index);
 
 	Domain getDomain(long index);
 
