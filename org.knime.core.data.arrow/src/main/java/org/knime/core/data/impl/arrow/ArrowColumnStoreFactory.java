@@ -1,7 +1,7 @@
+
 package org.knime.core.data.impl.arrow;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.UUID;
 
 import org.apache.arrow.memory.RootAllocator;
@@ -12,6 +12,7 @@ import org.knime.core.data.chunk.DataChunkAccess;
 import org.knime.core.data.column.NativeColumnType;
 
 public class ArrowColumnStoreFactory implements ColumnStoreFactory {
+
 	private final String STORE_ID = UUID.randomUUID().toString();
 
 	private final long m_chunkSize;
@@ -27,22 +28,20 @@ public class ArrowColumnStoreFactory implements ColumnStoreFactory {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T, D extends DataChunk<T>, V extends DataChunkAccess<T>> ColumnStore<T, D, V> createColumnStore(
-			NativeColumnType type) {
+		final NativeColumnType type)
+	{
 		switch (type) {
-		case BOOLEAN:
-			return (ColumnStore<T, D, V>) new BitVectorColumnStore(
-					m_allocator.newChildAllocator(type.toString(), 0, m_allocator.getLimit()), m_chunkSize);
-		case DOUBLE:
-			return (ColumnStore<T, D, V>) new Float8VectorColumnStore(
-					m_allocator.newChildAllocator(type.toString(), 0, m_allocator.getLimit()), m_chunkSize);
-		case STRING:
-			return (ColumnStore<T, D, V>) new VarCharVectorColumnStore(
-					m_allocator.newChildAllocator(type.toString(), 0, m_allocator.getLimit()), m_chunkSize);
-		default:
-			break;
+			case BOOLEAN:
+				return (ColumnStore<T, D, V>) new BitVectorColumnStore(m_allocator.newChildAllocator(type.toString(), 0,
+					m_allocator.getLimit()), m_chunkSize);
+			case DOUBLE:
+				return (ColumnStore<T, D, V>) new Float8VectorColumnStore(m_allocator.newChildAllocator(type.toString(), 0,
+					m_allocator.getLimit()), m_chunkSize);
+			case STRING:
+				return (ColumnStore<T, D, V>) new VarCharVectorColumnStore(m_allocator.newChildAllocator(type.toString(), 0,
+					m_allocator.getLimit()), m_chunkSize);
+			default:
+				throw new IllegalStateException("Type '" + type + "' not supported.");
 		}
-		// TODO Auto-generated method stub
-		return null;
 	}
-
 }

@@ -1,3 +1,4 @@
+
 package org.knime.core.data.array;
 
 import org.knime.core.data.ColumnStore;
@@ -8,29 +9,23 @@ import org.knime.core.data.column.NativeColumnType;
 
 public class ArrayColumnStoreFactory implements ColumnStoreFactory {
 
-	private long m_chunkSize;
+	private final long m_chunkSize;
 
-	public ArrayColumnStoreFactory(long chunkSize) {
+	public ArrayColumnStoreFactory(final long chunkSize) {
 		m_chunkSize = chunkSize;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T, D extends DataChunk<T>, V extends DataChunkAccess<T>> ColumnStore<T, D, V> createColumnStore(
-			NativeColumnType type) {
+		final NativeColumnType type)
+	{
 		// TODO we could even make this extensible
 		switch (type) {
-		case BOOLEAN:
-			break;
-		case DOUBLE:
-			return (ColumnStore<T, D, V>) new DoubleColumnStore(m_chunkSize);
-		case STRING:
-			break;
-		default:
-			break;
-
+			case DOUBLE:
+				return (ColumnStore<T, D, V>) new DoubleColumnStore(m_chunkSize);
+			default:
+				throw new IllegalStateException("Type '" + type + "' not supported.");
 		}
-		return null;
 	}
-
 }
