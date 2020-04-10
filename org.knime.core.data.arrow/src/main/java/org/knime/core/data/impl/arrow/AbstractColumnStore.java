@@ -1,5 +1,6 @@
 package org.knime.core.data.impl.arrow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.arrow.memory.BufferAllocator;
@@ -15,7 +16,7 @@ abstract class AbstractColumnStore<T extends FieldVector, V extends DataChunkAcc
 	private final long m_maxCapacity;
 	private final BufferAllocator m_allocator;
 
-	private List<FieldVectorDataChunk<T>> m_list;
+	private final List<FieldVectorDataChunk<T>> m_list = new ArrayList<>();
 	private Domain m_domain;
 
 	AbstractColumnStore(final BufferAllocator allocator, final long chunkSize) {
