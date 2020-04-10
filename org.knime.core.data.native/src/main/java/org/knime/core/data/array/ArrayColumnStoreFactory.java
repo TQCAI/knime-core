@@ -22,8 +22,12 @@ public class ArrayColumnStoreFactory implements ColumnStoreFactory {
 	{
 		// TODO we could even make this extensible
 		switch (type) {
+			case BOOLEAN:
+				return (ColumnStore<T, D, V>) new BooleanColumnStore(m_chunkSize);
 			case DOUBLE:
 				return (ColumnStore<T, D, V>) new DoubleColumnStore(m_chunkSize);
+			case STRING:
+				return (ColumnStore<T, D, V>) new StringColumnStore(m_chunkSize);
 			default:
 				throw new IllegalStateException("Type '" + type + "' not supported.");
 		}
