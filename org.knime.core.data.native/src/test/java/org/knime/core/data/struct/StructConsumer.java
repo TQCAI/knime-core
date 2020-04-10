@@ -6,9 +6,9 @@ import org.knime.core.data.WritableTable;
 
 class StructConsumer<S> implements Consumer<S> {
 
-	private WritableTable m_table;
+	private final WritableTable m_table;
 
-	public StructConsumer(Class<S> person) {
+	public StructConsumer(final Class<S> person) {
 		// TODO create table based on S (e.g. as a struct or row-based or ...)#
 		// TODO dynamic struct values? Olalala
 		// TODO etc
@@ -17,7 +17,7 @@ class StructConsumer<S> implements Consumer<S> {
 	}
 
 	@Override
-	public void accept(S t) {
+	public void accept(final S t) {
 		// TODO parse data from S
 		// TODO
 	}

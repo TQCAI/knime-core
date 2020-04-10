@@ -9,19 +9,11 @@ import org.knime.core.data.column.ColumnType;
 import org.knime.core.data.column.NativeColumnType;
 import org.knime.core.data.column.ReadableCursor;
 import org.knime.core.data.column.WritableCursor;
-import org.knime.core.data.impl.arrow.ArrowUtils;
-import org.knime.core.data.partition.ReadablePartitionedTable;
-import org.knime.core.data.partition.Store;
-import org.knime.core.data.partition.WritablePartitionedTable;
-import org.knime.core.data.table.ColumnBackedReadableRow;
-import org.knime.core.data.table.ColumnBackedWritableRow;
-import org.knime.core.data.table.ReadableRow;
-import org.knime.core.data.table.WritableRow;
-import org.knime.core.data.table.column.ColumnSchema;
+import org.knime.core.data.impl.arrow.ArrowColumnStoreFactory;
 
 public class StorageTest {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(final String[] args) throws Exception {
 		final StorageTest storageTest = new StorageTest();
 		for (int i = 0; i < 2; i++) {
 			System.out.println("Iteration: " + i);
@@ -42,21 +34,16 @@ public class StorageTest {
 	public static final long NUM_ROWS = 1_000_000;
 
 	// some schema
-	private static final ColumnSchema[] SCHEMAS = new ColumnSchema[] { new ColumnSchema() {
+	private static final ColumnType[] STRING_COLUMN = new ColumnType[] { new ColumnType() {
+
 		@Override
 		public String name() {
-			return "My Double Column";
+			return "My String Column";
 		}
 
 		@Override
-		public ColumnType getColumnType() {
-			return new ColumnType() {
-
-				@Override
-				public NativeColumnType[] getNativeTypes() {
-					return new NativeColumnType[] { NativeColumnType.STRING };
-				}
-			};
+		public NativeColumnType[] getNativeTypes() {
+			return new NativeColumnType[] { NativeColumnType.STRING };
 		}
 	} };
 
@@ -64,7 +51,7 @@ public class StorageTest {
 	 * TESTS
 	 */
 
-	@Test
+	// @Test
 	public void doubleArrayTest() {
 		final double[] array = new double[100_000_000];
 		for (int i = 0; i < array.length; i++) {
@@ -72,51 +59,54 @@ public class StorageTest {
 		}
 
 		for (int i = 0; i < array.length; i++) {
-			double k = array[i];
+			final double k = array[i];
 			Assert.assertEquals(array[i], k, 0.00000000000001);
 		}
 	}
 
 	@Test
 	public void columnwiseWriteReadSingleColumnIdentityTest() throws Exception {
-		try (final Store root = ArrowUtils.createArrowStore(OFFHEAP_SIZE, BATCH_SIZE, SCHEMAS)) {
+		// TODO: Store is not AutoCloseable any more - should it be?
+		final TableStore store = TableUtils.createTableStore(new ArrowColumnStoreFactory(BATCH_SIZE, OFFHEAP_SIZE),
+			STRING_COLUMN);
 
-			// Create writable table on store. Just an access on store.
-			final WritablePartitionedTable writableTable = new WritablePartitionedTable(root);
+		// Create writable table on store. Just an access on store.
+		final WritableTable writableTable = TableUtils.createWritableColumnTable(store);
 
-			// first column write
-			try (final WritableCursor col0 = writableTable.getWritableColumn(0).createWritableCursor()) {
-				final WritableStringAccess val0 = (WritableStringAccess) col0.getValue();
-				for (long i = 0; i < NUM_ROWS; i++) {
-					// TODO it would be cool to do col0.fwd().setDouble('val') or
-					// col0.next().getDouble()
-					// for(DoubleColumValue val : doubleColumn){
-					// }
+		// first column write
+		try (final WritableCursor<?> col0 = writableTable.getWritableColumn(0).createWritableCursor()) {
+			final WritableStringAccess val0 = (WritableStringAccess) col0.get();
+			for (long i = 0; i < NUM_ROWS; i++) {
+				// TODO it would be cool to do col0.fwd().setDouble('val') or
+				// col0.next().getDouble()
+				// for(DoubleColumValue val : doubleColumn){
+				// }
 
 //					root.flush();
 
-					col0.fwd();
-					val0.setStringValue("Entry" + i);
-				}
+				col0.fwd();
+				val0.setStringValue("Entry" + i);
 			}
+		}
 
-			// TODO this is unfortunately required before reading...
-			// TODO implication: We can't offer read access to a table if the table is not
-			// entirely flushed AND/OR held in memory, unless we write multiple files per
-			// table (chunks) (-> current implementation)
-			// TODO maybe Parquet behaves differently?
-			// root.closeForWriting();
+		// TODO this is unfortunately required before reading...
+		// TODO implication: We can't offer read access to a table if the table is
+		// not
+		// entirely flushed AND/OR held in memory, unless we write multiple files
+		// per
+		// table (chunks) (-> current implementation)
+		// TODO maybe Parquet behaves differently?
+		// root.closeForWriting();
 
-			// Done writing?
-			final ReadablePartitionedTable readableTable = new ReadablePartitionedTable(root);
+		// Done writing?
+		final ReadableTable readableTable = TableUtils.createReadableTable(store);
 
-			// then read
-			try (final ReadableCursor col0 = readableTable.getReadableColumn(0).createCursor()) {
-				final ReadableStringAccess val0 = (ReadableStringAccess) col0.getValue();
-				for (long i = 0; col0.canFwd(); i++) {
-					col0.fwd();
-					Assert.assertEquals("Entry" + i, val0.getStringValue());
-				}
+		// then read
+		try (final ReadableCursor<?> col0 = readableTable.getReadableColumn(0).createReadableCursor()) {
+			final ReadableStringAccess val0 = (ReadableStringAccess) col0.get();
+			for (long i = 0; col0.canFwd(); i++) {
+				col0.fwd();
+				Assert.assertEquals("Entry" + i, val0.getStringValue());
 			}
 		}
 	}
@@ -124,28 +114,29 @@ public class StorageTest {
 	@Test
 	public void rowwiseWriteReadSingleDoubleColumnIdentityTest() throws Exception {
 		// Read/Write table...
-		try (final Store root = ArrowUtils.createArrowStore(OFFHEAP_SIZE, BATCH_SIZE, SCHEMAS)) {
+		// TODO: Store is not AutoCloseable any more - should it be?
+		final TableStore store = TableUtils.createTableStore(new ArrowColumnStoreFactory(BATCH_SIZE, OFFHEAP_SIZE),
+			STRING_COLUMN);
 
-			// Create writable table on store. Just an access on store.
-			final WritablePartitionedTable writableTable = new WritablePartitionedTable(root);
+		// Create writable table on store. Just an access on store.
+		final WritableRowTable writableTable = TableUtils.createWritableRowTable(store);
 
-			try (final WritableRow row = ColumnBackedWritableRow.fromWritableTable(writableTable)) {
-				final WritableStringAccess val0 = (WritableStringAccess) row.getValueAt(0);
-				for (long i = 0; i < NUM_ROWS; i++) {
-					row.fwd();
-					val0.setStringValue("Entry " + i);
-				}
+		try (final WritableRow row = writableTable.getWritableRow()) {
+			final WritableStringAccess val0 = (WritableStringAccess) row.getWritableAccess(0);
+			for (long i = 0; i < NUM_ROWS; i++) {
+				row.fwd();
+				val0.setStringValue("Entry " + i);
 			}
+		}
 
-			// Done writing?
-			final ReadablePartitionedTable readableTable = new ReadablePartitionedTable(root);
+		// Done writing?
+		final ReadableRowTable readableTable = TableUtils.createReadableRowTable(store);
 
-			try (final ReadableRow row = ColumnBackedReadableRow.fromReadableTable(readableTable)) {
-				final ReadableStringAccess val0 = (ReadableStringAccess) row.getValueAt(0);
-				for (long i = 0; row.canFwd(); i++) {
-					row.fwd();
-					Assert.assertEquals("Entry " + i, val0.getStringValue());
-				}
+		try (final ReadableRowCursor row = readableTable.getRowCursor()) {
+			final ReadableStringAccess val0 = (ReadableStringAccess) row.getReadableAccess(0);
+			for (long i = 0; row.canFwd(); i++) {
+				row.fwd();
+				Assert.assertEquals("Entry " + i, val0.getStringValue());
 			}
 		}
 	}
