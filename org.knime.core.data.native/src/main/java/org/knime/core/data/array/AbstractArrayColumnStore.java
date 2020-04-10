@@ -1,5 +1,6 @@
 package org.knime.core.data.array;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.knime.core.data.ColumnStore;
@@ -11,10 +12,10 @@ abstract class AbstractArrayColumnStore<T extends Array<?>, V extends DataChunkA
 		implements ColumnStore<T, ArrayDataChunk<T>, V> {
 
 	private final long m_maxCapacity;
-	private List<ArrayDataChunk<T>> m_list;
+	private final List<ArrayDataChunk<T>> m_list = new ArrayList<>();
 	private Domain m_domain;
 
-	AbstractArrayColumnStore(long chunkSize) {
+	AbstractArrayColumnStore(final long chunkSize) {
 		m_maxCapacity = chunkSize;
 	}
 
@@ -32,7 +33,7 @@ abstract class AbstractArrayColumnStore<T extends Array<?>, V extends DataChunkA
 	}
 
 	@Override
-	public void addData(ArrayDataChunk<T> data) {
+	public void addData(final ArrayDataChunk<T> data) {
 		// TODO write to disc
 		m_list.add(data);
 	}
@@ -70,7 +71,7 @@ abstract class AbstractArrayColumnStore<T extends Array<?>, V extends DataChunkA
 			}
 
 			@Override
-			public void move(long steps) {
+			public void move(final long steps) {
 				m_index += steps;
 			}
 		};

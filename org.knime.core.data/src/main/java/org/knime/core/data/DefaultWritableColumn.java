@@ -1,3 +1,4 @@
+
 package org.knime.core.data;
 
 import org.knime.core.data.chunk.DataChunk;
@@ -6,10 +7,11 @@ import org.knime.core.data.column.WritableAccess;
 import org.knime.core.data.column.WritableColumn;
 import org.knime.core.data.column.WritableCursor;
 
-class DefaultWritableColumn<T, C extends DataChunk<T>, V extends WritableAccess & DataChunkAccess<T>>
-		implements WritableColumn<V> {
+class DefaultWritableColumn<T, C extends DataChunk<T>, V extends WritableAccess & DataChunkAccess<T>> implements
+	WritableColumn<V>
+{
 
-	private ColumnStore<T, C, V> m_store;
+	private final ColumnStore<T, C, V> m_store;
 
 	public DefaultWritableColumn(final ColumnStore<T, C, V> store) {
 		m_store = store;
@@ -21,7 +23,7 @@ class DefaultWritableColumn<T, C extends DataChunk<T>, V extends WritableAccess 
 
 			private final V m_value = m_store.createDataAccess();
 
-			private DataChunk<T> m_currentData;
+			private C m_currentData;
 			private long m_currentDataMaxIndex = -1;
 			private long m_index = -1;
 
@@ -40,12 +42,24 @@ class DefaultWritableColumn<T, C extends DataChunk<T>, V extends WritableAccess 
 
 			private void switchToNextData() {
 				try {
+					returnCurrentData();
 					m_currentData = m_store.createData();
 					m_value.update(m_currentData.get());
 					m_currentDataMaxIndex = m_currentData.getCapacity() - 1;
-				} catch (final Exception e) {
+				}
+				catch (final Exception e) {
 					// TODO
 					throw new RuntimeException(e);
+				}
+			}
+
+			private void returnCurrentData() throws Exception {
+				if (m_currentData != null) {
+					m_currentData.setValueCount(m_index);
+					m_store.addData(m_currentData);
+					// TODO: close data or not? Native implementation currently sets its
+					// array to null if we close it.
+					// m_currentData.close();
 				}
 			}
 
@@ -56,10 +70,7 @@ class DefaultWritableColumn<T, C extends DataChunk<T>, V extends WritableAccess 
 
 			@Override
 			public void close() throws Exception {
-				if (m_currentData != null) {
-					m_currentData.setValueCount(m_index);
-					m_currentData.close();
-				}
+				returnCurrentData();
 			}
 
 			@Override
