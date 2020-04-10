@@ -8,11 +8,8 @@ import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
-import org.apache.arrow.vector.types.pojo.Schema;
 import org.knime.core.data.column.ColumnType;
 import org.knime.core.data.column.NativeColumnType;
-import org.knime.core.data.partition.Store;
-import org.knime.core.data.table.column.ColumnSchema;
 
 import io.netty.buffer.ArrowBuf;
 
@@ -31,10 +28,6 @@ public final class ArrowUtils {
 		for (final ArrowBuf buffer : vector.getBuffers(false)) {
 			buffer.getReferenceManager().release();
 		}
-	}
-
-	public static Store createArrowStore(long maxSize, int batchSize, ColumnSchema... schemas) {
-		return new ArrowRootStore(maxSize, batchSize, schemas);
 	}
 
 	public static Field toField(String name, NativeColumnType type) {
@@ -58,14 +51,6 @@ public final class ArrowUtils {
 			fields.add(toField(name + ", index " + i + ", type, " + types[i], types[i]));
 		}
 		return fields;
-	}
-
-	public static Schema createArrowSchema(ColumnSchema... schemas) {
-		final List<Field> fields = new ArrayList<>();
-		for (final ColumnSchema schema : schemas) {
-			fields.addAll(toFieldList(schema.name(), schema.getColumnType()));
-		}
-		return new Schema(fields);
 	}
 
 //

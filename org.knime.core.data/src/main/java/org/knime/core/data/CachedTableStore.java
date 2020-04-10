@@ -3,6 +3,7 @@ package org.knime.core.data;
 import java.io.Flushable;
 import java.io.IOException;
 
+import org.knime.core.data.chunk.DataChunk;
 import org.knime.core.data.chunk.DataChunkAccess;
 import org.knime.core.data.column.Domain;
 
@@ -32,10 +33,10 @@ public class CachedTableStore implements TableStore, Flushable {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, V extends DataChunkAccess<T>> ColumnStore<T, V> getStore(long index) {
+	public <T, C extends DataChunk<T>, V extends DataChunkAccess<T>> ColumnStore<T, C, V> getStore(long index) {
 		// NB: this cast is OK. just dealing with array not being able to capture
 		// generics.
-		return (ColumnStore<T, V>) m_columnStores[(int) index];
+		return (ColumnStore<T, C, V>) m_columnStores[(int) index];
 	}
 
 	@Override

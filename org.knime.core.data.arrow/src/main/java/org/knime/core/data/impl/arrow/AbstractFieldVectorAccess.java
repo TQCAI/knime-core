@@ -1,13 +1,11 @@
 
-package org.knime.core.data.impl.arrow.types;
+package org.knime.core.data.impl.arrow;
 
 import org.apache.arrow.vector.FieldVector;
-import org.knime.core.data.partition.Partition;
-import org.knime.core.data.partition.PartitionValue;
+import org.knime.core.data.chunk.DataChunkAccess;
 
-// TODO composition over inheritance? :-(
-abstract class AbstractArrowValue<V extends FieldVector> //
-		implements PartitionValue<V> {
+abstract class AbstractFieldVectorAccess<V extends FieldVector> //
+		implements DataChunkAccess<V> {
 
 	protected int m_index = -1;
 
@@ -19,9 +17,9 @@ abstract class AbstractArrowValue<V extends FieldVector> //
 	}
 
 	@Override
-	public void updateStorage(final Partition<V> partition) {
+	public void update(final V vector) {
 		m_index = -1;
-		m_vector = partition.get();
+		m_vector = vector;
 	}
 
 	@Override

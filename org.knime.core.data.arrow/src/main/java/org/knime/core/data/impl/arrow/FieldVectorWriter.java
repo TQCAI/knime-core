@@ -14,27 +14,25 @@ import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.ipc.ArrowStreamWriter;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
-import org.knime.core.data.partition.ReadablePartition;
 
 import io.netty.buffer.ArrowBuf;
 
-public class ArrowCacheFlusher<F extends FieldVector> implements AutoCloseable, SequentialCacheFlusher<F> {
+public class FieldVectorWriter<F extends FieldVector> implements AutoCloseable {
 
 	private final File m_file;
 	private ArrowStreamWriter m_writer;
 	private VectorLoader m_vectorLoader;
 
-	public ArrowCacheFlusher(final File file) throws IOException {
+	public FieldVectorWriter(final File file) throws IOException {
 		m_file = file;
 	}
 
 	@SuppressWarnings("resource")
-	@Override
-	public void flush(ReadablePartition<F> partition) throws IOException {
+	public void flush(FieldVectorDataChunk<F> dataChunk) throws IOException {
 
 		if (m_writer == null) {
-			VectorSchemaRoot root = new VectorSchemaRoot(Collections.singletonList(partition.get().getField()),
-					Collections.singletonList(partition.get()));
+			VectorSchemaRoot root = new VectorSchemaRoot(Collections.singletonList(dataChunk.get().getField()),
+					Collections.singletonList(dataChunk.get()));
 			m_vectorLoader = new VectorLoader(root);
 			m_writer = new ArrowStreamWriter(root, null, new RandomAccessFile(m_file, "rw").getChannel());
 		}
@@ -42,11 +40,11 @@ public class ArrowCacheFlusher<F extends FieldVector> implements AutoCloseable, 
 		// TODO there must be a better way?!
 		final List<ArrowFieldNode> nodes = new ArrayList<>();
 		final List<ArrowBuf> buffers = new ArrayList<>();
-		appendNodes(partition.get(), nodes, buffers);
+		appendNodes(dataChunk.get(), nodes, buffers);
 
 		// Auto-closing makes sure that ArrowRecordBatch actually releases the buffers
 		// again
-		try (final ArrowRecordBatch batch = new ArrowRecordBatch((int) partition.size(), nodes, buffers)) {
+		try (final ArrowRecordBatch batch = new ArrowRecordBatch((int) dataChunk.getValueCount(), nodes, buffers)) {
 			m_vectorLoader.load(batch);
 			m_writer.writeBatch();
 		}

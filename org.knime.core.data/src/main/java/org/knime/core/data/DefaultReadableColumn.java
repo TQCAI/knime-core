@@ -8,13 +8,13 @@ import org.knime.core.data.column.ReadableAccess;
 import org.knime.core.data.column.ReadableColumn;
 import org.knime.core.data.column.ReadableCursor;
 
-class DefaultReadableColumn<T, V extends ReadableAccess & DataChunkAccess<T>, D extends Domain>
+class DefaultReadableColumn<T, C extends DataChunk<T>, V extends ReadableAccess & DataChunkAccess<T>, D extends Domain>
 		implements ReadableColumn<V, D> {
 
-	private ColumnStore<T, V> m_store;
+	private ColumnStore<T, C, V> m_store;
 	private D m_domain;
 
-	public DefaultReadableColumn(final ColumnStore<T, V> store, D domain) {
+	public DefaultReadableColumn(final ColumnStore<T, C, V> store, D domain) {
 		m_store = store;
 		m_domain = domain;
 	}
@@ -28,7 +28,7 @@ class DefaultReadableColumn<T, V extends ReadableAccess & DataChunkAccess<T>, D 
 	public ReadableCursor<V> createReadableCursor() {
 		return new ReadableCursor<V>() {
 
-			private DataChunkCursor<T> m_cursor = m_store.cursor();
+			private DataChunkCursor<T, C> m_cursor = m_store.cursor();
 			private final V m_value = m_store.createDataAccess();
 			private long m_currentDataMaxIndex = -1;
 			private long m_index = -1;

@@ -1,5 +1,4 @@
-
-package org.knime.core.data.impl.arrow.types;
+package org.knime.core.data.impl.arrow;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -13,27 +12,40 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.VarCharVector;
 import org.knime.core.data.access.ReadableStringAccess;
 import org.knime.core.data.access.WritableStringAccess;
+import org.knime.core.data.column.Domain;
+import org.knime.core.data.impl.arrow.VarCharVectorColumnStore.VarCharVectorAccess;
 
-public final class ArrowStringVectorFactory extends AbstractArrowFieldVectorFactory<VarCharVector> {
+public class VarCharVectorColumnStore extends AbstractColumnStore<VarCharVector, VarCharVectorAccess> {
 
-	public ArrowStringVectorFactory(final BufferAllocator allocator, final int partitionCapacity) {
-		super(allocator, partitionCapacity);
+	VarCharVectorColumnStore(BufferAllocator allocator, long chunkSize) {
+		super(allocator, chunkSize);
 	}
 
 	@Override
-	VarCharVector create(final BufferAllocator allocator, final int capacity) {
+	public VarCharVectorAccess createDataAccess() {
+		return new VarCharVectorAccess();
+	}
+
+	@Override
+	protected VarCharVector create(BufferAllocator allocator, long capacity) {
 		final VarCharVector vector = new VarCharVector((String) null, allocator);
 		// TODO: Heuristic
-		vector.allocateNew(64l * capacity, capacity);
+		vector.allocateNew(64l * capacity, (int) capacity);
 		return vector;
+	}
+
+	@Override
+	protected Domain initDomain() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	// TODO: row key split string 'RowKey' from integer '0'
 	// TODO: we could gain some performance here (i.e. avoid object creation
 	// where possible)
 	// TODO we don't have to encode anything in case we stay on the same system
-	public static final class StringArrowValue //
-			extends AbstractArrowValue<VarCharVector> //
+	static final class VarCharVectorAccess //
+			extends AbstractFieldVectorAccess<VarCharVector> //
 			implements ReadableStringAccess, WritableStringAccess {
 
 		private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder()

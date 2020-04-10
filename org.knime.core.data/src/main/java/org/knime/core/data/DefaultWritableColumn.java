@@ -6,11 +6,12 @@ import org.knime.core.data.column.WritableAccess;
 import org.knime.core.data.column.WritableColumn;
 import org.knime.core.data.column.WritableCursor;
 
-class DefaultWritableColumn<T, V extends WritableAccess & DataChunkAccess<T>> implements WritableColumn<V> {
+class DefaultWritableColumn<T, C extends DataChunk<T>, V extends WritableAccess & DataChunkAccess<T>>
+		implements WritableColumn<V> {
 
-	private ColumnStore<T, V> m_store;
+	private ColumnStore<T, C, V> m_store;
 
-	public DefaultWritableColumn(final ColumnStore<T, V> store) {
+	public DefaultWritableColumn(final ColumnStore<T, C, V> store) {
 		m_store = store;
 	}
 

@@ -5,7 +5,7 @@ import org.knime.core.data.chunk.DataChunkAccess;
 import org.knime.core.data.chunk.DataChunkCursor;
 import org.knime.core.data.column.Domain;
 
-public interface ColumnStore<T, V extends DataChunkAccess<T>> extends AutoCloseable {
+public interface ColumnStore<T, D extends DataChunk<T>, V extends DataChunkAccess<T>> extends AutoCloseable {
 
 	Domain getDomain();
 
@@ -19,15 +19,15 @@ public interface ColumnStore<T, V extends DataChunkAccess<T>> extends AutoClosea
 	 * 
 	 * @param data
 	 */
-	void addData(DataChunk<T> data);
+	void addData(D data);
 
 	/**
 	 * @return new data.
 	 */
-	DataChunk<T> createData();
+	D createData();
 
 	/**
 	 * @return cursor over all added data.
 	 */
-	DataChunkCursor<T> cursor();
+	DataChunkCursor<T, D> cursor();
 }

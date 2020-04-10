@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.knime.core.data.CachedColumnStore.CachedDataChunk;
 import org.knime.core.data.chunk.DataChunk;
 import org.knime.core.data.chunk.DataChunkAccess;
 import org.knime.core.data.chunk.DataChunkCursor;
@@ -18,15 +19,15 @@ import org.knime.core.data.column.Domain;
 // TODO sequential pre-loading etc
 // TODO there must be smarter sequential caches out there
 // Important: partitions must be flushed in order.
-class CachedColumnStore<T> implements Flushable, ColumnStore<T, DataChunkAccess<T>> {
+class CachedColumnStore<T> implements Flushable, ColumnStore<T, CachedDataChunk<T>, DataChunkAccess<T>> {
 
 	private final Map<Long, CachedDataChunk<T>> m_cache = new TreeMap<>();
 	private final ReentrantReadWriteLock m_cacheLock = new ReentrantReadWriteLock(true);
-	private final ColumnStore<T, DataChunkAccess<T>> m_delegate;
+	private final ColumnStore<T, DataChunk<T>, DataChunkAccess<T>> m_delegate;
 
 	private long m_dataCounter;
 
-	public CachedColumnStore(final ColumnStore<T, DataChunkAccess<T>> delegate) {
+	public CachedColumnStore(final ColumnStore<T, DataChunk<T>, DataChunkAccess<T>> delegate) {
 		m_delegate = delegate;
 	}
 
@@ -64,10 +65,10 @@ class CachedColumnStore<T> implements Flushable, ColumnStore<T, DataChunkAccess<
 	}
 
 	@Override
-	public DataChunkCursor<T> cursor() {
-		return new DataChunkCursor<T>() {
+	public DataChunkCursor<T, CachedDataChunk<T>> cursor() {
+		return new DataChunkCursor<T, CachedDataChunk<T>>() {
 
-			private final DataChunkCursor<T> m_delegateCursor = m_delegate.cursor();
+			private final DataChunkCursor<T, ?> m_delegateCursor = m_delegate.cursor();
 
 			private long m_index = -1;
 
@@ -124,17 +125,12 @@ class CachedColumnStore<T> implements Flushable, ColumnStore<T, DataChunkAccess<
 	}
 
 	@Override
-	public void addData(DataChunk<T> data) {
+	public void addData(CachedDataChunk<T> data) {
 		m_cacheLock.writeLock().lock();
 		try {
 			// TODO async pre-flushing
-			final CachedDataChunk<T> chunk;
-			if (data instanceof CachedDataChunk) {
-				chunk = (CachedDataChunk<T>) data;
-			} else {
-				chunk = new CachedDataChunk<T>(data);
-			}
-			m_cache.put(m_dataCounter++, chunk);
+			m_cache.put(m_dataCounter++, data);
+			data.incRefCtr();
 		} finally {
 			m_cacheLock.writeLock().unlock();
 		}
