@@ -1,6 +1,5 @@
-package org.knime.core.data.array;
+package org.knime.core.data.array.types;
 
-import org.knime.core.data.array.types.Array;
 import org.knime.core.data.partition.ReadablePartition;
 
 public class ReadableNativePartition<V extends Array<?>> implements ReadablePartition<V> {

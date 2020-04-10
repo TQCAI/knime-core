@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.knime.core.data.chunk.DataChunk;
 import org.knime.core.data.chunk.DataChunkAccess;
 import org.knime.core.data.chunk.DataChunkCursor;
+import org.knime.core.data.column.Domain;
 
 // TODO thread-safety...
 // TODO sequential pre-loading etc
@@ -186,6 +187,12 @@ class CachedColumnStore<T> implements Flushable, ColumnStore<T, DataChunkAccess<
 		public long getValueCount() {
 			return m_delegate.getValueCount();
 		}
+	}
+
+	@Override
+	public Domain getDomain() {
+		// TODO we need to make sure this is correct.
+		return m_delegate.getDomain();
 	}
 
 }

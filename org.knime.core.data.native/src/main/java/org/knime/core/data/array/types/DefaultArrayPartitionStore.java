@@ -1,10 +1,9 @@
-package org.knime.core.data.array;
+package org.knime.core.data.array.types;
 
 import java.io.IOException;
 import java.util.function.Supplier;
 
 import org.knime.core.data.CachedColumnStore;
-import org.knime.core.data.array.types.Array;
 import org.knime.core.data.column.ReadableAccess;
 import org.knime.core.data.partition.PartitionValue;
 import org.knime.core.data.partition.ReadablePartition;

@@ -1,6 +1,5 @@
-package org.knime.core.data.array;
+package org.knime.core.data.array.types;
 
-import org.knime.core.data.array.types.Array;
 import org.knime.core.data.partition.WritablePartition;
 
 public class WritableArrayPartition<V extends Array<?>> implements WritablePartition<V> {
