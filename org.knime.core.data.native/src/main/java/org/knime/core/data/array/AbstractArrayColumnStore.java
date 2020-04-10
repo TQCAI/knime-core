@@ -43,6 +43,7 @@ abstract class AbstractArrayColumnStore<T extends Array<?>, V extends DataChunkA
 		return new ArrayDataChunk<>(create(m_maxCapacity));
 	}
 
+	// TODO: Cursor is independent of array-based implementation
 	@Override
 	public DataChunkCursor<T, ArrayDataChunk<T>> cursor() {
 		return new DataChunkCursor<T, ArrayDataChunk<T>>() {
@@ -62,7 +63,7 @@ abstract class AbstractArrayColumnStore<T extends Array<?>, V extends DataChunkA
 
 			@Override
 			public boolean canFwd() {
-				return m_index < m_list.size();
+				return m_index < m_list.size() - 1;
 			}
 
 			@Override

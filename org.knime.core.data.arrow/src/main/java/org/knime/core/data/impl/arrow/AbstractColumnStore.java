@@ -18,7 +18,7 @@ abstract class AbstractColumnStore<T extends FieldVector, V extends DataChunkAcc
 	private List<FieldVectorDataChunk<T>> m_list;
 	private Domain m_domain;
 
-	AbstractColumnStore(BufferAllocator allocator, long chunkSize) {
+	AbstractColumnStore(final BufferAllocator allocator, final long chunkSize) {
 		m_maxCapacity = chunkSize;
 		m_allocator = allocator;
 	}
@@ -37,7 +37,7 @@ abstract class AbstractColumnStore<T extends FieldVector, V extends DataChunkAcc
 	}
 
 	@Override
-	public void addData(FieldVectorDataChunk<T> data) {
+	public void addData(final FieldVectorDataChunk<T> data) {
 		m_list.add(data);
 	}
 
@@ -52,6 +52,7 @@ abstract class AbstractColumnStore<T extends FieldVector, V extends DataChunkAcc
 		return new FieldVectorDataChunk<>(vector);
 	}
 
+	// TODO: Cursor is independent of Arrow
 	@Override
 	public DataChunkCursor<T, FieldVectorDataChunk<T>> cursor() {
 		return new DataChunkCursor<T, FieldVectorDataChunk<T>>() {
@@ -71,7 +72,7 @@ abstract class AbstractColumnStore<T extends FieldVector, V extends DataChunkAcc
 
 			@Override
 			public boolean canFwd() {
-				return m_index < m_list.size();
+				return m_index < m_list.size() - 1;
 			}
 
 			@Override
@@ -81,7 +82,7 @@ abstract class AbstractColumnStore<T extends FieldVector, V extends DataChunkAcc
 			}
 
 			@Override
-			public void move(long steps) {
+			public void move(final long steps) {
 				m_index += steps;
 			}
 		};
