@@ -1,5 +1,5 @@
 
-package org.knime.core.data.table;
+package org.knime.core.data;
 
 import org.knime.core.data.column.WritableAccess;
 
@@ -7,8 +7,6 @@ import org.knime.core.data.column.WritableAccess;
 public interface WritableRow extends AutoCloseable {
 
 	void fwd();
-
-	long getNumColumns();
 
 	WritableAccess getWritableAccess(long index);
 }

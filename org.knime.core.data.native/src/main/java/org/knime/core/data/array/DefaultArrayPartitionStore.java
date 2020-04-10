@@ -3,8 +3,8 @@ package org.knime.core.data.array;
 import java.io.IOException;
 import java.util.function.Supplier;
 
+import org.knime.core.data.CachedColumnStore;
 import org.knime.core.data.array.types.Array;
-import org.knime.core.data.chunked.CachedChunkedDataStore;
 import org.knime.core.data.column.ReadableAccess;
 import org.knime.core.data.partition.PartitionValue;
 import org.knime.core.data.partition.ReadablePartition;
@@ -15,11 +15,11 @@ class DefaultArrayPartitionStore<T extends Array<?>, V extends ReadableAccess & 
 
 	private final Supplier<PartitionValue<T>> m_valueSupplier;
 	private final Supplier<T> m_partitionSupplier;
-	private final CachedChunkedDataStore<T> m_cache;
+	private final CachedColumnStore<T> m_cache;
 	private long m_partitionIdx;
 
 	public DefaultArrayPartitionStore(Supplier<PartitionValue<T>> partitionValueSupplier, Supplier<T> partitionSupplier,
-			CachedChunkedDataStore<T> cache) {
+			CachedColumnStore<T> cache) {
 		m_valueSupplier = partitionValueSupplier;
 		m_partitionSupplier = partitionSupplier;
 		m_cache = cache;

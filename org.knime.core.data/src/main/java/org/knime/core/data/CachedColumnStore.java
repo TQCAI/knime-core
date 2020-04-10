@@ -1,5 +1,5 @@
 
-package org.knime.core.data.chunked;
+package org.knime.core.data;
 
 import java.io.Flushable;
 import java.io.IOException;
@@ -9,27 +9,29 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.knime.core.data.Data;
-import org.knime.core.data.DataAccess;
-import org.knime.core.data.chunked.CachedChunkedDataStore.CachedData;
+import org.knime.core.data.CachedColumnStore.CachedData;
+import org.knime.core.data.chunk.DataChunk;
+import org.knime.core.data.chunk.DataChunkAccess;
+import org.knime.core.data.chunk.DataChunkCursor;
 
 // TODO thread-safety...
 // TODO sequential pre-loading etc
 // TODO there must be smarter sequential caches out there
 // Important: partitions must be flushed in order.
-public final class CachedChunkedDataStore<T> implements Flushable, ChunkedDataStore<T, CachedData<T>, DataAccess<T>> {
+class CachedColumnStore<T> implements Flushable, ColumnStore<CachedData<T>, DataChunkAccess<T>> {
 
 	private final Map<Long, CachedData<T>> m_cache = new TreeMap<>();
 	private final ReentrantReadWriteLock m_cacheLock = new ReentrantReadWriteLock(true);
-	private final ChunkedDataStore<T, Data<T>, DataAccess<T>> m_delegate;
+	private final ColumnStore<DataChunk<T>, DataChunkAccess<T>> m_delegate;
 
 	private long m_dataCounter;
 
-	public CachedChunkedDataStore(final ChunkedDataStore<T, Data<T>, DataAccess<T>> delegate) {
+	public CachedColumnStore(final ColumnStore<DataChunk<T>, DataChunkAccess<T>> delegate) {
 		m_delegate = delegate;
 	}
 
 	// TODO Memory alert or similar: Block adding new stuff to cache.
+	// Also clears cache.
 	@Override
 	public void flush() throws IOException {
 		m_cacheLock.writeLock().lock();
@@ -37,9 +39,8 @@ public final class CachedChunkedDataStore<T> implements Flushable, ChunkedDataSt
 			for (final Entry<Long, CachedData<T>> entry : m_cache.entrySet()) {
 				final CachedData<T> data = entry.getValue();
 				m_delegate.addData(data);
-				entry.getValue().close();
 			}
-			m_cache.clear();
+			clear();
 		} catch (Exception e) {
 			// TODO acceptable?
 			throw new IOException(e);
@@ -49,7 +50,7 @@ public final class CachedChunkedDataStore<T> implements Flushable, ChunkedDataSt
 	}
 
 	@Override
-	public DataAccess<T> createDataAccess() {
+	public DataChunkAccess<T> createDataAccess() {
 		return m_delegate.createDataAccess();
 	}
 
@@ -63,10 +64,10 @@ public final class CachedChunkedDataStore<T> implements Flushable, ChunkedDataSt
 	}
 
 	@Override
-	public ChunkedDataCursor<T, CachedData<T>> cursor() {
-		return new ChunkedDataCursor<T, CachedData<T>>() {
+	public DataChunkCursor<CachedData<T>> cursor() {
+		return new DataChunkCursor<CachedData<T>>() {
 
-			private final ChunkedDataCursor<T, Data<T>> m_delegateCursor = m_delegate.cursor();
+			private final DataChunkCursor<DataChunk<T>> m_delegateCursor = m_delegate.cursor();
 
 			private long m_index = -1;
 
@@ -107,7 +108,19 @@ public final class CachedChunkedDataStore<T> implements Flushable, ChunkedDataSt
 			public void close() throws Exception {
 				m_delegateCursor.close();
 			}
+
+			@Override
+			public void move(long steps) {
+				m_index += steps;
+			}
 		};
+	}
+
+	private void clear() throws Exception {
+		for (final CachedData<T> entry : m_cache.values()) {
+			entry.close();
+		}
+		m_cache.clear();
 	}
 
 	@Override
@@ -121,12 +134,18 @@ public final class CachedChunkedDataStore<T> implements Flushable, ChunkedDataSt
 		}
 	}
 
-	static class CachedData<T> implements Data<T> {
+	@Override
+	public void close() throws Exception {
+		clear();
+		m_delegate.close();
+	}
+
+	static class CachedData<T> implements DataChunk<T> {
 
 		private final AtomicInteger m_refs;
-		private final Data<T> m_delegate;
+		private final DataChunk<T> m_delegate;
 
-		public CachedData(Data<T> delegate) {
+		public CachedData(DataChunk<T> delegate) {
 			m_delegate = delegate;
 			m_refs = new AtomicInteger(1);
 		}

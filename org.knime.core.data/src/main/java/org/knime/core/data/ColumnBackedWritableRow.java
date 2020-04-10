@@ -1,5 +1,5 @@
 
-package org.knime.core.data.table;
+package org.knime.core.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import org.knime.core.data.column.WritableAccess;
 import org.knime.core.data.column.WritableCursor;
 
 // TODO: Implemented against KNIME classes ('DataValue', 'DataCell', ...)
+// TODO implement as cursor!
 public final class ColumnBackedWritableRow implements WritableRow {
 
 	public static ColumnBackedWritableRow fromWritableTable(final WritableTable table) {
@@ -22,11 +23,6 @@ public final class ColumnBackedWritableRow implements WritableRow {
 
 	public ColumnBackedWritableRow(final List<WritableCursor<?>> columns) {
 		m_columns = columns;
-	}
-
-	@Override
-	public long getNumColumns() {
-		return m_columns.size();
 	}
 
 	@Override

@@ -13,10 +13,6 @@ import org.knime.core.data.impl.arrow.ArrowUtils;
 import org.knime.core.data.partition.ReadablePartitionedTable;
 import org.knime.core.data.partition.Store;
 import org.knime.core.data.partition.WritablePartitionedTable;
-import org.knime.core.data.table.ColumnBackedReadableRow;
-import org.knime.core.data.table.ColumnBackedWritableRow;
-import org.knime.core.data.table.ReadableRow;
-import org.knime.core.data.table.WritableRow;
 import org.knime.core.data.table.column.ColumnSchema;
 
 public class StorageTest {
@@ -140,7 +136,7 @@ public class StorageTest {
 			// Done writing?
 			final ReadablePartitionedTable readableTable = new ReadablePartitionedTable(root);
 
-			try (final ReadableRow row = ColumnBackedReadableRow.fromReadableTable(readableTable)) {
+			try (final ReadableRowCursor row = ColumnBackedReadableRow.fromReadableTable(readableTable)) {
 				final ReadableStringAccess val0 = (ReadableStringAccess) row.getValueAt(0);
 				for (long i = 0; row.canFwd(); i++) {
 					row.fwd();

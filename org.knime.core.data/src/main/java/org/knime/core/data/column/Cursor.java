@@ -7,5 +7,4 @@ public interface Cursor<T> extends AutoCloseable {
 	void fwd();
 
 	boolean canFwd();
-
 }

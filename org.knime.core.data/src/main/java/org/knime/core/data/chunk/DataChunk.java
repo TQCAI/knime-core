@@ -1,6 +1,6 @@
-package org.knime.core.data;
+package org.knime.core.data.chunk;
 
-public interface Data<T> extends AutoCloseable {
+public interface DataChunk<T> extends AutoCloseable {
 	T get();
 
 	long getCapacity();

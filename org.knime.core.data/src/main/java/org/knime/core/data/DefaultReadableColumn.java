@@ -1,20 +1,20 @@
-package org.knime.core.data.chunked;
+package org.knime.core.data;
 
-import org.knime.core.data.Data;
-import org.knime.core.data.DataAccess;
+import org.knime.core.data.chunk.DataChunk;
+import org.knime.core.data.chunk.DataChunkAccess;
+import org.knime.core.data.chunk.DataChunkCursor;
 import org.knime.core.data.column.Domain;
 import org.knime.core.data.column.ReadableAccess;
 import org.knime.core.data.column.ReadableColumn;
 import org.knime.core.data.column.ReadableCursor;
 
-public class ChunkedReadableColumn<T, V extends ReadableAccess & DataAccess<T>, D extends Domain>
+class DefaultReadableColumn<T, V extends ReadableAccess & DataChunkAccess<T>, D extends Domain>
 		implements ReadableColumn<V, D> {
 
+	private ColumnStore<DataChunk<T>, V> m_store;
 	private D m_domain;
 
-	private ChunkedDataStore<T, Data<T>, V> m_store;
-
-	public ChunkedReadableColumn(final ChunkedDataStore<T, Data<T>, V> store, final D domain) {
+	public DefaultReadableColumn(final ColumnStore<DataChunk<T>, V> store, D domain) {
 		m_store = store;
 		m_domain = domain;
 	}
@@ -28,12 +28,12 @@ public class ChunkedReadableColumn<T, V extends ReadableAccess & DataAccess<T>, 
 	public ReadableCursor<V> createReadableCursor() {
 		return new ReadableCursor<V>() {
 
-			private ChunkedDataCursor<T, Data<T>> m_cursor = m_store.cursor();
+			private DataChunkCursor<DataChunk<T>> m_cursor = m_store.cursor();
 			private final V m_value = m_store.createDataAccess();
 			private long m_currentDataMaxIndex = -1;
 			private long m_index = -1;
 
-			private Data<T> m_currentData;
+			private DataChunk<T> m_currentData;
 			{
 				switchToNextData();
 			}

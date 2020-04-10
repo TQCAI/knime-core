@@ -1,25 +1,27 @@
 
-package org.knime.core.data.table;
+package org.knime.core.data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.knime.core.data.column.ReadableAccess;
+import org.knime.core.data.column.ReadableColumn;
 import org.knime.core.data.column.ReadableCursor;
 
 //TODO: Implemented against KNIME classes ('DataValue', 'DataCell', ...)
-public final class ColumnBackedReadableRow implements ReadableRow {
+// TODO implement as cursor.
+public final class ColumnBackedReadableRow implements ReadableRowCursor {
 
 	public static ColumnBackedReadableRow fromReadableTable(final ReadableTable table) {
 		final List<ReadableCursor<?>> columns = new ArrayList<>(Math.toIntExact(table.getNumColumns()));
 		for (long i = 0; i < table.getNumColumns(); i++) {
-			columns.add(table.getReadableColumn(i).createReadableCursor());
+			ReadableColumn<?, ?> col = table.getReadableColumn(i);
+			columns.add(col.createReadableCursor());
 		}
 		return new ColumnBackedReadableRow(columns);
 	}
 
 	private final List<ReadableCursor<?>> m_columns;
-
 	private final List<ReadableAccess> m_dataValues;
 
 	public ColumnBackedReadableRow(final List<ReadableCursor<?>> columns) {
@@ -28,11 +30,6 @@ public final class ColumnBackedReadableRow implements ReadableRow {
 		for (final ReadableCursor<?> column : m_columns) {
 			m_dataValues.add(column.get());
 		}
-	}
-
-	@Override
-	public long getNumColumns() {
-		return m_dataValues.size();
 	}
 
 	@Override
@@ -48,8 +45,8 @@ public final class ColumnBackedReadableRow implements ReadableRow {
 	}
 
 	@Override
-	public ReadableAccess getReadableAccess(final long idx) {
-		return m_dataValues.get((int) idx);
+	public ReadableAccess getReadableAccess(final long index) {
+		return m_dataValues.get((int) index);
 	}
 
 	@Override

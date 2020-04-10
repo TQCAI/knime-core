@@ -1,18 +1,18 @@
-package org.knime.core.data.chunked;
+package org.knime.core.data;
 
-import org.knime.core.data.Data;
-import org.knime.core.data.DataAccess;
+import org.knime.core.data.chunk.DataChunk;
+import org.knime.core.data.chunk.DataChunkAccess;
 import org.knime.core.data.column.Domain;
 import org.knime.core.data.column.WritableAccess;
 import org.knime.core.data.column.WritableColumn;
 import org.knime.core.data.column.WritableCursor;
 
-public class ChunkedWritableColumn<T, V extends WritableAccess & DataAccess<T>, D extends Domain>
+class DefaultWritableColumn<T, V extends WritableAccess & DataChunkAccess<T>, D extends Domain>
 		implements WritableColumn<V> {
 
-	private ChunkedDataStore<T, Data<T>, V> m_store;
+	private ColumnStore<DataChunk<T>, V> m_store;
 
-	public ChunkedWritableColumn(final ChunkedDataStore<T, Data<T>, V> store) {
+	public DefaultWritableColumn(final ColumnStore<DataChunk<T>, V> store) {
 		m_store = store;
 	}
 
@@ -22,7 +22,7 @@ public class ChunkedWritableColumn<T, V extends WritableAccess & DataAccess<T>, 
 
 			private final V m_value = m_store.createDataAccess();
 
-			private Data<T> m_currentData;
+			private DataChunk<T> m_currentData;
 			private long m_currentDataMaxIndex = -1;
 			private long m_index = -1;
 
@@ -65,7 +65,7 @@ public class ChunkedWritableColumn<T, V extends WritableAccess & DataAccess<T>, 
 
 			@Override
 			public boolean canFwd() {
-				return false;
+				return true;
 			}
 		};
 	}

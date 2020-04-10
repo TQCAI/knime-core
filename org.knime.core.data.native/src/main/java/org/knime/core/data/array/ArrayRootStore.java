@@ -2,11 +2,11 @@ package org.knime.core.data.array;
 
 import java.io.IOException;
 
+import org.knime.core.data.CachedColumnStore;
 import org.knime.core.data.array.types.DoubleArray;
 import org.knime.core.data.array.types.DoubleArrayFactory;
 import org.knime.core.data.array.types.StringArray;
 import org.knime.core.data.array.types.StringArrayFactory;
-import org.knime.core.data.chunked.CachedChunkedDataStore;
 import org.knime.core.data.column.NativeColumnType;
 import org.knime.core.data.partition.PartitionStore;
 import org.knime.core.data.partition.Store;
@@ -49,10 +49,10 @@ class ArrayRootStore implements Store {
 		// retrieved from VectorFactory.
 		case DOUBLE:
 			return new DefaultArrayPartitionStore<>(() -> new DoubleArray.NativeDoubleValue(),
-					() -> new DoubleArrayFactory(capacity).createData(), new CachedChunkedDataStore<>(null, null));
+					() -> new DoubleArrayFactory(capacity).createData(), new CachedColumnStore<>(null, null));
 		case STRING:
 			return new DefaultArrayPartitionStore<>(() -> new StringArray.NativeStringValue(),
-					() -> new StringArrayFactory(capacity).createData(), new CachedChunkedDataStore<>(null, null));
+					() -> new StringArrayFactory(capacity).createData(), new CachedColumnStore<>(null, null));
 		default:
 			throw new IllegalArgumentException("Unknown or not yet implemented NativeType " + type);
 		}

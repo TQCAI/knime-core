@@ -1,5 +1,5 @@
 
-package org.knime.core.data.table;
+package org.knime.core.data;
 
 import org.knime.core.data.column.ReadableColumn;
 

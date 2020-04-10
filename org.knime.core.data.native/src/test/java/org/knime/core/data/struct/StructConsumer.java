@@ -2,7 +2,7 @@ package org.knime.core.data.struct;
 
 import java.util.function.Consumer;
 
-import org.knime.core.data.table.WritableTable;
+import org.knime.core.data.WritableTable;
 
 class StructConsumer<S> implements Consumer<S> {
 
