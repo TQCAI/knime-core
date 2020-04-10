@@ -1,5 +1,6 @@
 package org.knime.core.data;
 
+import org.knime.core.data.column.ColumnType;
 import org.knime.core.data.column.Domain;
 import org.knime.core.data.column.ReadableColumn;
 import org.knime.core.data.column.WritableColumn;
@@ -71,5 +72,9 @@ public class TableUtils {
 
 	public static CachedTableStore cache(TableStore store) {
 		return new CachedTableStore(store);
+	}
+
+	public static DefaultTableStore createTableStore(ColumnStoreFactory factory, ColumnType... types) {
+		return new DefaultTableStore(factory, types);
 	}
 }
