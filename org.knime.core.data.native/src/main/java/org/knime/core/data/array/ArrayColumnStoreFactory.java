@@ -1,13 +1,13 @@
 
 package org.knime.core.data.array;
 
-import org.knime.core.data.ColumnDataStore;
-import org.knime.core.data.ColumnDataStoreFactory;
+import org.knime.core.data.DataStore;
+import org.knime.core.data.DataStoreFactory;
 import org.knime.core.data.DataAccess;
 import org.knime.core.data.chunk.ReadableData;
 import org.knime.core.data.column.NativeColumnType;
 
-public class ArrayColumnStoreFactory implements ColumnDataStoreFactory {
+public class ArrayColumnStoreFactory implements DataStoreFactory {
 
 	private final long m_chunkSize;
 
@@ -16,7 +16,7 @@ public class ArrayColumnStoreFactory implements ColumnDataStoreFactory {
 	}
 
 	@Override
-	public <T, V extends DataAccess<T>> ColumnDataStore<T, V> createColumnDataStore(NativeColumnType type) {
+	public <T, V extends DataAccess<T>> DataStore<T, V> createColumnDataStore(NativeColumnType type) {
 		// TODO Auto-generated method stub
 		return null;
 	}

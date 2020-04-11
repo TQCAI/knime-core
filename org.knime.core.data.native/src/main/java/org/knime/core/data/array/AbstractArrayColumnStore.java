@@ -3,13 +3,13 @@ package org.knime.core.data.array;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.data.ColumnDataStore;
+import org.knime.core.data.DataStore;
 import org.knime.core.data.DataAccess;
 import org.knime.core.data.DataCursor;
 import org.knime.core.data.chunk.WritableData;
 import org.knime.core.data.column.Domain;
 
-abstract class AbstractArrayColumnStore<T extends Array<?>, V extends DataAccess<T>> implements ColumnDataStore<T, V> {
+abstract class AbstractArrayColumnStore<T extends Array<?>, V extends DataAccess<T>> implements DataStore<T, V> {
 
 	private final long m_maxCapacity;
 	private final List<ReadableArrayData<T>> m_list = new ArrayList<>();

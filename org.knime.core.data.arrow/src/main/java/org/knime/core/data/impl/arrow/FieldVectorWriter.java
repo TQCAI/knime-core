@@ -28,7 +28,7 @@ public class FieldVectorWriter<F extends FieldVector> implements AutoCloseable {
 	}
 
 	@SuppressWarnings("resource")
-	public void flush(FieldVectorDataChunk<F> dataChunk) throws IOException {
+	public void flush(FieldVectorData<F> dataChunk) throws IOException {
 
 		if (m_writer == null) {
 			VectorSchemaRoot root = new VectorSchemaRoot(Collections.singletonList(dataChunk.get().getField()),

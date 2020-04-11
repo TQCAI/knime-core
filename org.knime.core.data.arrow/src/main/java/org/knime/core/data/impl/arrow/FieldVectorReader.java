@@ -39,7 +39,7 @@ public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
 
 	// Assumption for this reader: sequential loading.
 	@SuppressWarnings("resource")
-	public FieldVectorDataChunk<V> load(long index) throws IOException {
+	public FieldVectorData<V> load(long index) throws IOException {
 		if (m_reader == null) {
 			m_reader = new ArrowStreamReader(new RandomAccessFile(m_file, "rw").getChannel(), m_alloc);
 			m_root = m_reader.getVectorSchemaRoot();
@@ -57,7 +57,7 @@ public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
 
 		@SuppressWarnings("unchecked")
 		final V vector = (V) root.getVector(0);
-		return new FieldVectorDataChunk<>(vector);
+		return new FieldVectorData<>(vector);
 	}
 
 	@Override
