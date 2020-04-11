@@ -1,11 +1,10 @@
 
 package org.knime.core.data.array;
 
-import org.knime.core.data.DataStore;
-import org.knime.core.data.DataStoreFactory;
-import org.knime.core.data.DataAccess;
-import org.knime.core.data.chunk.ReadableData;
-import org.knime.core.data.column.NativeColumnType;
+import org.knime.core.data.store.DataStoreFactory;
+import org.knime.core.data.store.types.BooleanDataStore;
+import org.knime.core.data.store.types.DoubleDataStore;
+import org.knime.core.data.store.types.StringDataStore;
 
 public class ArrayColumnStoreFactory implements DataStoreFactory {
 
@@ -16,8 +15,18 @@ public class ArrayColumnStoreFactory implements DataStoreFactory {
 	}
 
 	@Override
-	public <T, V extends DataAccess<T>> DataStore<T, V> createColumnDataStore(NativeColumnType type) {
-		// TODO Auto-generated method stub
-		return null;
+	public DoubleDataStore<?, ?> createDoubleStore() {
+		return new DoubleArrayStore(m_chunkSize);
 	}
+
+	@Override
+	public BooleanDataStore<?, ?> createBooleanStore() {
+		return new BooleanArrayStore(m_chunkSize);
+	}
+
+	@Override
+	public StringDataStore<?, ?> createStringStore() {
+		return new StringArrayStore(m_chunkSize);
+	}
+
 }

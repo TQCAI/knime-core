@@ -1,7 +1,7 @@
 
 package org.knime.core.data.array;
 
-import org.knime.core.data.DataAccess;
+import org.knime.core.data.store.DataAccess;
 
 // TODO composition over inheritance? :-(
 abstract class AbstractNativeArrayAccess<A, N extends Array<A>> //

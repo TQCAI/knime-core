@@ -1,14 +1,15 @@
 package org.knime.core.data.array;
 
-import org.knime.core.data.access.ReadableDoubleAccess;
-import org.knime.core.data.access.WritableDoubleAccess;
-import org.knime.core.data.array.DoubleColumnStore.DoubleArray;
-import org.knime.core.data.array.DoubleColumnStore.DoubleArrayAccess;
-import org.knime.core.data.column.Domain;
+import org.knime.core.data.api.access.ReadableDoubleAccess;
+import org.knime.core.data.api.access.WritableDoubleAccess;
+import org.knime.core.data.array.DoubleArrayStore.DoubleArray;
+import org.knime.core.data.array.DoubleArrayStore.DoubleArrayAccess;
+import org.knime.core.data.store.types.DoubleDataStore;
 
-public class DoubleColumnStore extends AbstractArrayColumnStore<DoubleArray, DoubleArrayAccess> {
+public class DoubleArrayStore extends AbstractArrayStore<DoubleArray, DoubleArrayAccess>
+		implements DoubleDataStore<DoubleArray, DoubleArrayAccess> {
 
-	DoubleColumnStore(long chunkSize) {
+	DoubleArrayStore(long chunkSize) {
 		super(chunkSize);
 	}
 
@@ -20,12 +21,6 @@ public class DoubleColumnStore extends AbstractArrayColumnStore<DoubleArray, Dou
 	@Override
 	protected DoubleArray create(long capacity) {
 		return new DoubleArray(capacity);
-	}
-
-	@Override
-	protected Domain initDomain() {
-		// TODO return empty NumericColumnDomain
-		return null;
 	}
 
 	static class DoubleArray extends AbstractNativeArray<double[]> {
