@@ -1,9 +1,9 @@
 package org.knime.core.data.impl.arrow;
 
 import org.apache.arrow.vector.FieldVector;
-import org.knime.core.data.chunk.DataChunk;
+import org.knime.core.data.Data;
 
-class FieldVectorDataChunk<V extends FieldVector> implements DataChunk<V> {
+class FieldVectorDataChunk<V extends FieldVector> implements Data<V> {
 
 	private final V m_vector;
 
@@ -20,11 +20,6 @@ class FieldVectorDataChunk<V extends FieldVector> implements DataChunk<V> {
 	@Override
 	public V get() {
 		return m_vector;
-	}
-
-	@Override
-	public void close() throws Exception {
-		m_vector.close();
 	}
 
 	@Override

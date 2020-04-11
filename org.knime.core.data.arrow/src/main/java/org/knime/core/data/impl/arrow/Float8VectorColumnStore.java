@@ -4,7 +4,6 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.Float8Vector;
 import org.knime.core.data.access.ReadableDoubleAccess;
 import org.knime.core.data.access.WritableDoubleAccess;
-import org.knime.core.data.column.Domain;
 import org.knime.core.data.impl.arrow.Float8VectorColumnStore.Float8VectorAccess;
 
 public class Float8VectorColumnStore extends AbstractColumnStore<Float8Vector, Float8VectorAccess> {
@@ -23,12 +22,6 @@ public class Float8VectorColumnStore extends AbstractColumnStore<Float8Vector, F
 		final Float8Vector vector = new Float8Vector((String) null, allocator);
 		vector.allocateNew((int) capacity);
 		return vector;
-	}
-
-	@Override
-	protected Domain initDomain() {
-		// TODO init DoubleDomain
-		return null;
 	}
 
 	final static class Float8VectorAccess extends AbstractFieldVectorAccess<Float8Vector> //

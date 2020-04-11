@@ -3,16 +3,16 @@ package org.knime.core.data.array;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.data.ColumnStore;
-import org.knime.core.data.chunk.DataChunkAccess;
-import org.knime.core.data.chunk.DataChunkCursor;
+import org.knime.core.data.ColumnDataStore;
+import org.knime.core.data.DataAccess;
+import org.knime.core.data.DataCursor;
+import org.knime.core.data.chunk.WritableData;
 import org.knime.core.data.column.Domain;
 
-abstract class AbstractArrayColumnStore<T extends Array<?>, V extends DataChunkAccess<T>>
-		implements ColumnStore<T, ArrayDataChunk<T>, V> {
+abstract class AbstractArrayColumnStore<T extends Array<?>, V extends DataAccess<T>> implements ColumnDataStore<T, V> {
 
 	private final long m_maxCapacity;
-	private final List<ArrayDataChunk<T>> m_list = new ArrayList<>();
+	private final List<ReadableArrayData<T>> m_list = new ArrayList<>();
 	private Domain m_domain;
 
 	AbstractArrayColumnStore(final long chunkSize) {
@@ -33,25 +33,19 @@ abstract class AbstractArrayColumnStore<T extends Array<?>, V extends DataChunkA
 	}
 
 	@Override
-	public void addData(final ArrayDataChunk<T> data) {
-		// TODO write to disc
-		m_list.add(data);
-	}
-
-	@Override
-	public ArrayDataChunk<T> createData() {
-		return new ArrayDataChunk<>(create(m_maxCapacity));
+	public WritableData<T> create() {
+		return new WritableArrayData<>(create(m_maxCapacity));
 	}
 
 	// TODO: Cursor is independent of array-based implementation
 	@Override
-	public DataChunkCursor<T, ArrayDataChunk<T>> cursor() {
-		return new DataChunkCursor<T, ArrayDataChunk<T>>() {
+	public DataCursor<T> cursor() {
+		return new DataCursor<T>() {
 
 			private long m_index = -1;
 
 			@Override
-			public ArrayDataChunk<T> get() {
+			public ReadableArrayData<T> get() {
 				// TODO load from disc if required!
 				return m_list.get((int) m_index);
 			}

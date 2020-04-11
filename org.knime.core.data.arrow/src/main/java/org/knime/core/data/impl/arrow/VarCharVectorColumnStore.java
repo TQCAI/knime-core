@@ -12,7 +12,6 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.VarCharVector;
 import org.knime.core.data.access.ReadableStringAccess;
 import org.knime.core.data.access.WritableStringAccess;
-import org.knime.core.data.column.Domain;
 import org.knime.core.data.impl.arrow.VarCharVectorColumnStore.VarCharVectorAccess;
 
 public class VarCharVectorColumnStore extends AbstractColumnStore<VarCharVector, VarCharVectorAccess> {
@@ -32,12 +31,6 @@ public class VarCharVectorColumnStore extends AbstractColumnStore<VarCharVector,
 		// TODO: Heuristic
 		vector.allocateNew(64l * capacity, (int) capacity);
 		return vector;
-	}
-
-	@Override
-	protected Domain initDomain() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	// TODO: row key split string 'RowKey' from integer '0'

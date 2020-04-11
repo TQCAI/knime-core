@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.apache.arrow.memory.RootAllocator;
-import org.knime.core.data.ColumnStore;
-import org.knime.core.data.ColumnStoreFactory;
-import org.knime.core.data.chunk.DataChunk;
-import org.knime.core.data.chunk.DataChunkAccess;
+import org.knime.core.data.ColumnDataStore;
+import org.knime.core.data.ColumnDataStoreFactory;
+import org.knime.core.data.DataAccess;
+import org.knime.core.data.chunk.ReadableData;
 import org.knime.core.data.column.NativeColumnType;
 
-public class ArrowColumnStoreFactory implements ColumnStoreFactory {
+public class ArrowColumnStoreFactory implements ColumnDataStoreFactory {
 
 	private final String STORE_ID = UUID.randomUUID().toString();
 
@@ -27,18 +27,18 @@ public class ArrowColumnStoreFactory implements ColumnStoreFactory {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, D extends DataChunk<T>, V extends DataChunkAccess<T>> ColumnStore<T, D, V> createColumnStore(
+	public <T, D extends ReadableData<T>, V extends DataAccess<T>> ColumnDataStore<T, D, V> createColumnDataStore(
 		final NativeColumnType type)
 	{
 		switch (type) {
 			case BOOLEAN:
-				return (ColumnStore<T, D, V>) new BitVectorColumnStore(m_allocator.newChildAllocator(type.toString(), 0,
+				return (ColumnDataStore<T, D, V>) new BitVectorColumnStore(m_allocator.newChildAllocator(type.toString(), 0,
 					m_allocator.getLimit()), m_chunkSize);
 			case DOUBLE:
-				return (ColumnStore<T, D, V>) new Float8VectorColumnStore(m_allocator.newChildAllocator(type.toString(), 0,
+				return (ColumnDataStore<T, D, V>) new Float8VectorColumnStore(m_allocator.newChildAllocator(type.toString(), 0,
 					m_allocator.getLimit()), m_chunkSize);
 			case STRING:
-				return (ColumnStore<T, D, V>) new VarCharVectorColumnStore(m_allocator.newChildAllocator(type.toString(), 0,
+				return (ColumnDataStore<T, D, V>) new VarCharVectorColumnStore(m_allocator.newChildAllocator(type.toString(), 0,
 					m_allocator.getLimit()), m_chunkSize);
 			default:
 				throw new IllegalStateException("Type '" + type + "' not supported.");

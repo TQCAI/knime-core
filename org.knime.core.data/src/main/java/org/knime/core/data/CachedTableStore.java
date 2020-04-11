@@ -3,14 +3,9 @@ package org.knime.core.data;
 import java.io.Flushable;
 import java.io.IOException;
 
-import org.knime.core.data.chunk.DataChunk;
-import org.knime.core.data.chunk.DataChunkAccess;
-import org.knime.core.data.column.Domain;
-
 public class CachedTableStore implements TableStore, Flushable {
 
-	private final CachedColumnStore<?>[] m_columnStores;
-	private final TableStore m_delegate;
+	private final CachedColumnStore<?, ?>[] m_columnStores;
 
 	public CachedTableStore(TableStore delegate) {
 		// TODO long..
@@ -18,12 +13,6 @@ public class CachedTableStore implements TableStore, Flushable {
 		for (long i = 0; i < m_columnStores.length; i++) {
 			m_columnStores[(int) i] = new CachedColumnStore<>(delegate.getStore(i));
 		}
-		m_delegate = delegate;
-	}
-
-	@Override
-	public Domain getDomain(long index) {
-		return m_delegate.getDomain(index);
 	}
 
 	@Override
@@ -33,10 +22,10 @@ public class CachedTableStore implements TableStore, Flushable {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, C extends DataChunk<T>, V extends DataChunkAccess<T>> ColumnStore<T, C, V> getStore(long index) {
+	public <T, V extends DataAccess<T>> ColumnDataStore<T, V> getStore(long index) {
 		// NB: this cast is OK. just dealing with array not being able to capture
 		// generics.
-		return (ColumnStore<T, C, V>) m_columnStores[(int) index];
+		return (ColumnDataStore<T, V>) m_columnStores[(int) index];
 	}
 
 	@Override

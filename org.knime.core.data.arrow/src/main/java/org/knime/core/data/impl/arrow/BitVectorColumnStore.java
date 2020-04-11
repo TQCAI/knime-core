@@ -4,7 +4,6 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.BitVector;
 import org.knime.core.data.access.ReadableBooleanAccess;
 import org.knime.core.data.access.WritableBooleanAccess;
-import org.knime.core.data.column.Domain;
 import org.knime.core.data.impl.arrow.BitVectorColumnStore.BitVectorAccess;
 
 public class BitVectorColumnStore extends AbstractColumnStore<BitVector, BitVectorAccess> {
@@ -23,12 +22,6 @@ public class BitVectorColumnStore extends AbstractColumnStore<BitVector, BitVect
 		final BitVector vector = new BitVector((String) null, allocator);
 		vector.allocateNew((int) capacity);
 		return vector;
-	}
-
-	@Override
-	protected Domain initDomain() {
-		// TODO init DoubleDomain
-		return null;
 	}
 
 	static final class BitVectorAccess //

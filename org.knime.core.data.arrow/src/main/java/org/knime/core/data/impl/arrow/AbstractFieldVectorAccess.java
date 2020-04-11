@@ -2,10 +2,10 @@
 package org.knime.core.data.impl.arrow;
 
 import org.apache.arrow.vector.FieldVector;
-import org.knime.core.data.chunk.DataChunkAccess;
+import org.knime.core.data.DataAccess;
 
 abstract class AbstractFieldVectorAccess<V extends FieldVector> //
-		implements DataChunkAccess<V> {
+		implements DataAccess<V> {
 
 	protected int m_index = -1;
 

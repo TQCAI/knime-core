@@ -30,7 +30,8 @@ public class TableUtils {
 
 			@Override
 			public ReadableColumn<?, ?> getReadableColumn(long columnIndex) {
-				return new DefaultReadableColumn<>(store.getStore(columnIndex), store.getDomain(columnIndex));
+				// TODO domain?
+				return new DefaultReadableColumn<>(store.getStore(columnIndex), null);
 			}
 		};
 	}
@@ -65,7 +66,8 @@ public class TableUtils {
 
 			@Override
 			public Domain getDomain(long index) {
-				return store.getDomain(index);
+//				return store.getDomain(index);
+				throw new UnsupportedOperationException("Not yet implemented");
 			}
 		};
 	}
@@ -74,7 +76,7 @@ public class TableUtils {
 		return new CachedTableStore(store);
 	}
 
-	public static DefaultTableStore createTableStore(ColumnStoreFactory factory, ColumnType... types) {
+	public static DefaultTableStore createTableStore(ColumnDataStoreFactory factory, ColumnType... types) {
 		return new DefaultTableStore(factory, types);
 	}
 }
