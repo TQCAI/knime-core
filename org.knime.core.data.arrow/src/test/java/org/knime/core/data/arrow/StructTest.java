@@ -1,5 +1,5 @@
 
-package org.knime.core.data;
+package org.knime.core.data.arrow;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import org.knime.core.data.api.column.ColumnType;
 import org.knime.core.data.api.column.NativeColumnType;
 import org.knime.core.data.api.column.ReadableCursor;
 import org.knime.core.data.api.column.WritableCursor;
-import org.knime.core.data.impl.arrow.ArrowStoreFactory;
+import org.knime.core.data.arrow.ArrowStoreFactory;
 import org.knime.core.data.store.TableStore;
 import org.knime.core.data.store.TableStoreUtils;
 

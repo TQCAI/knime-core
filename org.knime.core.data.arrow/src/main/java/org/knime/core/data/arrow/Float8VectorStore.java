@@ -1,10 +1,10 @@
-package org.knime.core.data.impl.arrow;
+package org.knime.core.data.arrow;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.Float8Vector;
 import org.knime.core.data.api.access.ReadableDoubleAccess;
 import org.knime.core.data.api.access.WritableDoubleAccess;
-import org.knime.core.data.impl.arrow.Float8VectorStore.Float8VectorAccess;
+import org.knime.core.data.arrow.Float8VectorStore.Float8VectorAccess;
 import org.knime.core.data.store.types.DoubleDataStore;
 
 public class Float8VectorStore extends AbstractArrowStore<Float8Vector, Float8VectorAccess>

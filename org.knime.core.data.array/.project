@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.knime.core.data.native</name>
+	<name>org.knime.core.data.array</name>
 	<comment></comment>
 	<projects>
 	</projects>

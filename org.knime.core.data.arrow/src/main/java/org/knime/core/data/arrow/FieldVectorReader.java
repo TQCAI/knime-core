@@ -1,4 +1,4 @@
-package org.knime.core.data.impl.arrow;
+package org.knime.core.data.arrow;
 
 import java.io.File;
 import java.io.IOException;

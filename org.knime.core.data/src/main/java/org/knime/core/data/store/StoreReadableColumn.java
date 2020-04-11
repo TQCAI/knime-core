@@ -74,6 +74,8 @@ class StoreReadableColumn<T, V extends ReadableAccess & DataAccess<T>, D extends
 
 			private void closeCurrentPartition() throws Exception {
 				if (m_currentData != null) {
+					// only release
+					m_store.release(m_currentData);
 					m_cursor.close();
 				}
 			}

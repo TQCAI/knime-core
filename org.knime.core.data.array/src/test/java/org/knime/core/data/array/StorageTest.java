@@ -1,5 +1,5 @@
 
-package org.knime.core.data;
+package org.knime.core.data.array;
 
 import org.junit.Assert;
 import org.junit.Test;

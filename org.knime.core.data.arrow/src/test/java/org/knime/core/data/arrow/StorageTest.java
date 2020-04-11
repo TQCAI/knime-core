@@ -1,5 +1,5 @@
 
-package org.knime.core.data;
+package org.knime.core.data.arrow;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import org.knime.core.data.api.row.ReadableRowCursor;
 import org.knime.core.data.api.row.ReadableRowTable;
 import org.knime.core.data.api.row.WritableRow;
 import org.knime.core.data.api.row.WritableRowTable;
-import org.knime.core.data.impl.arrow.ArrowStoreFactory;
+import org.knime.core.data.arrow.ArrowStoreFactory;
 import org.knime.core.data.store.TableStore;
 import org.knime.core.data.store.TableStoreUtils;
 
@@ -115,7 +115,7 @@ public class StorageTest {
 	public void rowwiseWriteReadSingleDoubleColumnIdentityTest() throws Exception {
 		try (final TableStore store = TableStoreUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE),
 				STRING_COLUMN)) {
-
+			
 			// Create writable table on store. Just an access on store.
 			final WritableRowTable writableTable = TableStoreUtils.createWritableRowTable(store);
 

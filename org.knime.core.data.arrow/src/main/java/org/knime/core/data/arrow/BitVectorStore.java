@@ -1,10 +1,10 @@
-package org.knime.core.data.impl.arrow;
+package org.knime.core.data.arrow;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.BitVector;
 import org.knime.core.data.api.access.ReadableBooleanAccess;
 import org.knime.core.data.api.access.WritableBooleanAccess;
-import org.knime.core.data.impl.arrow.BitVectorStore.BitVectorAccess;
+import org.knime.core.data.arrow.BitVectorStore.BitVectorAccess;
 import org.knime.core.data.store.types.BooleanDataStore;
 
 public class BitVectorStore extends AbstractArrowStore<BitVector, BitVectorAccess>

@@ -38,7 +38,7 @@ class StoreWritableColumn<T, V extends WritableAccess & DataAccess<T>> implement
 
 			private void switchToNextData() {
 				try {
-					returnCurrentData();
+					releaseCurrentData();
 					m_currentData = m_store.create();
 					m_value.update(m_currentData.get());
 					m_currentDataMaxIndex = m_currentData.getCapacity() - 1;
@@ -48,11 +48,10 @@ class StoreWritableColumn<T, V extends WritableAccess & DataAccess<T>> implement
 				}
 			}
 
-			private void returnCurrentData() throws Exception {
+			private void releaseCurrentData() throws Exception {
 				if (m_currentData != null) {
 					m_currentData.setValueCount(m_index);
-					// TODO Finished writing
-					m_store.store(m_currentData);
+					m_store.storeAndRelease(m_currentData);
 				}
 			}
 
@@ -63,7 +62,7 @@ class StoreWritableColumn<T, V extends WritableAccess & DataAccess<T>> implement
 
 			@Override
 			public void close() throws Exception {
-				returnCurrentData();
+				releaseCurrentData();
 			}
 
 			@Override

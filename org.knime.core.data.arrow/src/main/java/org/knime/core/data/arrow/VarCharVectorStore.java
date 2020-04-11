@@ -1,4 +1,4 @@
-package org.knime.core.data.impl.arrow;
+package org.knime.core.data.arrow;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -12,7 +12,7 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.VarCharVector;
 import org.knime.core.data.api.access.ReadableStringAccess;
 import org.knime.core.data.api.access.WritableStringAccess;
-import org.knime.core.data.impl.arrow.VarCharVectorStore.VarCharVectorAccess;
+import org.knime.core.data.arrow.VarCharVectorStore.VarCharVectorAccess;
 import org.knime.core.data.store.types.StringDataStore;
 
 public class VarCharVectorStore extends AbstractArrowStore<VarCharVector, VarCharVectorAccess>

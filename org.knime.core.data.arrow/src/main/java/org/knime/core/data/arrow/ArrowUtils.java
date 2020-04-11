@@ -1,5 +1,5 @@
 
-package org.knime.core.data.impl.arrow;
+package org.knime.core.data.arrow;
 
 import java.util.ArrayList;
 import java.util.List;

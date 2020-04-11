@@ -1,5 +1,5 @@
 
-package org.knime.core.data.impl.arrow;
+package org.knime.core.data.arrow;
 
 import org.apache.arrow.vector.FieldVector;
 import org.knime.core.data.store.DataAccess;
