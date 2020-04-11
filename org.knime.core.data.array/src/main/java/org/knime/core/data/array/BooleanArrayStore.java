@@ -5,10 +5,10 @@ import org.knime.core.data.api.access.ReadableBooleanAccess;
 import org.knime.core.data.api.access.WritableBooleanAccess;
 import org.knime.core.data.array.BooleanArrayStore.BooleanArray;
 import org.knime.core.data.array.BooleanArrayStore.BooleanArrayAccess;
-import org.knime.core.data.store.types.BooleanDataStore;
+import org.knime.core.data.store.types.BooleanStore;
 
 public class BooleanArrayStore extends AbstractArrayStore<BooleanArray, BooleanArrayAccess>
-		implements BooleanDataStore<BooleanArray, BooleanArrayAccess> {
+		implements BooleanStore<BooleanArray, BooleanArrayAccess> {
 
 	BooleanArrayStore(final long chunkSize) {
 		super(chunkSize);

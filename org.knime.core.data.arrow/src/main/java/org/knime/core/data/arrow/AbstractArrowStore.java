@@ -1,7 +1,7 @@
 package org.knime.core.data.arrow;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
@@ -15,25 +15,39 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 	private final long m_maxCapacity;
 	private final BufferAllocator m_allocator;
 
-	private final List<Data<T>> m_list = new ArrayList<>();
+	private final File m_file;
+	private final FieldVectorWriter<T> m_writer;
 
-	AbstractArrowStore(final BufferAllocator allocator, final long chunkSize) {
+	// at some point, when we instantiate readers without prior writing, this field
+	// needs to come from somewhere else.
+	private long m_storedData;
+
+	AbstractArrowStore(final BufferAllocator allocator, File file, final long chunkSize) {
 		m_maxCapacity = chunkSize;
 		m_allocator = allocator;
+		m_file = file;
+		try {
+			m_writer = new FieldVectorWriter<>(m_file);
+		} catch (IOException e) {
+			// TODO
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
 	public void close() throws Exception {
-		// Close means: clear memory
-		for (final Data<T> data : m_list) {
-			release(data);
-		}
-		m_list.clear();
+		m_writer.close();
 	}
 
 	@Override
 	public void store(final Data<T> data) {
-		m_list.add(data);
+		try {
+			m_writer.flush(data.get());
+			m_storedData++;
+		} catch (IOException e) {
+			// TODO
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -57,12 +71,25 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 	public DataCursor<T> cursor() {
 		return new DataCursor<T>() {
 
+			final FieldVectorReader<T> m_reader;
+			{
+				try {
+					m_reader = new FieldVectorReader<>(m_file, m_allocator);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+
 			private long m_index = -1;
 
 			@Override
 			public Data<T> get() {
-				// TODO load from disc if required!
-				return m_list.get((int) m_index);
+				try {
+					return new FieldVectorData<>(m_reader.load(m_index));
+				} catch (IOException e) {
+					// TODO
+					throw new RuntimeException(e);
+				}
 			}
 
 			@Override
@@ -72,12 +99,12 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 
 			@Override
 			public boolean canFwd() {
-				return m_index < m_list.size() - 1;
+				return m_index < m_storedData - 1;
 			}
 
 			@Override
 			public void close() throws Exception {
-				// TODO as soon as we have a reader though...
+				m_reader.close();
 			}
 		};
 	}

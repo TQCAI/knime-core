@@ -5,10 +5,10 @@ import org.knime.core.data.api.access.ReadableStringAccess;
 import org.knime.core.data.api.access.WritableStringAccess;
 import org.knime.core.data.array.StringArrayStore.StringArray;
 import org.knime.core.data.array.StringArrayStore.StringArrayAccess;
-import org.knime.core.data.store.types.StringDataStore;
+import org.knime.core.data.store.types.StringStore;
 
 public class StringArrayStore extends AbstractArrayStore<StringArray, StringArrayAccess>
-		implements StringDataStore<StringArray, StringArrayAccess> {
+		implements StringStore<StringArray, StringArrayAccess> {
 
 	StringArrayStore(final long chunkSize) {
 		super(chunkSize);

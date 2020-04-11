@@ -1,5 +1,6 @@
 package org.knime.core.data.arrow;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -13,13 +14,13 @@ import org.apache.arrow.vector.VarCharVector;
 import org.knime.core.data.api.access.ReadableStringAccess;
 import org.knime.core.data.api.access.WritableStringAccess;
 import org.knime.core.data.arrow.VarCharVectorStore.VarCharVectorAccess;
-import org.knime.core.data.store.types.StringDataStore;
+import org.knime.core.data.store.types.StringStore;
 
 public class VarCharVectorStore extends AbstractArrowStore<VarCharVector, VarCharVectorAccess>
-		implements StringDataStore<VarCharVector, VarCharVectorAccess> {
+		implements StringStore<VarCharVector, VarCharVectorAccess> {
 
-	VarCharVectorStore(BufferAllocator allocator, long chunkSize) {
-		super(allocator, chunkSize);
+	VarCharVectorStore(BufferAllocator allocator, File file, long chunkSize) {
+		super(allocator, file, chunkSize);
 	}
 
 	@Override

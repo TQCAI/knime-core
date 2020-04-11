@@ -1,15 +1,15 @@
 package org.knime.core.data.store;
 
-import org.knime.core.data.store.types.BooleanDataStore;
-import org.knime.core.data.store.types.DoubleDataStore;
-import org.knime.core.data.store.types.StringDataStore;
+import org.knime.core.data.store.types.BooleanStore;
+import org.knime.core.data.store.types.DoubleStore;
+import org.knime.core.data.store.types.StringStore;
 
 public interface DataStoreFactory {
 
-	DoubleDataStore<?, ?> createDoubleStore();
+	DoubleStore<?, ?> createDoubleStore();
 
-	BooleanDataStore<?, ?> createBooleanStore();
+	BooleanStore<?, ?> createBooleanStore();
 
-	StringDataStore<?, ?> createStringStore();
+	StringStore<?, ?> createStringStore();
 
 }

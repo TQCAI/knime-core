@@ -99,15 +99,6 @@ public class StorageTest {
 					Assert.assertEquals("Entry" + i, val0.getStringValue());
 				}
 			}
-
-			// then read again
-			try (final ReadableCursor<?> col0 = readableTable.getReadableColumn(0).createReadableCursor()) {
-				final ReadableStringAccess val0 = (ReadableStringAccess) col0.get();
-				for (long i = 0; col0.canFwd(); i++) {
-					col0.fwd();
-					Assert.assertEquals("Entry" + i, val0.getStringValue());
-				}
-			}
 		}
 	}
 
@@ -115,7 +106,7 @@ public class StorageTest {
 	public void rowwiseWriteReadSingleDoubleColumnIdentityTest() throws Exception {
 		try (final TableStore store = TableStoreUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE),
 				STRING_COLUMN)) {
-			
+
 			// Create writable table on store. Just an access on store.
 			final WritableRowTable writableTable = TableStoreUtils.createWritableRowTable(store);
 

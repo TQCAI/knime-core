@@ -28,11 +28,11 @@ public class FieldVectorWriter<F extends FieldVector> implements AutoCloseable {
 	}
 
 	@SuppressWarnings("resource")
-	public void flush(FieldVectorData<F> dataChunk) throws IOException {
+	public void flush(F vector) throws IOException {
 
 		if (m_writer == null) {
-			VectorSchemaRoot root = new VectorSchemaRoot(Collections.singletonList(dataChunk.get().getField()),
-					Collections.singletonList(dataChunk.get()));
+			VectorSchemaRoot root = new VectorSchemaRoot(Collections.singletonList(vector.getField()),
+					Collections.singletonList(vector));
 			m_vectorLoader = new VectorLoader(root);
 			m_writer = new ArrowStreamWriter(root, null, new RandomAccessFile(m_file, "rw").getChannel());
 		}
@@ -40,11 +40,11 @@ public class FieldVectorWriter<F extends FieldVector> implements AutoCloseable {
 		// TODO there must be a better way?!
 		final List<ArrowFieldNode> nodes = new ArrayList<>();
 		final List<ArrowBuf> buffers = new ArrayList<>();
-		appendNodes(dataChunk.get(), nodes, buffers);
+		appendNodes(vector, nodes, buffers);
 
 		// Auto-closing makes sure that ArrowRecordBatch actually releases the buffers
 		// again
-		try (final ArrowRecordBatch batch = new ArrowRecordBatch((int) dataChunk.getValueCount(), nodes, buffers)) {
+		try (final ArrowRecordBatch batch = new ArrowRecordBatch((int) vector.getValueCount(), nodes, buffers)) {
 			m_vectorLoader.load(batch);
 			m_writer.writeBatch();
 		}

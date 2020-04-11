@@ -39,7 +39,7 @@ public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
 
 	// Assumption for this reader: sequential loading.
 	@SuppressWarnings("resource")
-	public FieldVectorData<V> load(long index) throws IOException {
+	public V load(long index) throws IOException {
 		if (m_reader == null) {
 			m_reader = new ArrowStreamReader(new RandomAccessFile(m_file, "rw").getChannel(), m_alloc);
 			m_root = m_reader.getVectorSchemaRoot();
@@ -48,7 +48,7 @@ public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
 
 		// load next
 		m_reader.loadNextBatch();
-
+		
 		// Transfer buffers to new vector. Zero copy.
 		// TODO Too expensive?
 		final VectorSchemaRoot root = VectorSchemaRoot.create(m_root.getSchema(), m_alloc);
@@ -57,7 +57,7 @@ public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
 
 		@SuppressWarnings("unchecked")
 		final V vector = (V) root.getVector(0);
-		return new FieldVectorData<>(vector);
+		return vector;
 	}
 
 	@Override

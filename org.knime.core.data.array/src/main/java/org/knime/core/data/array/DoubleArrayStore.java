@@ -4,10 +4,10 @@ import org.knime.core.data.api.access.ReadableDoubleAccess;
 import org.knime.core.data.api.access.WritableDoubleAccess;
 import org.knime.core.data.array.DoubleArrayStore.DoubleArray;
 import org.knime.core.data.array.DoubleArrayStore.DoubleArrayAccess;
-import org.knime.core.data.store.types.DoubleDataStore;
+import org.knime.core.data.store.types.DoubleStore;
 
 public class DoubleArrayStore extends AbstractArrayStore<DoubleArray, DoubleArrayAccess>
-		implements DoubleDataStore<DoubleArray, DoubleArrayAccess> {
+		implements DoubleStore<DoubleArray, DoubleArrayAccess> {
 
 	DoubleArrayStore(long chunkSize) {
 		super(chunkSize);

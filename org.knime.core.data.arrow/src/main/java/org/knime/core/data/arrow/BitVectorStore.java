@@ -1,17 +1,19 @@
 package org.knime.core.data.arrow;
 
+import java.io.File;
+
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.BitVector;
 import org.knime.core.data.api.access.ReadableBooleanAccess;
 import org.knime.core.data.api.access.WritableBooleanAccess;
 import org.knime.core.data.arrow.BitVectorStore.BitVectorAccess;
-import org.knime.core.data.store.types.BooleanDataStore;
+import org.knime.core.data.store.types.BooleanStore;
 
 public class BitVectorStore extends AbstractArrowStore<BitVector, BitVectorAccess>
-		implements BooleanDataStore<BitVector, BitVectorAccess> {
+		implements BooleanStore<BitVector, BitVectorAccess> {
 
-	BitVectorStore(BufferAllocator allocator, long chunkSize) {
-		super(allocator, chunkSize);
+	BitVectorStore(BufferAllocator allocator, File file, long chunkSize) {
+		super(allocator, file, chunkSize);
 	}
 
 	@Override
