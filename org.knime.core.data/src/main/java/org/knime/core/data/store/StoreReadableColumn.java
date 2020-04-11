@@ -70,13 +70,13 @@ class StoreReadableColumn<T, V extends ReadableAccess & DataAccess<T>, D extends
 			@Override
 			public void close() throws Exception {
 				closeCurrentPartition();
+				m_cursor.close();
 			}
 
 			private void closeCurrentPartition() throws Exception {
 				if (m_currentData != null) {
 					// only release
 					m_store.release(m_currentData);
-					m_cursor.close();
 				}
 			}
 		};

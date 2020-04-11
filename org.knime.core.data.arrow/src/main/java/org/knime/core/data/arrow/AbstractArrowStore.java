@@ -74,7 +74,8 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 			final FieldVectorReader<T> m_reader;
 			{
 				try {
-					m_reader = new FieldVectorReader<>(m_file, m_allocator);
+					m_reader = new FieldVectorReader<>(m_file,
+							m_allocator.newChildAllocator("Reader", 0, m_allocator.getLimit()));
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}

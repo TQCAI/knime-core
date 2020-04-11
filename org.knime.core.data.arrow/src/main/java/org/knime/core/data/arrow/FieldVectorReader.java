@@ -6,10 +6,9 @@ import java.io.RandomAccessFile;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
-import org.apache.arrow.vector.VectorLoader;
 import org.apache.arrow.vector.VectorSchemaRoot;
-import org.apache.arrow.vector.VectorUnloader;
 import org.apache.arrow.vector.ipc.ArrowStreamReader;
+import org.apache.arrow.vector.util.TransferPair;
 
 /* NB: This reader has best performance when data is accessed sequentially row-wise.
 * TODO Maybe different flush / loader combinations are configurable per node later?
@@ -26,8 +25,6 @@ public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
 
 	private ArrowStreamReader m_reader;
 
-	private VectorUnloader m_unloader;
-
 	// TODO support for column filtering and row filtering ('TableFilter'), i.e.
 	// only load required columns / rows from disc. Rows should be easily possible
 	// by using 'ArrowBlock'
@@ -43,27 +40,23 @@ public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
 		if (m_reader == null) {
 			m_reader = new ArrowStreamReader(new RandomAccessFile(m_file, "rw").getChannel(), m_alloc);
 			m_root = m_reader.getVectorSchemaRoot();
-			m_unloader = new VectorUnloader(m_root);
 		}
 
 		// load next
 		m_reader.loadNextBatch();
-		
-		// Transfer buffers to new vector. Zero copy.
-		// TODO Too expensive?
-		final VectorSchemaRoot root = VectorSchemaRoot.create(m_root.getSchema(), m_alloc);
-		final VectorLoader loader = new VectorLoader(root);
-		loader.load(m_unloader.getRecordBatch());
 
+		// TODO Check if there is a faster way
+		final FieldVector vector = m_root.getVector(0);
+		final TransferPair transferPair = vector.getTransferPair(m_alloc);
+		transferPair.transfer();
 		@SuppressWarnings("unchecked")
-		final V vector = (V) root.getVector(0);
-		return vector;
+		final V newVector = (V) transferPair.getTo();
+		return (V) newVector;
 	}
 
 	@Override
 	public void close() throws Exception {
 		if (m_root != null) {
-			m_root.close();
 			m_reader.close();
 			m_alloc.close();
 		}
