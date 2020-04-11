@@ -1,9 +1,8 @@
 
-package org.knime.core.data.struct;
+package org.knime.core.data;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.knime.core.data.StorageTest;
 import org.knime.core.data.api.ReadableTable;
 import org.knime.core.data.api.WritableTable;
 import org.knime.core.data.api.access.ReadableDoubleAccess;

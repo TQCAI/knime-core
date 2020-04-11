@@ -15,24 +15,31 @@ class DefaultTableStore implements TableStore {
 		for (int i = 0; i < types.length; i++) {
 			final NativeColumnType[] nativeTypes = types[i].getNativeTypes();
 			if (nativeTypes.length == 1) {
-				switch (nativeTypes[0]) {
-				case BOOLEAN:
-					m_dataStores.add(factory.createBooleanStore());
-					break;
-				case DOUBLE:
-					m_dataStores.add(factory.createDoubleStore());
-					break;
-				case STRING:
-					m_dataStores.add(factory.createStringStore());
-					break;
-				default:
-					throw new UnsupportedOperationException("Unknown type " + nativeTypes[0]);
-				}
+				m_dataStores.add(create(factory, nativeTypes[0]));
 			} else {
-				// TODO
-				throw new UnsupportedOperationException("Multi types are not yet implemented");
+				// TODO only single level struct or allow infinite nesting?
+				// TODO push struct creation down to dataformat? Possible e.g. via opening and
+				// closing a datafactory for a nested type.
+				final List<DataStore<?, ?>> structList = new ArrayList<>();
+				for (NativeColumnType type : nativeTypes) {
+					structList.add(create(factory, type));
+				}
+				m_dataStores.add(new StructDataStore(structList));
 			}
 
+		}
+	}
+
+	private DataStore<?, ?> create(final DataStoreFactory factory, final NativeColumnType type) {
+		switch (type) {
+		case BOOLEAN:
+			return factory.createBooleanStore();
+		case DOUBLE:
+			return factory.createDoubleStore();
+		case STRING:
+			return factory.createStringStore();
+		default:
+			throw new UnsupportedOperationException("Unknown type " + type);
 		}
 	}
 
@@ -54,5 +61,4 @@ class DefaultTableStore implements TableStore {
 			store.close();
 		}
 	}
-
 }
