@@ -23,6 +23,7 @@ import org.knime.core.data.store.DataStore;
 class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 
 	private final Map<Long, CachedData> m_indexCache = new TreeMap<>();
+
 	private final Map<Data<T>, CachedData> m_dataCache = new HashMap<>();
 
 	private final ReentrantReadWriteLock m_cacheLock = new ReentrantReadWriteLock(true);

@@ -36,6 +36,7 @@ abstract class AbstractArrayStore<T extends Array<?>, V extends DataAccess<T>> i
 	@Override
 	public void release(Data<T> data) {
 		// Nothing to do here
+		data.get().release();
 	}
 	
 	@Override
