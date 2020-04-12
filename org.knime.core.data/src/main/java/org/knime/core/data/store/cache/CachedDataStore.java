@@ -83,10 +83,12 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 		m_cacheLock.writeLock().lock();
 		try {
 			// TODO increment ref counter on data
-			m_dataCounter++;
-			final CachedDataStore<T, V>.CachedData cachedData = new CachedData(data, m_dataCounter);
+			final CachedData cachedData = new CachedData(data, m_dataCounter);
+			// Inc ref counter by one (=cache).
+			cachedData.incRefCounter();
 			m_indexCache.put(m_dataCounter, cachedData);
 			m_dataCache.put(data, cachedData);
+			m_dataCounter++;
 		} finally {
 			m_cacheLock.writeLock().unlock();
 		}
@@ -111,11 +113,15 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 
 				m_cacheLock.readLock().lock();
 				try {
-					Data<T> entry = m_indexCache.get(m_index).get();
+					final CachedData entry = m_indexCache.get(m_index);
+					final Data<T> data;
 					if (entry == null) {
-						store(entry = m_delegateCursor.get());
+						store(data = m_delegateCursor.get());
+					} else {
+						data = entry.get();
+						m_delegateCursor.fwd();
 					}
-					return entry;
+					return data;
 				} finally {
 					m_cacheLock.readLock().unlock();
 				}

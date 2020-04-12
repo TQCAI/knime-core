@@ -73,8 +73,8 @@ public class StorageTest {
 
 	@Test
 	public void columnwiseWriteReadSingleColumnIdentityTest() throws Exception {
-		try (final TableStore store = TableStoreUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE),
-				STRING_COLUMN)) {
+		try (final TableStore store = TableStoreUtils.cache(
+				TableStoreUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE), STRING_COLUMN))) {
 
 			// Create writable table on store. Just an access on store.
 			final WritableTable writableTable = TableStoreUtils.createWritableColumnTable(store);
