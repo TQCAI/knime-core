@@ -35,7 +35,12 @@ abstract class AbstractArrayStore<T extends Array<?>, V extends DataAccess<T>> i
 
 	@Override
 	public void release(Data<T> data) {
-		// nothing to do here.
+		// Nothing to do here
+	}
+	
+	@Override
+	public void closeForWriting() {
+		// TODO
 	}
 
 	@Override

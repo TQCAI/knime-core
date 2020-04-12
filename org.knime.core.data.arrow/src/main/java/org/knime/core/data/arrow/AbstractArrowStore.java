@@ -36,7 +36,19 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 
 	@Override
 	public void close() throws Exception {
-		m_writer.close();
+		// close all memory etc. keep written files.
+		m_allocator.close();
+	}
+
+	@Override
+	public void closeForWriting() {
+		try {
+			// close writer.
+			m_writer.close();
+		} catch (Exception e) {
+			// TODO
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

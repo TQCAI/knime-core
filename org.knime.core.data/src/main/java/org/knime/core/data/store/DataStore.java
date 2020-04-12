@@ -42,4 +42,6 @@ public interface DataStore<T, V extends DataAccess<T>> extends AutoCloseable {
 		store(data);
 		release(data);
 	}
+
+	void closeForWriting();
 }

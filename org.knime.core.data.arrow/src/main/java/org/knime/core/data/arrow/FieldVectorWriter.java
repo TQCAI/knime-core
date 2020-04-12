@@ -11,6 +11,7 @@ import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.TypeLayout;
 import org.apache.arrow.vector.VectorLoader;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.ipc.ArrowFileWriter;
 import org.apache.arrow.vector.ipc.ArrowStreamWriter;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
@@ -20,7 +21,7 @@ import io.netty.buffer.ArrowBuf;
 public class FieldVectorWriter<F extends FieldVector> implements AutoCloseable {
 
 	private final File m_file;
-	private ArrowStreamWriter m_writer;
+	private ArrowFileWriter m_writer;
 	private VectorLoader m_vectorLoader;
 
 	public FieldVectorWriter(final File file) throws IOException {
@@ -34,7 +35,7 @@ public class FieldVectorWriter<F extends FieldVector> implements AutoCloseable {
 			VectorSchemaRoot root = new VectorSchemaRoot(Collections.singletonList(vector.getField()),
 					Collections.singletonList(vector));
 			m_vectorLoader = new VectorLoader(root);
-			m_writer = new ArrowStreamWriter(root, null, new RandomAccessFile(m_file, "rw").getChannel());
+			m_writer = new ArrowFileWriter(root, null, new RandomAccessFile(m_file, "rw").getChannel());
 		}
 
 		// TODO there must be a better way?!

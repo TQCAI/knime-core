@@ -192,4 +192,9 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 		}
 	}
 
+	@Override
+	public void closeForWriting() {
+		m_delegate.closeForWriting();
+	}
+
 }

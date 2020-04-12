@@ -3,11 +3,13 @@ package org.knime.core.data.arrow;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.List;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
-import org.apache.arrow.vector.ipc.ArrowStreamReader;
+import org.apache.arrow.vector.ipc.ArrowFileReader;
+import org.apache.arrow.vector.ipc.message.ArrowBlock;
 import org.apache.arrow.vector.util.TransferPair;
 
 /* NB: This reader has best performance when data is accessed sequentially row-wise.
@@ -23,7 +25,9 @@ public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
 
 	private File m_file;
 
-	private ArrowStreamReader m_reader;
+	private ArrowFileReader m_reader;
+
+	private List<ArrowBlock> m_blocks;
 
 	// TODO support for column filtering and row filtering ('TableFilter'), i.e.
 	// only load required columns / rows from disc. Rows should be easily possible
@@ -38,12 +42,13 @@ public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
 	@SuppressWarnings("resource")
 	public V load(long index) throws IOException {
 		if (m_reader == null) {
-			m_reader = new ArrowStreamReader(new RandomAccessFile(m_file, "rw").getChannel(), m_alloc);
+			m_reader = new ArrowFileReader(new RandomAccessFile(m_file, "rw").getChannel(), m_alloc);
 			m_root = m_reader.getVectorSchemaRoot();
+			m_blocks = m_reader.getRecordBlocks();
 		}
 
 		// load next
-		m_reader.loadNextBatch();
+		m_reader.loadRecordBatch(m_blocks.get((int) index));
 
 		// TODO Check if there is a faster way
 		final FieldVector vector = m_root.getVector(0);

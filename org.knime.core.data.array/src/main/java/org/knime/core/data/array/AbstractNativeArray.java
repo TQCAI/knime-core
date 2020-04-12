@@ -1,6 +1,6 @@
 package org.knime.core.data.array;
 
-public class AbstractNativeArray<A> implements Array<A> {
+abstract class AbstractNativeArray<A> implements Array<A> {
 
 	private long[] m_isMissing;
 	private A m_array;
@@ -32,6 +32,12 @@ public class AbstractNativeArray<A> implements Array<A> {
 	@Override
 	public long size() {
 		return m_capacity;
+	}
+
+	@Override
+	public void release() {
+		m_array = null;
+		m_isMissing = null;
 	}
 
 }

@@ -103,6 +103,13 @@ public class StructDataStore implements DataStore<Data<?>[], StructDataAccess> {
 		}
 	}
 
+	@Override
+	public void closeForWriting() {
+		for (final DataStore<?, ?> child : m_childStores) {
+			child.closeForWriting();
+		}
+	}
+
 	class StructDataAccess implements DataAccess<Data<?>[]>, ReadableStructAccess, WritableStructAccess {
 
 		final DataAccess<?>[] m_children = new DataAccess<?>[m_childStores.size()];
@@ -187,4 +194,5 @@ public class StructDataStore implements DataStore<Data<?>[], StructDataAccess> {
 			return m_data;
 		}
 	}
+
 }
