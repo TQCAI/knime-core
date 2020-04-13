@@ -1,5 +1,6 @@
 package org.knime.core.data.store;
 
+// TODO Split into read/write
 public interface DataStore<T, V extends StoreDataAccess<T>> extends AutoCloseable {
 
 	/**
