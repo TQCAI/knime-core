@@ -29,4 +29,9 @@ public class ArrayColumnStoreFactory implements DataStoreFactory {
 		return new StringArrayStore(m_chunkSize);
 	}
 
+	@Override
+	public void close() throws Exception {
+		// Nothing to do here
+	}
+
 }
