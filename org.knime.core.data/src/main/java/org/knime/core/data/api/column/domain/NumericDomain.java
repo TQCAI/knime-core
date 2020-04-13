@@ -1,8 +1,9 @@
 package org.knime.core.data.api.column.domain;
 
 public interface NumericDomain extends Domain {
-	double min();
+	double getMin();
 
-	double max();
+	double getMax();
 
+	double getSum();
 }
