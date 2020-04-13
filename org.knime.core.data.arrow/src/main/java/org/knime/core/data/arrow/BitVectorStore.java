@@ -7,6 +7,8 @@ import org.apache.arrow.vector.BitVector;
 import org.knime.core.data.api.access.ReadableBooleanAccess;
 import org.knime.core.data.api.access.WritableBooleanAccess;
 import org.knime.core.data.arrow.BitVectorStore.BitVectorAccess;
+import org.knime.core.data.store.Data;
+import org.knime.core.data.store.UpdatableDomain;
 import org.knime.core.data.store.types.BooleanStore;
 
 public class BitVectorStore extends AbstractArrowStore<BitVector, BitVectorAccess>
@@ -42,4 +44,10 @@ public class BitVectorStore extends AbstractArrowStore<BitVector, BitVectorAcces
 			m_vector.set(m_index, value ? 1 : 0);
 		}
 	}
+
+	@Override
+	public UpdatableDomain<BitVector> getDomain() {
+		throw new UnsupportedOperationException("not yet supported");
+	}
+
 }

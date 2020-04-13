@@ -54,8 +54,6 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 	@Override
 	public void add(final Data<T> data) {
 		try {
-			// TODO async
-			updateDomain(data);
 			m_writer.flush(data.get());
 			m_storedData++;
 		} catch (IOException e) {
@@ -123,8 +121,6 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 			}
 		};
 	}
-
-	protected abstract void updateDomain(Data<T> data);
 
 	protected abstract T create(BufferAllocator allocator, long capacity);
 }

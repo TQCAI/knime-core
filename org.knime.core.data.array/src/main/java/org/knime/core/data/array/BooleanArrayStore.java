@@ -5,6 +5,7 @@ import org.knime.core.data.api.access.ReadableBooleanAccess;
 import org.knime.core.data.api.access.WritableBooleanAccess;
 import org.knime.core.data.array.BooleanArrayStore.BooleanArray;
 import org.knime.core.data.array.BooleanArrayStore.BooleanArrayAccess;
+import org.knime.core.data.store.UpdatableDomain;
 import org.knime.core.data.store.types.BooleanStore;
 
 public class BooleanArrayStore extends AbstractArrayStore<BooleanArray, BooleanArrayAccess>
@@ -24,7 +25,12 @@ public class BooleanArrayStore extends AbstractArrayStore<BooleanArray, BooleanA
 		return new BooleanArray(capacity);
 	}
 
-	static class BooleanArray extends AbstractNativeArray<boolean[]> {
+	@Override
+	public UpdatableDomain<BooleanArray> getDomain() {
+		throw new UnsupportedOperationException("not yet supported");
+	}
+
+	final class BooleanArray extends AbstractNativeArray<boolean[]> {
 		BooleanArray(final long capacity) {
 			super(new boolean[(int) capacity], (int) capacity);
 		}

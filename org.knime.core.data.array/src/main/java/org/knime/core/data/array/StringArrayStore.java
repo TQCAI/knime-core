@@ -5,6 +5,7 @@ import org.knime.core.data.api.access.ReadableStringAccess;
 import org.knime.core.data.api.access.WritableStringAccess;
 import org.knime.core.data.array.StringArrayStore.StringArray;
 import org.knime.core.data.array.StringArrayStore.StringArrayAccess;
+import org.knime.core.data.store.UpdatableDomain;
 import org.knime.core.data.store.types.StringStore;
 
 public class StringArrayStore extends AbstractArrayStore<StringArray, StringArrayAccess>
@@ -44,5 +45,10 @@ public class StringArrayStore extends AbstractArrayStore<StringArray, StringArra
 		public void setStringValue(final String value) {
 			m_data[m_index] = value;
 		}
+	}
+
+	@Override
+	public UpdatableDomain<StringArray> getDomain() {
+		throw new UnsupportedOperationException("not yet supported");
 	}
 }

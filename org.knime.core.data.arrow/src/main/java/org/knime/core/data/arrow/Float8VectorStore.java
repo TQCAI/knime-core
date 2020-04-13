@@ -8,7 +8,7 @@ import org.knime.core.data.api.access.ReadableDoubleAccess;
 import org.knime.core.data.api.access.WritableDoubleAccess;
 import org.knime.core.data.api.column.domain.NumericDomain;
 import org.knime.core.data.arrow.Float8VectorStore.Float8VectorAccess;
-import org.knime.core.data.store.Data;
+import org.knime.core.data.store.UpdatableDomain;
 import org.knime.core.data.store.types.DoubleStore;
 
 public class Float8VectorStore extends AbstractArrowStore<Float8Vector, Float8VectorAccess>
@@ -34,16 +34,11 @@ public class Float8VectorStore extends AbstractArrowStore<Float8Vector, Float8Ve
 	}
 
 	@Override
-	public NumericDomain getDomain() {
+	public Float8VectorDomain getDomain() {
 		return m_domain;
 	}
 
-	@Override
-	protected void updateDomain(Data<Float8Vector> data) {
-		m_domain.update(data.get());
-	}
-
-	final class Float8VectorDomain implements NumericDomain {
+	final class Float8VectorDomain implements NumericDomain, UpdatableDomain<Float8Vector> {
 
 		private long m_numMissing = 0;
 		private long m_numNonMissing = 0;
@@ -51,7 +46,8 @@ public class Float8VectorStore extends AbstractArrowStore<Float8Vector, Float8Ve
 		private double m_max = Double.MIN_VALUE;
 		private double m_sum = 0;
 
-		void update(final Float8Vector vector) {
+		@Override
+		public void update(final Float8Vector vector) {
 			for (int i = 0; i < vector.getValueCount(); i++) {
 				if (vector.isNull(i)) {
 					m_numMissing++;
