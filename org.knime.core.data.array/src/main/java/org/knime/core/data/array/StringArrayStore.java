@@ -5,7 +5,7 @@ import org.knime.core.data.api.access.ReadableStringAccess;
 import org.knime.core.data.api.access.WritableStringAccess;
 import org.knime.core.data.array.StringArrayStore.StringArray;
 import org.knime.core.data.array.StringArrayStore.StringArrayAccess;
-import org.knime.core.data.store.UpdatableDomain;
+import org.knime.core.data.store.WritableDomain;
 import org.knime.core.data.store.types.StringStore;
 
 public class StringArrayStore extends AbstractArrayStore<StringArray, StringArrayAccess>
@@ -48,7 +48,7 @@ public class StringArrayStore extends AbstractArrayStore<StringArray, StringArra
 	}
 
 	@Override
-	public UpdatableDomain<StringArray> getDomain() {
+	public WritableDomain<StringArray> getDomain() {
 		throw new UnsupportedOperationException("not yet supported");
 	}
 }

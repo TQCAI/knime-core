@@ -110,9 +110,14 @@ public class StructDataStore implements DataStore<Data<?>[], StructDataAccess> {
 		}
 	}
 
-	class StructDataAccess implements DataAccess<Data<?>[]>, ReadableStructAccess, WritableStructAccess {
+	@Override
+	public WritableDomain getDomain() {
+		throw new UnsupportedOperationException("Not yet implemented");
+	}
 
-		final DataAccess<?>[] m_children = new DataAccess<?>[m_childStores.size()];
+	class StructDataAccess implements StoreDataAccess<Data<?>[]>, ReadableStructAccess, WritableStructAccess {
+
+		final StoreDataAccess<?>[] m_children = new StoreDataAccess<?>[m_childStores.size()];
 
 		{
 			for (int i = 0; i < m_children.length; i++) {
@@ -149,10 +154,10 @@ public class StructDataStore implements DataStore<Data<?>[], StructDataAccess> {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		public void update(Data<?>[] data) {
+		public void setData(Data<?>[] data) {
 			for (int i = 0; i < m_children.length; i++) {
 				// TODO nicer cast
-				((DataAccess) m_children[i]).update(data[i].get());
+				((StoreDataAccess) m_children[i]).setData(data[i].get());
 			}
 		}
 
@@ -193,11 +198,6 @@ public class StructDataStore implements DataStore<Data<?>[], StructDataAccess> {
 		public Data<?>[] get() {
 			return m_data;
 		}
-	}
-
-	@Override
-	public UpdatableDomain getDomain() {
-		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 }

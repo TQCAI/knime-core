@@ -47,7 +47,7 @@ class DefaultTableStore implements TableStore {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, V extends DataAccess<T>> DataStore<T, V> getStore(long index) {
+	public <T, V extends StoreDataAccess<T>> DataStore<T, V> getStore(long index) {
 		// NB: OK Cast.
 		return (DataStore<T, V>) m_dataStores.get((int) index);
 	}

@@ -3,7 +3,7 @@ package org.knime.core.data.store.cache;
 import java.io.Flushable;
 import java.io.IOException;
 
-import org.knime.core.data.store.DataAccess;
+import org.knime.core.data.store.StoreDataAccess;
 import org.knime.core.data.store.DataStore;
 import org.knime.core.data.store.TableStore;
 
@@ -28,7 +28,7 @@ public class CachedTableStore implements TableStore, Flushable {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, V extends DataAccess<T>> DataStore<T, V> getStore(long index) {
+	public <T, V extends StoreDataAccess<T>> DataStore<T, V> getStore(long index) {
 		// NB: this cast is OK. just dealing with array not being able to capture
 		// generics.
 		return (DataStore<T, V>) m_stores[(int) index];

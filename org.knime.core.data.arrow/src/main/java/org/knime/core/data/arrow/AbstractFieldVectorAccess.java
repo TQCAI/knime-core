@@ -2,10 +2,10 @@
 package org.knime.core.data.arrow;
 
 import org.apache.arrow.vector.FieldVector;
-import org.knime.core.data.store.DataAccess;
+import org.knime.core.data.store.StoreDataAccess;
 
 abstract class AbstractFieldVectorAccess<V extends FieldVector> //
-		implements DataAccess<V> {
+		implements StoreDataAccess<V> {
 
 	protected int m_index = -1;
 
@@ -17,7 +17,7 @@ abstract class AbstractFieldVectorAccess<V extends FieldVector> //
 	}
 
 	@Override
-	public void update(final V vector) {
+	public void setData(final V vector) {
 		m_index = -1;
 		m_vector = vector;
 	}

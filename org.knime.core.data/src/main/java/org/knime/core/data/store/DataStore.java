@@ -1,13 +1,11 @@
 package org.knime.core.data.store;
 
-import org.knime.core.data.api.column.domain.Domain;
-
-public interface DataStore<T, V extends DataAccess<T>> extends AutoCloseable {
+public interface DataStore<T, V extends StoreDataAccess<T>> extends AutoCloseable {
 
 	/**
 	 * @return domain for this store
 	 */
-	UpdatableDomain<T> getDomain();
+	WritableDomain<T> getDomain();
 
 	/**
 	 * @return linked access for this data.

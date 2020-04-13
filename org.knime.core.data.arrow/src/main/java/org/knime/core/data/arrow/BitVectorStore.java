@@ -8,7 +8,7 @@ import org.knime.core.data.api.access.ReadableBooleanAccess;
 import org.knime.core.data.api.access.WritableBooleanAccess;
 import org.knime.core.data.arrow.BitVectorStore.BitVectorAccess;
 import org.knime.core.data.store.Data;
-import org.knime.core.data.store.UpdatableDomain;
+import org.knime.core.data.store.WritableDomain;
 import org.knime.core.data.store.types.BooleanStore;
 
 public class BitVectorStore extends AbstractArrowStore<BitVector, BitVectorAccess>
@@ -46,7 +46,7 @@ public class BitVectorStore extends AbstractArrowStore<BitVector, BitVectorAcces
 	}
 
 	@Override
-	public UpdatableDomain<BitVector> getDomain() {
+	public WritableDomain<BitVector> getDomain() {
 		throw new UnsupportedOperationException("not yet supported");
 	}
 

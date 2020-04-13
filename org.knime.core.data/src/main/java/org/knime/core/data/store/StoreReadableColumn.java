@@ -5,7 +5,7 @@ import org.knime.core.data.api.column.ReadableColumn;
 import org.knime.core.data.api.column.ReadableCursor;
 import org.knime.core.data.api.column.domain.Domain;
 
-class StoreReadableColumn<T, V extends ReadableAccess & DataAccess<T>, D extends Domain>
+class StoreReadableColumn<T, V extends ReadableAccess & StoreDataAccess<T>, D extends Domain>
 		implements ReadableColumn<V, D> {
 
 	private DataStore<T, V> m_store;
@@ -54,7 +54,7 @@ class StoreReadableColumn<T, V extends ReadableAccess & DataAccess<T>, D extends
 					closeCurrentPartition();
 					m_cursor.fwd();
 					m_currentData = m_cursor.get();
-					m_value.update(m_currentData.get());
+					m_value.setData(m_currentData.get());
 					m_currentDataMaxIndex = m_currentData.getValueCount() - 1;
 				} catch (final Exception e) {
 					// TODO

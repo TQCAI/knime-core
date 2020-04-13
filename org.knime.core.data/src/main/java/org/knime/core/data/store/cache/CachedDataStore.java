@@ -12,17 +12,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.knime.core.data.store.Data;
-import org.knime.core.data.store.DataAccess;
+import org.knime.core.data.store.StoreDataAccess;
 import org.knime.core.data.store.DataCursor;
 import org.knime.core.data.store.DataStore;
-import org.knime.core.data.store.UpdatableDomain;
+import org.knime.core.data.store.WritableDomain;
 
 // TODO thread-safety...
 // TODO sequential pre-loading etc
 // TODO remember what has already been flushed (vs. what needs to be flushed)
 // TODO: DataStore should be split into ReadableDataStore and WritableDataStore
 // NB: Important: data must be flushed in order.
-class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Flushable {
+class CachedDataStore<T, V extends StoreDataAccess<T>> implements DataStore<T, V>, Flushable {
 
 	private final Map<Long, CachedData> m_indexCache = new TreeMap<>();
 	private final Map<Data<T>, CachedData> m_dataCache = new HashMap<>();
@@ -104,7 +104,7 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 		add(data, m_numData++, false);
 		
 		// TODO async
-		getDomain().update(data.get());
+		getDomain().add(data.get());
 	}
 
 	private void add(Data<T> data, long index, boolean isStored) {
@@ -142,7 +142,7 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 	}
 
 	@Override
-	public UpdatableDomain<T> getDomain() {
+	public WritableDomain<T> getDomain() {
 		return m_delegate.getDomain();
 	}
 

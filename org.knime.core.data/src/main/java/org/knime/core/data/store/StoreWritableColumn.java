@@ -5,7 +5,7 @@ import org.knime.core.data.api.column.WritableAccess;
 import org.knime.core.data.api.column.WritableColumn;
 import org.knime.core.data.api.column.WritableCursor;
 
-class StoreWritableColumn<T, V extends WritableAccess & DataAccess<T>> implements WritableColumn<V> {
+class StoreWritableColumn<T, V extends WritableAccess & StoreDataAccess<T>> implements WritableColumn<V> {
 
 	private final DataStore<T, V> m_store;
 
@@ -40,7 +40,7 @@ class StoreWritableColumn<T, V extends WritableAccess & DataAccess<T>> implement
 				try {
 					releaseCurrentData();
 					m_currentData = m_store.create();
-					m_value.update(m_currentData.get());
+					m_value.setData(m_currentData.get());
 					m_currentDataMaxIndex = m_currentData.getCapacity() - 1;
 				} catch (final Exception e) {
 					// TODO

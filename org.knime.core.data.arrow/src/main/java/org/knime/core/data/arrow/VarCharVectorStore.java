@@ -14,7 +14,7 @@ import org.apache.arrow.vector.VarCharVector;
 import org.knime.core.data.api.access.ReadableStringAccess;
 import org.knime.core.data.api.access.WritableStringAccess;
 import org.knime.core.data.arrow.VarCharVectorStore.VarCharVectorAccess;
-import org.knime.core.data.store.UpdatableDomain;
+import org.knime.core.data.store.WritableDomain;
 import org.knime.core.data.store.types.StringStore;
 
 public class VarCharVectorStore extends AbstractArrowStore<VarCharVector, VarCharVectorAccess>
@@ -71,7 +71,7 @@ public class VarCharVectorStore extends AbstractArrowStore<VarCharVector, VarCha
 	}
 
 	@Override
-	public UpdatableDomain<VarCharVector> getDomain() {
+	public WritableDomain<VarCharVector> getDomain() {
 		throw new UnsupportedOperationException("not yet implemented");
 	}
 }

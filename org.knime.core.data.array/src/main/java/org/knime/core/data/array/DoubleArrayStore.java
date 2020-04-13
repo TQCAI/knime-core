@@ -4,7 +4,7 @@ import org.knime.core.data.api.access.ReadableDoubleAccess;
 import org.knime.core.data.api.access.WritableDoubleAccess;
 import org.knime.core.data.array.DoubleArrayStore.DoubleArray;
 import org.knime.core.data.array.DoubleArrayStore.DoubleArrayAccess;
-import org.knime.core.data.store.UpdatableDomain;
+import org.knime.core.data.store.WritableDomain;
 import org.knime.core.data.store.types.DoubleStore;
 
 public class DoubleArrayStore extends AbstractArrayStore<DoubleArray, DoubleArrayAccess>
@@ -46,7 +46,7 @@ public class DoubleArrayStore extends AbstractArrayStore<DoubleArray, DoubleArra
 	}
 
 	@Override
-	public UpdatableDomain<DoubleArray> getDomain() {
+	public WritableDomain<DoubleArray> getDomain() {
 		throw new UnsupportedOperationException("not yet supported");
 	}
 }
