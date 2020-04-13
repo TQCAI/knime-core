@@ -1,6 +1,7 @@
 
 package org.knime.core.data.store.cache;
 
+import java.io.Flushable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,45 +18,51 @@ import org.knime.core.data.store.DataStore;
 
 // TODO thread-safety...
 // TODO sequential pre-loading etc
-// TODO there must be smarter sequential caches out there
-// NB: Important: data must be flushed in order.
 // TODO remember what has already been flushed (vs. what needs to be flushed)
-class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
+// NB: Important: data must be flushed in order.
+class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Flushable {
 
 	private final Map<Long, CachedData> m_indexCache = new TreeMap<>();
 	private final Map<Data<T>, CachedData> m_dataCache = new HashMap<>();
 	private final ReentrantReadWriteLock m_cacheLock = new ReentrantReadWriteLock(true);
 	private final AtomicBoolean m_isClosedForAdding;
+	private final DataStore<T, V> m_delegate;
 
 	private long m_dataCounter;
-
-	private DataStore<T, V> m_delegate;
 
 	public CachedDataStore(final DataStore<T, V> delegate) {
 		m_delegate = delegate;
 		m_isClosedForAdding = new AtomicBoolean(false);
 	}
 
-	// TODO Memory alert or similar: Block adding new stuff to cache.
-	// Also clears cache.
+	@Override
 	public void flush() throws IOException {
 		m_cacheLock.writeLock().lock();
 		try {
-			// TODO strong assumption on order.
 			for (final Entry<Long, CachedData> entry : m_indexCache.entrySet()) {
-				final CachedData data = entry.getValue();
-				if (!data.isStored()) {
-					m_delegate.add(data.get());
-					data.store();
+				final CachedData cachedData = entry.getValue();
+				if (!cachedData.isStored()) {
+					m_delegate.addToStore(cachedData.get());
+					cachedData.setStored();
+				}
+
+				// TODO keep data as long in memory as possible? How with off-heap? can't rely
+				// on weak references etc.
+				// we can release our internal reference.
+				if (cachedData.decRefCounter()) {
+					m_delegate.release(cachedData.get());
 				}
 			}
-			clear();
-			// we can now close the delegate store for storing.
+			// clear our cache. external references will still have access to data.
+			m_dataCache.clear();
+			m_indexCache.clear();
+
+			// we can now close the delegate storing in case we were closed for adding
+			// before as everything has been flushed.
 			if (m_isClosedForAdding.get()) {
 				m_delegate.closeForAdding();
 			}
 		} catch (Exception e) {
-			// TODO acceptable?
 			throw new IOException(e);
 		} finally {
 			m_cacheLock.writeLock().unlock();
@@ -69,35 +76,44 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 
 	@Override
 	public Data<T> create() {
-		return m_delegate.create();
-	}
-
-	@Override
-	public void release(Data<T> data) {
-		// Data could have been requested several times.
-		// Check ref-counter on data. in case 0, release also from delegate.
-		final CachedData cached = m_dataCache.get(data);
-		if (cached.decRefCounter()) {
-			m_dataCache.remove(data);
-			m_indexCache.remove(cached.getIndex());
-			m_delegate.release(data);
+		// we also block the creation of new data during flush etc.
+		try {
+			m_cacheLock.writeLock().lock();
+			return m_delegate.create();
+		} finally {
+			m_cacheLock.writeLock().unlock();
 		}
 	}
 
 	@Override
-	public void add(Data<T> data) {
+	public void release(final Data<T> data) {
+		final CachedData cached = m_dataCache.get(data);
+		if (cached == null) {
+			// data not cached. we can just forward the release to delegate.
+			m_delegate.release(data);
+		} else if (cached.decRefCounter()) {
+			// cache always has a reference on data until cleared.
+			throw new IllegalStateException("Data released too manny times. Implementation error.");
+		}
+	}
+
+	@Override
+	public void addToStore(Data<T> data) {
+		addToStore(data, m_dataCounter++, false);
+	}
+
+	private void addToStore(Data<T> data, long index, boolean isStored) {
 		if (m_isClosedForAdding.get()) {
-			throw new IllegalStateException("'Store' called after store has already been closed!");
+			throw new IllegalStateException("Data added after store has already been closed for adding.");
 		}
 		m_cacheLock.writeLock().lock();
 		try {
-			// TODO increment ref counter on data
-			final CachedData cachedData = new CachedData(data, m_dataCounter);
-			// Inc ref counter by one (=cache).
+			final CachedData cachedData = new CachedData(data, index, isStored);
+			// Inc ref counter by one (=cache). The initial one is for whoever added the
+			// data to the cache.
 			cachedData.incRefCounter();
-			m_indexCache.put(m_dataCounter, cachedData);
+			m_indexCache.put(index, cachedData);
 			m_dataCache.put(data, cachedData);
-			m_dataCounter++;
 		} finally {
 			m_cacheLock.writeLock().unlock();
 		}
@@ -105,22 +121,24 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 
 	@Override
 	public void close() throws Exception {
-		clear();
+		for (final Entry<Data<T>, CachedData> data : m_dataCache.entrySet()) {
+			if (!data.getValue().decRefCounter()) {
+				// throw exception. We're killing the cache even if there are open
+				// references to it... can only go wrong.
+				throw new IllegalStateException(
+						"Clearing all memory associated with store, even if there is still referenced data, which has not been released, yet!");
+			} else {
+				// release memory
+				m_delegate.release(data.getKey());
+			}
+		}
+		m_dataCache.clear();
+		m_indexCache.clear();
 	}
 
 	@Override
 	public void closeForAdding() {
 		m_isClosedForAdding.set(true);
-	}
-
-	private void clear() throws Exception {
-		for (final Data<T> data : m_dataCache.keySet()) {
-			// release our own reference!
-			release(data);
-		}
-		// this one we really have to clear now
-		m_indexCache.clear();
-		m_dataCache.clear();
 	}
 
 	@Override
@@ -135,12 +153,16 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 			public Data<T> get() {
 				// TODO pre-loading
 
+				// TODO do we have to lock here while we're flushing?
+				// Some thoughts: (1) we could block all reading nodes and avoid data
+				// production on memory-alerts vs. (2) we could allow all accessing nodes to
+				// read all in-memory chunks as we have them in memory anyways.
 				m_cacheLock.readLock().lock();
 				try {
 					final CachedData entry = m_indexCache.get(m_index);
 					final Data<T> data;
 					if (entry == null) {
-						add(data = m_delegateCursor.get());
+						addToStore(data = m_delegateCursor.get(), m_index, true);
 					} else {
 						data = entry.get();
 						entry.incRefCounter();
@@ -177,10 +199,10 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 		private AtomicInteger m_refCounter;
 		private long m_index;
 
-		CachedData(Data<T> data, long index) {
+		CachedData(Data<T> data, long index, boolean isStored) {
 			m_data = data;
 			m_index = index;
-			m_isStored = new AtomicBoolean(false);
+			m_isStored = new AtomicBoolean(isStored);
 			m_refCounter = new AtomicInteger(1);
 		}
 
@@ -199,7 +221,7 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 			return m_isStored.get();
 		}
 
-		void store() {
+		void setStored() {
 			m_isStored.set(true);
 		}
 

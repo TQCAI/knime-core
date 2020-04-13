@@ -33,11 +33,11 @@ public class StructDataStore implements DataStore<Data<?>[], StructDataAccess> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void add(Data<Data<?>[]> data) {
+	public void addToStore(Data<Data<?>[]> data) {
 		final Data<?>[] childData = data.get();
 		for (int i = 0; i < childData.length; i++) {
 			// TODO nicer cast
-			m_childStores.get(i).add((Data) childData[i]);
+			m_childStores.get(i).addToStore((Data) childData[i]);
 		}
 	}
 

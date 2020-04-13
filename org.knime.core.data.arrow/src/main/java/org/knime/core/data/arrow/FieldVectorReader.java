@@ -63,7 +63,7 @@ public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
 	public void close() throws Exception {
 		if (m_root != null) {
 			m_reader.close();
-			m_alloc.close();
 		}
+		m_alloc.close();
 	}
 }

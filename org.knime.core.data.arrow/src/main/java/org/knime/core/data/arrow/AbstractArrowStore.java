@@ -52,7 +52,7 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 	}
 
 	@Override
-	public void add(final Data<T> data) {
+	public void addToStore(final Data<T> data) {
 		try {
 			m_writer.flush(data.get());
 			m_storedData++;

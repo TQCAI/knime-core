@@ -59,6 +59,7 @@ class DefaultTableStore implements TableStore {
 
 	@Override
 	public void close() throws Exception {
+		// TODO close here or in factory?
 		for (final DataStore<?, ?> store : m_dataStores) {
 			store.close();
 		}

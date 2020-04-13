@@ -13,7 +13,7 @@ public interface DataStore<T, V extends DataAccess<T>> extends AutoCloseable {
 	 * 
 	 * @param data to be stored.
 	 */
-	void add(Data<T> data);
+	void addToStore(Data<T> data);
 
 	/**
 	 * @return a cursor over all stored data.
@@ -39,7 +39,7 @@ public interface DataStore<T, V extends DataAccess<T>> extends AutoCloseable {
 	 * @param data stored and released data.
 	 */
 	default void addAndRelease(Data<T> data) {
-		add(data);
+		addToStore(data);
 		release(data);
 	}
 
