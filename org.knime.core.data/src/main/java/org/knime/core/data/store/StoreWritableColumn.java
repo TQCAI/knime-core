@@ -63,7 +63,7 @@ class StoreWritableColumn<T, V extends WritableAccess & DataAccess<T>> implement
 			@Override
 			public void close() throws Exception {
 				releaseCurrentData();
-				m_store.closeForAdding();
+				m_store.closeForWriting();
 			}
 
 			@Override

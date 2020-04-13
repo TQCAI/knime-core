@@ -28,7 +28,7 @@ abstract class AbstractArrayStore<T extends Array<?>, V extends DataAccess<T>> i
 	}
 
 	@Override
-	public void addToStore(Data<T> data) {
+	public void writeToStore(Data<T> data) {
 		// TODO of course flush is more appropriate here
 		m_list.add(data);
 	}
@@ -40,7 +40,7 @@ abstract class AbstractArrayStore<T extends Array<?>, V extends DataAccess<T>> i
 	}
 
 	@Override
-	public void closeForAdding() {
+	public void closeForWriting() {
 		// TODO
 	}
 

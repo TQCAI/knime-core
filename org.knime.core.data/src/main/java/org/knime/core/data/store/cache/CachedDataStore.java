@@ -28,7 +28,7 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 	private final AtomicBoolean m_isClosedForAdding;
 	private final DataStore<T, V> m_delegate;
 
-	private long m_dataCounter;
+	private long m_numData;
 
 	public CachedDataStore(final DataStore<T, V> delegate) {
 		m_delegate = delegate;
@@ -42,7 +42,7 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 			for (final Entry<Long, CachedData> entry : m_indexCache.entrySet()) {
 				final CachedData cachedData = entry.getValue();
 				if (!cachedData.isStored()) {
-					m_delegate.addToStore(cachedData.get());
+					m_delegate.writeToStore(cachedData.get());
 					cachedData.setStored();
 				}
 
@@ -60,7 +60,7 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 			// we can now close the delegate storing in case we were closed for adding
 			// before as everything has been flushed.
 			if (m_isClosedForAdding.get()) {
-				m_delegate.closeForAdding();
+				m_delegate.closeForWriting();
 			}
 		} catch (Exception e) {
 			throw new IOException(e);
@@ -98,11 +98,11 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 	}
 
 	@Override
-	public void addToStore(Data<T> data) {
-		addToStore(data, m_dataCounter++, false);
+	public void writeToStore(Data<T> data) {
+		writeToStore(data, m_numData++, false);
 	}
 
-	private void addToStore(Data<T> data, long index, boolean isStored) {
+	private void writeToStore(Data<T> data, long index, boolean isStored) {
 		if (m_isClosedForAdding.get()) {
 			throw new IllegalStateException("Data added after store has already been closed for adding.");
 		}
@@ -137,8 +137,18 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 	}
 
 	@Override
-	public void closeForAdding() {
+	public void closeForWriting() {
 		m_isClosedForAdding.set(true);
+		// if the last element in our cache has been stored, we can close the delegate
+		// for writing.
+		if (m_indexCache.get(m_numData - 1).isStored()) {
+			try {
+				m_delegate.closeForWriting();
+			} catch (Exception e) {
+				// TODO
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	@Override
@@ -162,7 +172,7 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 					final CachedData entry = m_indexCache.get(m_index);
 					final Data<T> data;
 					if (entry == null) {
-						addToStore(data = m_delegateCursor.get(), m_index, true);
+						writeToStore(data = m_delegateCursor.get(), m_index, true);
 					} else {
 						data = entry.get();
 						entry.incRefCounter();
@@ -183,7 +193,7 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 			public boolean canFwd() {
 				// we can't delegate this. We might have cached more than we've actually
 				// written.
-				return m_index < m_dataCounter - 1;
+				return m_index < m_numData - 1;
 			}
 
 			@Override

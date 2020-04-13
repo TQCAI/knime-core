@@ -41,7 +41,7 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 	}
 
 	@Override
-	public void closeForAdding() {
+	public void closeForWriting() {
 		try {
 			// close writer.
 			m_writer.close();
@@ -52,7 +52,7 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 	}
 
 	@Override
-	public void addToStore(final Data<T> data) {
+	public void writeToStore(final Data<T> data) {
 		try {
 			m_writer.flush(data.get());
 			m_storedData++;
