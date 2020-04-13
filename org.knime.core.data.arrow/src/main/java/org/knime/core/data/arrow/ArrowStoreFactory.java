@@ -31,19 +31,19 @@ public class ArrowStoreFactory implements DataStoreFactory {
 
 	@Override
 	public DoubleStore<?, ?> createDoubleStore() {
-		return new Float8VectorStore(m_allocator.newChildAllocator("TODO", 0, m_allocator.getLimit()),
+		return new Float8VectorStore(m_allocator.newChildAllocator("TODO DoubleStore", 0, m_allocator.getLimit()),
 				createFile("DoubleStore"), m_chunkSize);
 	}
 
 	@Override
 	public BooleanStore<?, ?> createBooleanStore() {
-		return new BitVectorStore(m_allocator.newChildAllocator("TODO", 0, m_allocator.getLimit()),
+		return new BitVectorStore(m_allocator.newChildAllocator("TODO BitVectorStore", 0, m_allocator.getLimit()),
 				createFile("BooleanStore"), m_chunkSize);
 	}
 
 	@Override
 	public StringStore<?, ?> createStringStore() {
-		return new VarCharVectorStore(m_allocator.newChildAllocator("TODO", 0, m_allocator.getLimit()),
+		return new VarCharVectorStore(m_allocator.newChildAllocator("TODO StringStore", 0, m_allocator.getLimit()),
 				createFile("StringStore"), m_chunkSize);
 	}
 
@@ -57,5 +57,10 @@ public class ArrowStoreFactory implements DataStoreFactory {
 			throw new RuntimeException(e);
 		}
 
+	}
+
+	@Override
+	public void close() throws Exception {
+		m_allocator.close();
 	}
 }

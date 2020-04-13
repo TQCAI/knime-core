@@ -6,15 +6,17 @@ import org.knime.core.data.store.Data;
 class FieldVectorData<V extends FieldVector> implements Data<V> {
 
 	private final V m_vector;
+	private final long m_maxCapacity;
 
 	// write case
-	public FieldVectorData(final V vector) {
+	public FieldVectorData(final V vector, long maxCapacity) {
 		m_vector = vector;
+		m_maxCapacity = maxCapacity;
 	}
 
 	@Override
 	public long getCapacity() {
-		return m_vector.getValueCapacity();
+		return m_maxCapacity;
 	}
 
 	@Override

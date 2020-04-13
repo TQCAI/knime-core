@@ -51,7 +51,7 @@ class StoreWritableColumn<T, V extends WritableAccess & DataAccess<T>> implement
 			private void releaseCurrentData() throws Exception {
 				if (m_currentData != null) {
 					m_currentData.setValueCount(m_index);
-					m_store.storeAndRelease(m_currentData);
+ 					m_store.addAndRelease(m_currentData);
 				}
 			}
 
@@ -63,7 +63,7 @@ class StoreWritableColumn<T, V extends WritableAccess & DataAccess<T>> implement
 			@Override
 			public void close() throws Exception {
 				releaseCurrentData();
-				m_store.closeForWriting();
+				m_store.closeForAdding();
 			}
 
 			@Override

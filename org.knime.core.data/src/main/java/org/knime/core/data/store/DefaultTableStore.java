@@ -9,8 +9,10 @@ import org.knime.core.data.api.column.NativeColumnType;
 class DefaultTableStore implements TableStore {
 
 	private List<DataStore<?, ?>> m_dataStores;
+	private DataStoreFactory m_factory;
 
 	public DefaultTableStore(final DataStoreFactory factory, final ColumnType... types) {
+		m_factory = factory;
 		m_dataStores = new ArrayList<DataStore<?, ?>>();
 		for (int i = 0; i < types.length; i++) {
 			final NativeColumnType[] nativeTypes = types[i].getNativeTypes();
@@ -60,5 +62,7 @@ class DefaultTableStore implements TableStore {
 		for (final DataStore<?, ?> store : m_dataStores) {
 			store.close();
 		}
+		m_factory.close();
 	}
+
 }

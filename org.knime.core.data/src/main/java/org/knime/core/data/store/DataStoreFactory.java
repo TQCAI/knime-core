@@ -4,7 +4,7 @@ import org.knime.core.data.store.types.BooleanStore;
 import org.knime.core.data.store.types.DoubleStore;
 import org.knime.core.data.store.types.StringStore;
 
-public interface DataStoreFactory {
+public interface DataStoreFactory extends AutoCloseable {
 
 	DoubleStore<?, ?> createDoubleStore();
 

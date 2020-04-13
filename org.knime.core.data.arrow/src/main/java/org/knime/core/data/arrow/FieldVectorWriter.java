@@ -23,6 +23,7 @@ public class FieldVectorWriter<F extends FieldVector> implements AutoCloseable {
 	private final File m_file;
 	private ArrowFileWriter m_writer;
 	private VectorLoader m_vectorLoader;
+	private VectorSchemaRoot m_root;
 
 	public FieldVectorWriter(final File file) throws IOException {
 		m_file = file;
@@ -32,10 +33,10 @@ public class FieldVectorWriter<F extends FieldVector> implements AutoCloseable {
 	public void flush(F vector) throws IOException {
 
 		if (m_writer == null) {
-			VectorSchemaRoot root = new VectorSchemaRoot(Collections.singletonList(vector.getField()),
+			m_root = new VectorSchemaRoot(Collections.singletonList(vector.getField()),
 					Collections.singletonList(vector));
-			m_vectorLoader = new VectorLoader(root);
-			m_writer = new ArrowFileWriter(root, null, new RandomAccessFile(m_file, "rw").getChannel());
+			m_vectorLoader = new VectorLoader(m_root);
+			m_writer = new ArrowFileWriter(m_root, null, new RandomAccessFile(m_file, "rw").getChannel());
 		}
 
 		// TODO there must be a better way?!
@@ -54,6 +55,7 @@ public class FieldVectorWriter<F extends FieldVector> implements AutoCloseable {
 	@Override
 	public void close() throws Exception {
 		if (m_writer != null) {
+			m_root.close();
 			m_writer.close();
 		}
 	}

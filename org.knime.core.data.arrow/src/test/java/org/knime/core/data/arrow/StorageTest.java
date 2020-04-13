@@ -15,7 +15,6 @@ import org.knime.core.data.api.row.ReadableRowCursor;
 import org.knime.core.data.api.row.ReadableRowTable;
 import org.knime.core.data.api.row.WritableRow;
 import org.knime.core.data.api.row.WritableRowTable;
-import org.knime.core.data.arrow.ArrowStoreFactory;
 import org.knime.core.data.store.TableStore;
 import org.knime.core.data.store.TableStoreUtils;
 
@@ -32,13 +31,13 @@ public class StorageTest {
 	 * Some variables
 	 */
 	// in numValues per vector
-	public static final int BATCH_SIZE = 10_000;
+	public static final int BATCH_SIZE = 4;
 
 	// in bytes
 	public static final long OFFHEAP_SIZE = 2000_000_000;
 
 	// num rows used for testing
-	public static final long NUM_ROWS = 1_000_000;
+	public static final long NUM_ROWS = 6;
 
 	// some schema
 	private static final ColumnType[] STRING_COLUMN = new ColumnType[] { new ColumnType() {
@@ -73,8 +72,8 @@ public class StorageTest {
 
 	@Test
 	public void columnwiseWriteReadSingleColumnIdentityTest() throws Exception {
-		try (final TableStore store = TableStoreUtils.cache(
-				TableStoreUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE), STRING_COLUMN))) {
+		try (final TableStore store = TableStoreUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE),
+				STRING_COLUMN)) {
 
 			// Create writable table on store. Just an access on store.
 			final WritableTable writableTable = TableStoreUtils.createWritableColumnTable(store);

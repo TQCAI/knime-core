@@ -41,7 +41,7 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 	}
 
 	@Override
-	public void closeForWriting() {
+	public void closeForAdding() {
 		try {
 			// close writer.
 			m_writer.close();
@@ -52,7 +52,7 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 	}
 
 	@Override
-	public void store(final Data<T> data) {
+	public void add(final Data<T> data) {
 		try {
 			m_writer.flush(data.get());
 			m_storedData++;
@@ -75,7 +75,7 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 		// a bug report @ Arrow. Likely, we're doing something wrong on our side in the
 		// way we create vectors.
 		ArrowUtils.releaseVector(vector);
-		return new FieldVectorData<>(vector);
+		return new FieldVectorData<>(vector, m_maxCapacity);
 	}
 
 	// TODO: Cursor is independent of Arrow
@@ -98,7 +98,7 @@ abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>
 			@Override
 			public Data<T> get() {
 				try {
-					return new FieldVectorData<>(m_reader.load(m_index));
+					return new FieldVectorData<>(m_reader.load(m_index), m_maxCapacity);
 				} catch (IOException e) {
 					// TODO
 					throw new RuntimeException(e);

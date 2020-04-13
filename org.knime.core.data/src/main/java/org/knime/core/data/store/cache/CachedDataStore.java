@@ -23,10 +23,9 @@ import org.knime.core.data.store.DataStore;
 class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 
 	private final Map<Long, CachedData> m_indexCache = new TreeMap<>();
-
 	private final Map<Data<T>, CachedData> m_dataCache = new HashMap<>();
-
 	private final ReentrantReadWriteLock m_cacheLock = new ReentrantReadWriteLock(true);
+	private final AtomicBoolean m_isClosedForAdding;
 
 	private long m_dataCounter;
 
@@ -34,6 +33,7 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 
 	public CachedDataStore(final DataStore<T, V> delegate) {
 		m_delegate = delegate;
+		m_isClosedForAdding = new AtomicBoolean(false);
 	}
 
 	// TODO Memory alert or similar: Block adding new stuff to cache.
@@ -44,11 +44,16 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 			// TODO strong assumption on order.
 			for (final Entry<Long, CachedData> entry : m_indexCache.entrySet()) {
 				final CachedData data = entry.getValue();
-				if (!data.store()) {
-					m_delegate.store(data.get());
+				if (!data.isStored()) {
+					m_delegate.add(data.get());
+					data.store();
 				}
 			}
 			clear();
+			// we can now close the delegate store for storing.
+			if (m_isClosedForAdding.get()) {
+				m_delegate.closeForAdding();
+			}
 		} catch (Exception e) {
 			// TODO acceptable?
 			throw new IOException(e);
@@ -80,7 +85,10 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 	}
 
 	@Override
-	public void store(Data<T> data) {
+	public void add(Data<T> data) {
+		if (m_isClosedForAdding.get()) {
+			throw new IllegalStateException("'Store' called after store has already been closed!");
+		}
 		m_cacheLock.writeLock().lock();
 		try {
 			// TODO increment ref counter on data
@@ -101,6 +109,21 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 	}
 
 	@Override
+	public void closeForAdding() {
+		m_isClosedForAdding.set(true);
+	}
+
+	private void clear() throws Exception {
+		for (final Data<T> data : m_dataCache.keySet()) {
+			// release our own reference!
+			release(data);
+		}
+		// this one we really have to clear now
+		m_indexCache.clear();
+		m_dataCache.clear();
+	}
+
+	@Override
 	public DataCursor<T> cursor() {
 		return new DataCursor<T>() {
 
@@ -117,9 +140,10 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 					final CachedData entry = m_indexCache.get(m_index);
 					final Data<T> data;
 					if (entry == null) {
-						store(data = m_delegateCursor.get());
+						add(data = m_delegateCursor.get());
 					} else {
 						data = entry.get();
+						entry.incRefCounter();
 						m_delegateCursor.fwd();
 					}
 					return data;
@@ -147,15 +171,6 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 		};
 	}
 
-	private void clear() throws Exception {
-		for (final Data<T> data : m_dataCache.keySet()) {
-			// release our own reference!
-			release(data);
-		}
-		// this one we really have to clear now
-		m_indexCache.clear();
-	}
-
 	class CachedData {
 		private Data<T> m_data;
 		private AtomicBoolean m_isStored;
@@ -180,8 +195,12 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 			return m_refCounter.decrementAndGet() == 0;
 		}
 
-		boolean store() {
-			return m_isStored.getAndSet(true);
+		boolean isStored() {
+			return m_isStored.get();
+		}
+
+		void store() {
+			m_isStored.set(true);
 		}
 
 		Data<T> get() {
@@ -192,10 +211,4 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V> {
 			return m_index;
 		}
 	}
-
-	@Override
-	public void closeForWriting() {
-		m_delegate.closeForWriting();
-	}
-
 }
