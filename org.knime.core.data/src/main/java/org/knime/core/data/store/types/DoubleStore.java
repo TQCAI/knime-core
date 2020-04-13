@@ -9,7 +9,4 @@ import org.knime.core.data.store.DataStore;
 public interface DoubleStore<T, V extends DataAccess<T> & ReadableDoubleAccess & WritableDoubleAccess>
 		extends DataStore<T, V> {
 
-	@Override
-	NumericDomain getDomain();
-
 }

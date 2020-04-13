@@ -6,6 +6,7 @@ import org.knime.core.data.api.access.ReadableStructAccess;
 import org.knime.core.data.api.access.WritableStructAccess;
 import org.knime.core.data.api.column.ReadableAccess;
 import org.knime.core.data.api.column.WritableAccess;
+import org.knime.core.data.api.column.domain.Domain;
 import org.knime.core.data.store.StructDataStore.StructDataAccess;
 
 /**
@@ -33,11 +34,11 @@ public class StructDataStore implements DataStore<Data<?>[], StructDataAccess> {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public void writeToStore(Data<Data<?>[]> data) {
+	public void add(Data<Data<?>[]> data) {
 		final Data<?>[] childData = data.get();
 		for (int i = 0; i < childData.length; i++) {
 			// TODO nicer cast
-			m_childStores.get(i).writeToStore((Data) childData[i]);
+			m_childStores.get(i).add((Data) childData[i]);
 		}
 	}
 
@@ -193,6 +194,11 @@ public class StructDataStore implements DataStore<Data<?>[], StructDataAccess> {
 		public Data<?>[] get() {
 			return m_data;
 		}
+	}
+
+	@Override
+	public UpdatableDomain getDomain() {
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 }

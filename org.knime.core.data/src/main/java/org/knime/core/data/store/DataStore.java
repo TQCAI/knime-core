@@ -1,6 +1,13 @@
 package org.knime.core.data.store;
 
+import org.knime.core.data.api.column.domain.Domain;
+
 public interface DataStore<T, V extends DataAccess<T>> extends AutoCloseable {
+
+	/**
+	 * @return domain for this store
+	 */
+	UpdatableDomain<T> getDomain();
 
 	/**
 	 * @return linked access for this data.
@@ -13,7 +20,7 @@ public interface DataStore<T, V extends DataAccess<T>> extends AutoCloseable {
 	 * 
 	 * @param data to be stored.
 	 */
-	void writeToStore(Data<T> data);
+	void add(Data<T> data);
 
 	/**
 	 * @return a cursor over all stored data.
@@ -39,7 +46,7 @@ public interface DataStore<T, V extends DataAccess<T>> extends AutoCloseable {
 	 * @param data stored and released data.
 	 */
 	default void addAndRelease(Data<T> data) {
-		writeToStore(data);
+		add(data);
 		release(data);
 	}
 

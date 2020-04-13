@@ -15,10 +15,12 @@ import org.knime.core.data.store.Data;
 import org.knime.core.data.store.DataAccess;
 import org.knime.core.data.store.DataCursor;
 import org.knime.core.data.store.DataStore;
+import org.knime.core.data.store.UpdatableDomain;
 
 // TODO thread-safety...
 // TODO sequential pre-loading etc
 // TODO remember what has already been flushed (vs. what needs to be flushed)
+// TODO: DataStore should be split into ReadableDataStore and WritableDataStore
 // NB: Important: data must be flushed in order.
 class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Flushable {
 
@@ -42,7 +44,7 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 			for (final Entry<Long, CachedData> entry : m_indexCache.entrySet()) {
 				final CachedData cachedData = entry.getValue();
 				if (!cachedData.isStored()) {
-					m_delegate.writeToStore(cachedData.get());
+					m_delegate.add(cachedData.get());
 					cachedData.setStored();
 				}
 
@@ -98,11 +100,14 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 	}
 
 	@Override
-	public void writeToStore(Data<T> data) {
-		writeToStore(data, m_numData++, false);
+	public void add(Data<T> data) {
+		add(data, m_numData++, false);
+		
+		// TODO async
+		getDomain().update(data.get());
 	}
 
-	private void writeToStore(Data<T> data, long index, boolean isStored) {
+	private void add(Data<T> data, long index, boolean isStored) {
 		if (m_isClosedForAdding.get()) {
 			throw new IllegalStateException("Data added after store has already been closed for adding.");
 		}
@@ -134,6 +139,11 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 		}
 		m_dataCache.clear();
 		m_indexCache.clear();
+	}
+
+	@Override
+	public UpdatableDomain<T> getDomain() {
+		return m_delegate.getDomain();
 	}
 
 	@Override
@@ -172,7 +182,7 @@ class CachedDataStore<T, V extends DataAccess<T>> implements DataStore<T, V>, Fl
 					final CachedData entry = m_indexCache.get(m_index);
 					final Data<T> data;
 					if (entry == null) {
-						writeToStore(data = m_delegateCursor.get(), m_index, true);
+						add(data = m_delegateCursor.get(), m_index, true);
 					} else {
 						data = entry.get();
 						entry.incRefCounter();
