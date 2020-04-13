@@ -6,7 +6,6 @@ import org.knime.core.data.api.access.ReadableStructAccess;
 import org.knime.core.data.api.access.WritableStructAccess;
 import org.knime.core.data.api.column.ReadableAccess;
 import org.knime.core.data.api.column.WritableAccess;
-import org.knime.core.data.api.column.domain.Domain;
 import org.knime.core.data.store.StructDataStore.StructDataAccess;
 
 /**
