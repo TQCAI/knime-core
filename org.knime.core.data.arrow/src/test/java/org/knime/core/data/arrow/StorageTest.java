@@ -3,20 +3,20 @@ package org.knime.core.data.arrow;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.knime.core.data.api.ReadableTable;
-import org.knime.core.data.api.WritableTable;
-import org.knime.core.data.api.access.ReadableStringAccess;
-import org.knime.core.data.api.access.WritableStringAccess;
+import org.knime.core.data.api.ReadTable;
+import org.knime.core.data.api.WriteTable;
 import org.knime.core.data.api.column.ColumnType;
-import org.knime.core.data.api.column.NativeColumnType;
-import org.knime.core.data.api.column.ReadableCursor;
-import org.knime.core.data.api.column.WritableCursor;
+import org.knime.core.data.api.column.PrimitiveType;
+import org.knime.core.data.api.column.ColumnReadCursor;
+import org.knime.core.data.api.column.ColumnWriteCursor;
+import org.knime.core.data.api.column.access.ReadableStringAccess;
+import org.knime.core.data.api.column.access.WritableStringAccess;
 import org.knime.core.data.api.row.ReadableRowCursor;
 import org.knime.core.data.api.row.ReadableRowTable;
 import org.knime.core.data.api.row.WritableRow;
 import org.knime.core.data.api.row.WritableRowTable;
-import org.knime.core.data.store.TableStore;
-import org.knime.core.data.store.TableStoreUtils;
+import org.knime.core.data.store.TableBackend;
+import org.knime.core.data.store.TableUtils;
 
 public class StorageTest {
 
@@ -48,8 +48,8 @@ public class StorageTest {
 		}
 
 		@Override
-		public NativeColumnType[] getNativeTypes() {
-			return new NativeColumnType[] { NativeColumnType.STRING };
+		public PrimitiveType[] getPrimitiveTypes() {
+			return new PrimitiveType[] { PrimitiveType.STRING };
 		}
 	} };
 
@@ -72,14 +72,14 @@ public class StorageTest {
 
 	@Test
 	public void columnwiseWriteReadSingleColumnIdentityTest() throws Exception {
-		try (final TableStore store = TableStoreUtils.cache(
-				TableStoreUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE), STRING_COLUMN))) {
+		try (final TableBackend store = TableUtils.cache(
+				TableUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE), STRING_COLUMN))) {
 
 			// Create writable table on store. Just an access on store.
-			final WritableTable writableTable = TableStoreUtils.createWritableColumnTable(store);
+			final WriteTable writableTable = TableUtils.createWritableColumnTable(store);
 
 			// first column write
-			try (final WritableCursor<?> col0 = writableTable.getWritableColumn(0).createWritableCursor()) {
+			try (final ColumnWriteCursor<?> col0 = writableTable.getWritableColumn(0).access()) {
 				final WritableStringAccess val0 = (WritableStringAccess) col0.get();
 				for (long i = 0; i < NUM_ROWS; i++) {
 					col0.fwd();
@@ -88,10 +88,10 @@ public class StorageTest {
 			}
 
 			// Done writing?
-			final ReadableTable readableTable = TableStoreUtils.createReadableTable(store);
+			final ReadTable readableTable = TableUtils.createReadableTable(store);
 
 			// then read
-			try (final ReadableCursor<?> col0 = readableTable.getReadableColumn(0).createReadableCursor()) {
+			try (final ColumnReadCursor<?> col0 = readableTable.getReadableColumn(0).createReadableCursor()) {
 				final ReadableStringAccess val0 = (ReadableStringAccess) col0.get();
 				for (long i = 0; col0.canFwd(); i++) {
 					col0.fwd();
@@ -103,11 +103,11 @@ public class StorageTest {
 
 	@Test
 	public void rowwiseWriteReadSingleDoubleColumnIdentityTest() throws Exception {
-		try (final TableStore store = TableStoreUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE),
+		try (final TableBackend store = TableUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE),
 				STRING_COLUMN)) {
 
 			// Create writable table on store. Just an access on store.
-			final WritableRowTable writableTable = TableStoreUtils.createWritableRowTable(store);
+			final WritableRowTable writableTable = TableUtils.createWritableRowTable(store);
 
 			try (final WritableRow row = writableTable.getWritableRow()) {
 				final WritableStringAccess val0 = (WritableStringAccess) row.getWritableAccess(0);
@@ -117,7 +117,7 @@ public class StorageTest {
 				}
 			}
 
-			final ReadableRowTable readableTable = TableStoreUtils.createReadableRowTable(store);
+			final ReadableRowTable readableTable = TableUtils.createReadableRowTable(store);
 
 			try (final ReadableRowCursor row = readableTable.getRowCursor()) {
 				final ReadableStringAccess val0 = (ReadableStringAccess) row.getReadableAccess(0);

@@ -8,7 +8,7 @@ import org.knime.core.data.api.access.ReadableDoubleAccess;
 import org.knime.core.data.api.access.WritableDoubleAccess;
 import org.knime.core.data.api.column.domain.NumericDomain;
 import org.knime.core.data.arrow.Float8VectorStore.Float8VectorAccess;
-import org.knime.core.data.store.WritableDomain;
+import org.knime.core.data.store.DataDomain;
 import org.knime.core.data.store.types.DoubleStore;
 
 public class Float8VectorStore extends AbstractArrowStore<Float8Vector, Float8VectorAccess>
@@ -38,7 +38,7 @@ public class Float8VectorStore extends AbstractArrowStore<Float8Vector, Float8Ve
 		return m_domain;
 	}
 
-	final class Float8VectorDomain implements NumericDomain, WritableDomain<Float8Vector> {
+	final class Float8VectorDomain implements NumericDomain, DataDomain<Float8Vector> {
 
 		private long m_numMissing = 0;
 		private long m_numNonMissing = 0;

@@ -30,26 +30,26 @@ public class ArrowStoreFactory implements DataStoreFactory {
 	}
 
 	@Override
-	public DoubleStore<?, ?> createDoubleStore() {
+	public DoubleStore<?> createDoubleStore() {
 		return new Float8VectorStore(m_allocator.newChildAllocator("TODO DoubleStore", 0, m_allocator.getLimit()),
 				createFile("DoubleStore"), m_chunkSize);
 	}
 
 	@Override
-	public BooleanStore<?, ?> createBooleanStore() {
+	public BooleanStore<?> createBooleanStore() {
 		return new BitVectorStore(m_allocator.newChildAllocator("TODO BitVectorStore", 0, m_allocator.getLimit()),
 				createFile("BooleanStore"), m_chunkSize);
 	}
 
 	@Override
-	public StringStore<?, ?> createStringStore() {
+	public StringStore<?> createStringStore() {
 		return new VarCharVectorStore(m_allocator.newChildAllocator("TODO StringStore", 0, m_allocator.getLimit()),
 				createFile("StringStore"), m_chunkSize);
 	}
 
 	private File createFile(String prefix) {
 		try {
-			final File file = Files.createTempFile(m_baseDir, prefix + "_" + UUID.randomUUID().toString(), ".knarrow")
+			final File file = Files.createTempFile(mbaseDir, prefix + "_" + UUID.randomUUID().toString(), ".knarrow")
 					.toFile();
 			file.deleteOnExit();
 			return file;

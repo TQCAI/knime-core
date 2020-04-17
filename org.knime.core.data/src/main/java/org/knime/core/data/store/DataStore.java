@@ -1,57 +1,80 @@
 package org.knime.core.data.store;
 
-// TODO Split into read/write
-public interface DataStore<T, V extends StoreDataAccess<T>> extends AutoCloseable {
+import java.util.Iterator;
+
+import org.knime.core.data.api.column.PrimitiveType;
+
+public interface DataStore<T, A extends DataAccess<T>> extends Iterable<Data<T>>, AutoCloseable {
 
 	/**
-	 * @return domain for this store
+	 * @return type of store.
 	 */
-	WritableDomain<T> getDomain();
+	PrimitiveType type();
 
 	/**
-	 * @return linked access for this data.
+	 * @return access on data
 	 */
-	V createDataAccess();
+	A createAccess();
 
 	/**
-	 * Append it to list of all data. Data can be accessed via DataCursor
-	 * subsequently to store.
+	 * @return new data
+	 */
+	Data<T> create();
+
+	/**
+	 * @return the data. retains data before return.
+	 */
+	Data<T> get(long index);
+
+	/**
+	 * @return size
+	 */
+	long size();
+
+	/**
+	 * Append it to list of all data. Data can be accessed via DataCursor after
+	 * adding the Data object to the store.
 	 * 
 	 * @param data to be stored.
 	 */
 	void add(Data<T> data);
 
 	/**
-	 * @return a cursor over all stored data.
+	 * Closes the store for write. All persisted data will remain.
 	 */
-	DataCursor<T> cursor();
+	void closeForConsume();
 
 	/**
-	 * Creates new data. Not added to store.
+	 * Closes store. Removes all traces in memory.
+	 */
+	@Override
+	void close() throws Exception;
+
+	/**
+	 * Destroys the entire store. All data associated with the store will be
+	 * destroyed.
 	 * 
-	 * @return new data.
+	 * @throws Exception
 	 */
-	Data<T> create();
+	void destroy() throws Exception;
 
-	/**
-	 * Offers the DataStore data to free memory. If data has not been stored
-	 * previously, data may be lost.
-	 * 
-	 * @param data to release.
-	 */
-	void release(Data<T> data);
+	@Override
+	default Iterator<Data<T>> iterator() {
+		return new Iterator<Data<T>>() {
 
-	/**
-	 * @param data stored and released data.
-	 */
-	default void addAndRelease(Data<T> data) {
-		add(data);
-		release(data);
+			private long m_index = 0;
+
+			@Override
+			public boolean hasNext() {
+				return m_index < size();
+			}
+
+			@Override
+			public Data<T> next() {
+				final Data<T> data = get(m_index++);
+				data.retain();
+				return data;
+			}
+		};
 	}
-
-	/**
-	 * Closes store, i.e. no further elements can be 'stored'. Subsequent calls to
-	 * 'store' will fail.
-	 */
-	void closeForWriting();
 }

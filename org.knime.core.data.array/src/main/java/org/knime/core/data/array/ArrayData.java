@@ -23,7 +23,7 @@ class ArrayData<V extends Array<?>> implements Data<V> {
 	}
 
 	@Override
-	public void setValueCount(long numValues) {
+	public void setNumValues(long numValues) {
 		m_valueCount = numValues;
 	}
 

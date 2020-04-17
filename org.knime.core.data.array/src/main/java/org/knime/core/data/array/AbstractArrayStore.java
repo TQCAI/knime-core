@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.knime.core.data.store.Data;
-import org.knime.core.data.store.StoreDataAccess;
-import org.knime.core.data.store.DataCursor;
-import org.knime.core.data.store.DataStore;
+import org.knime.core.data.store.DataAccess;
+import org.knime.core.data.store.Data;
+import org.knime.core.data.store.WritableDataStore;
 
-abstract class AbstractArrayStore<T extends Array<?>, V extends StoreDataAccess<T>> implements DataStore<T, V> {
+abstract class AbstractArrayStore<T extends Array<?>, V extends DataAccess<T>> implements WritableDataStore<T, V> {
 
 	private final long m_maxCapacity;
 	private final List<Data<T>> m_list = new ArrayList<>();

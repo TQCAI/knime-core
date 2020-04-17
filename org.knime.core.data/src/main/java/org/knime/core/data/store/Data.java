@@ -1,11 +1,27 @@
 package org.knime.core.data.store;
 
-public interface Data<T> {
+public interface Data<T extends DataAccess<T>> extends ReferencedData<T> {
+
+	/**
+	 * @return the underlying data object
+	 */
 	T get();
 
-	long getValueCount();
+	/**
+	 * @return maxium number of values which can be set.
+	 */
+	long getMaxCapacity();
 
-	long getCapacity();
+	/**
+	 * @param number of values actually set
+	 */
+	void setNumValues(long count);
 
-	void setValueCount(long numValues);
+	/**
+	 * number of actual values
+	 */
+	long getNumValues();
+	
+	
+
 }

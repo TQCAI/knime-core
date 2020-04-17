@@ -1,5 +1,5 @@
 
-package org.knime.core.data.api.access;
+package org.knime.core.data.api.column.access;
 
 import org.knime.core.data.api.column.ReadableAccess;
 

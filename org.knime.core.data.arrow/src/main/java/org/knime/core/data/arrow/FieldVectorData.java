@@ -25,7 +25,7 @@ class FieldVectorData<V extends FieldVector> implements Data<V> {
 	}
 
 	@Override
-	public void setValueCount(long numValues) {
+	public void setNumValues(long numValues) {
 		m_vector.setValueCount((int) numValues);
 	}
 

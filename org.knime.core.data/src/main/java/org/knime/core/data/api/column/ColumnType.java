@@ -2,7 +2,7 @@
 package org.knime.core.data.api.column;
 
 public interface ColumnType {
-	NativeColumnType[] getNativeTypes();
+	PrimitiveType[] getPrimitiveTypes();
 
 	String name();
 }

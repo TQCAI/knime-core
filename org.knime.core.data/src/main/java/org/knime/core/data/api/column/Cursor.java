@@ -1,8 +1,8 @@
 package org.knime.core.data.api.column;
 
-public interface Cursor<T> extends AutoCloseable {
+public interface Cursor<A> extends AutoCloseable {
 
-	T get();
+	A get();
 
 	void fwd();
 

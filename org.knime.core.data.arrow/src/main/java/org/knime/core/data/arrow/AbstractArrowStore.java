@@ -6,11 +6,11 @@ import java.io.IOException;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
 import org.knime.core.data.store.Data;
-import org.knime.core.data.store.StoreDataAccess;
-import org.knime.core.data.store.DataCursor;
-import org.knime.core.data.store.DataStore;
+import org.knime.core.data.store.DataAccess;
+import org.knime.core.data.store.Data;
+import org.knime.core.data.store.WritableDataStore;
 
-abstract class AbstractArrowStore<T extends FieldVector, V extends StoreDataAccess<T>> implements DataStore<T, V> {
+abstract class AbstractArrowStore<T extends FieldVector, V extends DataAccess<T>> implements WritableDataStore<T, V> {
 
 	private final long m_maxCapacity;
 	private final BufferAllocator m_allocator;

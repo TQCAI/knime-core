@@ -3,20 +3,20 @@ package org.knime.core.data.arrow;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.knime.core.data.api.ReadableTable;
-import org.knime.core.data.api.WritableTable;
+import org.knime.core.data.api.ReadTable;
+import org.knime.core.data.api.WriteTable;
 import org.knime.core.data.api.access.ReadableDoubleAccess;
-import org.knime.core.data.api.access.ReadableStringAccess;
 import org.knime.core.data.api.access.ReadableStructAccess;
 import org.knime.core.data.api.access.WritableDoubleAccess;
-import org.knime.core.data.api.access.WritableStringAccess;
 import org.knime.core.data.api.access.WritableStructAccess;
 import org.knime.core.data.api.column.ColumnType;
-import org.knime.core.data.api.column.NativeColumnType;
-import org.knime.core.data.api.column.ReadableCursor;
-import org.knime.core.data.api.column.WritableCursor;
-import org.knime.core.data.store.TableStore;
-import org.knime.core.data.store.TableStoreUtils;
+import org.knime.core.data.api.column.PrimitiveType;
+import org.knime.core.data.api.column.ColumnReadCursor;
+import org.knime.core.data.api.column.ColumnWriteCursor;
+import org.knime.core.data.api.column.access.ReadableStringAccess;
+import org.knime.core.data.api.column.access.WritableStringAccess;
+import org.knime.core.data.store.TableBackend;
+import org.knime.core.data.store.TableUtils;
 
 public class StructTest {
 
@@ -31,8 +31,8 @@ public class StructTest {
 		}
 
 		@Override
-		public NativeColumnType[] getNativeTypes() {
-			return new NativeColumnType[] { NativeColumnType.STRING, NativeColumnType.DOUBLE };
+		public PrimitiveType[] getPrimitiveTypes() {
+			return new PrimitiveType[] { PrimitiveType.STRING, PrimitiveType.DOUBLE };
 		}
 	} };
 
@@ -44,14 +44,14 @@ public class StructTest {
 
 	@Test
 	public void columnwiseWriteReadStructColumnIdentityTest() throws Exception {
-		final TableStore store = TableStoreUtils.createTableStore(new ArrowStoreFactory(StorageTest.BATCH_SIZE,
+		final TableBackend store = TableUtils.createTableStore(new ArrowStoreFactory(StorageTest.BATCH_SIZE,
 			StorageTest.OFFHEAP_SIZE), STRUCT_COLUMN);
 
 		// Create writable table on store. Just an access on store.
-		final WritableTable writableTable = TableStoreUtils.createWritableColumnTable(store);
+		final WriteTable writableTable = TableUtils.createWritableColumnTable(store);
 
 		// first column write
-		try (final WritableCursor<?> col0 = writableTable.getWritableColumn(0).createWritableCursor()) {
+		try (final ColumnWriteCursor<?> col0 = writableTable.getWritableColumn(0).access()) {
 			final WritableStructAccess val0 = (WritableStructAccess) col0.get();
 			// TODO we could offer convenience API with reflection to operate on
 			// POJO
@@ -66,10 +66,10 @@ public class StructTest {
 		}
 
 		// Done writing?
-		final ReadableTable readableTable = TableStoreUtils.createReadableTable(store);
+		final ReadTable readableTable = TableUtils.createReadableTable(store);
 
 		// then read
-		try (final ReadableCursor<?> col0 = readableTable.getReadableColumn(0).createReadableCursor()) {
+		try (final ColumnReadCursor<?> col0 = readableTable.getReadableColumn(0).createReadableCursor()) {
 			final ReadableStructAccess val0 = (ReadableStructAccess) col0.get();
 			final ReadableStringAccess stringValue = (ReadableStringAccess) val0.readableValueAt(0);
 			final ReadableDoubleAccess doubleValue = (ReadableDoubleAccess) val0.readableValueAt(1);

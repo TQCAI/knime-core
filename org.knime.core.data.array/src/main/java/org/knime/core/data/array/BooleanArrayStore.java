@@ -1,11 +1,11 @@
 
 package org.knime.core.data.array;
 
-import org.knime.core.data.api.access.ReadableBooleanAccess;
-import org.knime.core.data.api.access.WritableBooleanAccess;
+import org.knime.core.data.api.column.access.ReadableBooleanAccess;
+import org.knime.core.data.api.column.access.WritableBooleanAccess;
 import org.knime.core.data.array.BooleanArrayStore.BooleanArray;
 import org.knime.core.data.array.BooleanArrayStore.BooleanArrayAccess;
-import org.knime.core.data.store.WritableDomain;
+import org.knime.core.data.store.DataDomain;
 import org.knime.core.data.store.types.BooleanStore;
 
 public class BooleanArrayStore extends AbstractArrayStore<BooleanArray, BooleanArrayAccess>
@@ -26,7 +26,7 @@ public class BooleanArrayStore extends AbstractArrayStore<BooleanArray, BooleanA
 	}
 
 	@Override
-	public WritableDomain<BooleanArray> getDomain() {
+	public DataDomain<BooleanArray> getDomain() {
 		throw new UnsupportedOperationException("not yet supported");
 	}
 
