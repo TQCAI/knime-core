@@ -4,7 +4,7 @@ package org.knime.core.data.api;
 import org.knime.core.data.api.column.WritableAccess;
 import org.knime.core.data.api.column.WriteColumn;
 
-public interface WriteTable {
+public interface WriteTable extends AutoCloseable {
 
 	long getNumColumns();
 

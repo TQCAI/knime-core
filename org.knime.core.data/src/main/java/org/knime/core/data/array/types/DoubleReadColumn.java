@@ -1,18 +1,18 @@
-package org.knime.core.data.store.array.types;
+package org.knime.core.data.array.types;
 
 import org.knime.core.data.api.column.Cursor;
 import org.knime.core.data.api.column.ReadColumn;
 import org.knime.core.data.api.column.access.DoubleReadAccess;
 import org.knime.core.data.api.column.domain.NumericDomain;
-import org.knime.core.data.store.array.ArrayReadCursor;
-import org.knime.core.data.store.array.ColumnStore;
-import org.knime.core.data.store.array.types.DoubleArray.DoubleArrayAccess;
+import org.knime.core.data.array.ArrayReadCursor;
+import org.knime.core.data.array.ArrayReadStore;
+import org.knime.core.data.array.types.DoubleArray.DoubleArrayAccess;
 
 public class DoubleReadColumn implements ReadColumn<DoubleReadAccess> {
 
-	private ColumnStore<DoubleArray> m_store;
+	private ArrayReadStore<DoubleArray> m_store;
 
-	public DoubleReadColumn(ColumnStore<DoubleArray> store) {
+	public DoubleReadColumn(ArrayReadStore<DoubleArray> store) {
 		m_store = store;
 	}
 

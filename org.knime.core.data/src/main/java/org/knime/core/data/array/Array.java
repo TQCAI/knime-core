@@ -1,6 +1,13 @@
-package org.knime.core.data.store.array;
+package org.knime.core.data.array;
+
+import org.knime.core.data.api.column.PrimitiveType;
 
 public interface Array {
+
+	/**
+	 * @return primitive type associated with this array
+	 */
+	PrimitiveType getPrimitiveType();
 
 	/**
 	 * @param set value missing at index. Default is false.

@@ -15,7 +15,7 @@ public final class ColumnBackedReadableRow implements ReadableRowCursor {
 		final List<ColumnReadCursor<?>> columns = new ArrayList<>(Math.toIntExact(table.getNumColumns()));
 		for (long i = 0; i < table.getNumColumns(); i++) {
 			ReadColumn<?> col = table.getReadableColumn(i);
-			columns.add(col.cursor());
+			columns.addCache(col.cursor());
 		}
 		return new ColumnBackedReadableRow(columns);
 	}
@@ -27,7 +27,7 @@ public final class ColumnBackedReadableRow implements ReadableRowCursor {
 		m_columns = columns;
 		m_dataValues = new ArrayList<>(columns.size());
 		for (final ColumnReadCursor<?> column : m_columns) {
-			m_dataValues.add(column.get());
+			m_dataValues.addCache(column.get());
 		}
 	}
 

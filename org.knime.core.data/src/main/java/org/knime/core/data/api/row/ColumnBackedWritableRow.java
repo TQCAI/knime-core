@@ -13,7 +13,7 @@ public final class ColumnBackedWritableRow implements WritableRow {
 	public static ColumnBackedWritableRow fromWritableTable(final WriteTable table) {
 		final List<ColumnWriteCursor<?>> columns = new ArrayList<>(Math.toIntExact(table.getNumColumns()));
 		for (long i = 0; i < table.getNumColumns(); i++) {
-			columns.add(table.getWritableColumn(i).access());
+			columns.addCache(table.getWritableColumn(i).access());
 		}
 		return new ColumnBackedWritableRow(columns);
 	}

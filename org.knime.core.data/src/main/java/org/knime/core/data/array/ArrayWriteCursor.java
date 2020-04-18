@@ -1,10 +1,12 @@
-package org.knime.core.data.store.array;
+package org.knime.core.data.array;
 
 import java.util.function.Supplier;
 
-public class ArrayWriteCursor<A extends Array, T extends ArrayAccess<A>> implements ArrayCursor<T> {
+import org.knime.core.data.api.column.Cursor;
 
-	private final ColumnStore<A> m_store;
+public class ArrayWriteCursor<A extends Array, T extends ArrayAccess<A>> implements Cursor<T> {
+
+	private final ArrayWriteStore<A> m_store;
 	private final Supplier<A> m_factory;
 
 	private A m_currentArray;
@@ -13,7 +15,7 @@ public class ArrayWriteCursor<A extends Array, T extends ArrayAccess<A>> impleme
 	private long m_currentDataMaxIndex;
 	private long m_index;
 
-	public ArrayWriteCursor(final Supplier<A> factory, final ColumnStore<A> store, final T access) {
+	public ArrayWriteCursor(final Supplier<A> factory, final ArrayWriteStore<A> store, final T access) {
 		switchToNextArray();
 		m_factory = factory;
 		m_store = store;
@@ -53,7 +55,7 @@ public class ArrayWriteCursor<A extends Array, T extends ArrayAccess<A>> impleme
 	@Override
 	public void close() throws Exception {
 		releaseCurrentData();
-		m_store.closeForAdditions();
+		m_store.closeWriteStore();
 	}
 
 	@Override

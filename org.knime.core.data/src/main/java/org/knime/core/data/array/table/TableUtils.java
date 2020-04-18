@@ -1,4 +1,4 @@
-package org.knime.core.data.store.array;
+package org.knime.core.data.array.table;
 
 import org.knime.core.data.api.ReadTable;
 import org.knime.core.data.api.WriteTable;
@@ -7,17 +7,22 @@ import org.knime.core.data.api.column.ReadColumn;
 import org.knime.core.data.api.column.ReadableAccess;
 import org.knime.core.data.api.column.WritableAccess;
 import org.knime.core.data.api.column.WriteColumn;
-import org.knime.core.data.store.array.types.DoubleReadColumn;
-import org.knime.core.data.store.array.types.DoubleWriteColumn;
+import org.knime.core.data.array.Array;
+import org.knime.core.data.array.ArrayFactory;
+import org.knime.core.data.array.ArrayReadStore;
+import org.knime.core.data.array.ArrayWriteStore;
+import org.knime.core.data.array.types.DoubleReadColumn;
+import org.knime.core.data.array.types.DoubleWriteColumn;
 
 public class TableUtils {
 
-	public WriteTable createWriteTable(final TableStore store, final ArrayFactory factory) {
+	public WriteTable createWriteTable(final WriteTable store, final ArrayFactory factory) {
 		return new WriteTable() {
 
 			@Override
 			public WriteColumn<? extends WritableAccess> getWritableColumn(long columnIndex) {
-				return createWriteColumn(store.getColumnType(columnIndex), store.getColumnStore(columnIndex), factory);
+				return createWriteColumn(store.getColumnType(columnIndex), store.getColumnWriteStore(columnIndex),
+						factory);
 			}
 
 			@Override
@@ -27,11 +32,11 @@ public class TableUtils {
 		};
 	}
 
-	public ReadTable createReadTable(final TableStore store) {
+	public ReadTable createReadTable(final DefaultReadTable store) {
 		return new ReadTable() {
 			@Override
 			public ReadColumn<?> getReadableColumn(long columnIndex) {
-				return createReadColumn(store.getColumnType(columnIndex), store.getColumnStore(columnIndex));
+				return createReadColumn(store.getColumnType(columnIndex), store.getColumnReadStore(columnIndex));
 			}
 
 			@Override
@@ -41,8 +46,7 @@ public class TableUtils {
 		};
 	}
 
-	private WriteColumn<? extends WritableAccess> createWriteColumn(ColumnType type, ColumnStore<?> columnStore,
-			ArrayFactory factory) {
+	private WriteColumn<? extends WritableAccess> createWriteColumn(ColumnType type, ArrayFactory factory) {
 		// TODO nested
 		switch (type.getPrimitiveTypes()[0]) {
 		case BOOLEAN:
@@ -56,7 +60,7 @@ public class TableUtils {
 		}
 	}
 
-	private ReadColumn<? extends ReadableAccess> createReadColumn(ColumnType type, ColumnStore<?> columnStore) {
+	private ReadColumn<? extends ReadableAccess> createReadColumn(ColumnType type, ArrayReadStore<?> columnStore) {
 		// TODO nested
 		switch (type.getPrimitiveTypes()[0]) {
 		case BOOLEAN:
@@ -70,9 +74,15 @@ public class TableUtils {
 		}
 	}
 
-	private <A extends Array> ColumnStore<A> cast(ColumnStore<?> columnStore) {
+	private <A extends Array> ArrayReadStore<A> cast(ArrayReadStore<?> columnStore) {
 		@SuppressWarnings("unchecked")
-		final ColumnStore<A> store = (ColumnStore<A>) columnStore;
+		final ArrayReadStore<A> store = (ArrayReadStore<A>) columnStore;
+		return store;
+	}
+
+	private <A extends Array> ArrayWriteStore<A> cast(ArrayWriteStore<?> columnStore) {
+		@SuppressWarnings("unchecked")
+		final ArrayWriteStore<A> store = (ArrayWriteStore<A>) columnStore;
 		return store;
 	}
 }

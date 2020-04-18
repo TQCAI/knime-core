@@ -1,9 +1,9 @@
-package org.knime.core.data.store.array.types;
+package org.knime.core.data.array.types;
 
 import org.knime.core.data.api.column.access.DoubleReadAccess;
 import org.knime.core.data.api.column.access.DoubleWriteAccess;
-import org.knime.core.data.store.array.Array;
-import org.knime.core.data.store.array.ArrayAccess;
+import org.knime.core.data.array.Array;
+import org.knime.core.data.array.ArrayAccess;
 
 public interface DoubleArray extends Array {
 	double getDouble(long index);

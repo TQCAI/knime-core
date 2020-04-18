@@ -1,6 +1,10 @@
-package org.knime.core.data.store.array;
+package org.knime.core.data.array;
 
-public class ArrayReadCursor<A extends Array, T extends ArrayAccess<A>> implements ArrayCursor<T> {
+import org.knime.core.data.api.column.Cursor;
+
+public class ArrayReadCursor<A extends Array, T extends ArrayAccess<A>> implements Cursor<T> {
+
+	private final ArrayReadStore<A> m_store;
 
 	private long m_arrayIndex = 0;
 	private long m_currentDataMaxIndex;
@@ -8,9 +12,8 @@ public class ArrayReadCursor<A extends Array, T extends ArrayAccess<A>> implemen
 
 	private Array m_currentArray;
 	private T m_access;
-	private ColumnStore<A> m_store;
 
-	public ArrayReadCursor(ColumnStore<A> store, T access) {
+	public ArrayReadCursor(ArrayReadStore<A> store, T access) {
 		switchToNextArray();
 		m_store = store;
 		m_access = access;

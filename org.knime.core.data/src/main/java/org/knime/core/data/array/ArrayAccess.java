@@ -1,4 +1,4 @@
-package org.knime.core.data.store.array;
+package org.knime.core.data.array;
 
 import org.knime.core.data.api.column.ReadableAccess;
 import org.knime.core.data.api.column.WritableAccess;
