@@ -12,7 +12,7 @@ import org.knime.core.data.api.column.ReadColumn;
 import org.knime.core.data.api.column.WritableAccess;
 import org.knime.core.data.api.column.WriteColumn;
 import org.knime.core.data.api.column.domain.Domain;
-import org.knime.core.data.data.CachedDataStore;
+import org.knime.core.data.data.ConsumingDataStore;
 import org.knime.core.data.data.Data;
 import org.knime.core.data.data.DataAccess;
 import org.knime.core.data.data.DataChunkReadCursor;
@@ -20,12 +20,13 @@ import org.knime.core.data.data.DataChunkWriteCursor;
 import org.knime.core.data.data.DataConsumer;
 import org.knime.core.data.data.DataFactory;
 import org.knime.core.data.data.DataLoader;
+import org.knime.core.data.data.LoadingDataStore;
 
 public class TableUtils {
 
 	// Strong assumption is that cached datastore delivers the right data
-	// TODO get rid of 'TableDataFactory'
-	public static WriteableTable create(CachedDataStore store, final TableDataFactory factories) {
+	// TODO get rid of 'TableDataFactory' in this class...
+	public static WriteableTable create(ConsumingDataStore store, final TableDataFactory factories) {
 		return new WriteableTable() {
 			private final PrimitiveType[] m_primitiveTypes = store.getPrimitiveSpec();
 
@@ -43,7 +44,7 @@ public class TableUtils {
 	}
 
 	// Strong assumption is that cached datastore delivers the right data
-	public static ReadTable create(CachedDataStore store, final Map<Long, Domain> domains) {
+	public static ReadTable create(LoadingDataStore store, final Map<Long, Domain> domains) {
 		return new ReadTable() {
 			private final PrimitiveType[] m_primitiveTypes = store.getPrimitiveSpec();
 

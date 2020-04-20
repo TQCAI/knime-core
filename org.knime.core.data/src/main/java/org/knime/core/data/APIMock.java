@@ -8,7 +8,9 @@ import org.knime.core.data.api.PrimitiveType;
 import org.knime.core.data.api.ReadTable;
 import org.knime.core.data.api.WriteableTable;
 import org.knime.core.data.api.column.domain.Domain;
-import org.knime.core.data.data.CachedDataStore;
+import org.knime.core.data.data.LoadingDataStore;
+import org.knime.core.data.data.cache.CachedDataStore;
+import org.knime.core.data.data.cache.CachedLoadingDataStore;
 import org.knime.core.data.data.table.TableData;
 import org.knime.core.data.data.table.TableUtils;
 
@@ -24,15 +26,18 @@ public class APIMock {
 		// deserialize file & domains from somewhere
 		File f = null;
 		Map<Long, Domain> domains = null;
-		PrimitiveType[] types;
+		PrimitiveType[] types = null;
 
 		// TODO make sure we load the right version of 'TableData'
-		// TODO we only need the 'Read' aspect of TableData here.
 		TableData store = null;
+
+		// TODO attach memory listeners
+		// TODO add to managed caches.
+		LoadingDataStore cache = new CachedLoadingDataStore(types, store.getReadAccess());
 
 		// we got our table back
 		// TODO we only need a 'Read' Cache here.
-		ReadTable table = TableUtils.create(store, domains);
+		ReadTable table = TableUtils.create(cache, domains);
 	}
 
 	// all in memory case
@@ -63,7 +68,7 @@ public class APIMock {
 			// TODO register to gobal LRU cache
 			// TODO use factory method to create cache (we may want to change the cache in
 			// the future).
-			CachedDataStore store = new CachedDataStore(data);
+			CachedDataStore store = new CachedDataStore(primitiveSpec, data.getWriteAccess(), data.getReadAccess());
 
 			// add decoraters per column
 			// TODO domain
@@ -75,7 +80,7 @@ public class APIMock {
 
 				// TODO return whatever we declare as API here
 				// A table which can be filled with data.
-				private WriteableTable writeTable = TableUtils.create(store, data);
+				private WriteableTable writeTable = TableUtils.create(store, data.getFactory());
 
 				// Similar to current API we close the container and with that create a
 				// BufferedDataTable.
