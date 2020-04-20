@@ -28,12 +28,12 @@ public class TableUtils {
 	// TODO get rid of 'TableDataFactory' in this class...
 	public static WriteableTable create(ConsumingDataStore store, final TableDataFactory factories) {
 		return new WriteableTable() {
-			private final PrimitiveType[] m_primitiveTypes = store.getPrimitiveSpec();
+			private final PrimitiveType<?>[] m_primitiveTypes = store.getPrimitiveSpec();
 
 			@Override
 			public WriteColumn<? extends WritableAccess> getWritableColumn(long columnIndex) {
 				return writeColumn(factories.getFactory(columnIndex), store.getConsumer(columnIndex),
-						m_primitiveTypes[(int) columnIndex].createAccess());
+						cast(m_primitiveTypes[(int) columnIndex]));
 			}
 
 			@Override
@@ -46,12 +46,12 @@ public class TableUtils {
 	// Strong assumption is that cached datastore delivers the right data
 	public static ReadTable create(LoadingDataStore store, final Map<Long, Domain> domains) {
 		return new ReadTable() {
-			private final PrimitiveType[] m_primitiveTypes = store.getPrimitiveSpec();
+			private final PrimitiveType<?>[] m_primitiveTypes = store.getPrimitiveSpec();
 
 			@Override
 			public ReadColumn<? extends ReadAccess> getReadColumn(long columnIndex) {
 				return readColumn(() -> store.createLoader(columnIndex), domains.get(columnIndex),
-						m_primitiveTypes[(int) columnIndex].createAccess());
+						cast(m_primitiveTypes[(int) columnIndex]));
 			}
 
 			@Override
@@ -62,12 +62,12 @@ public class TableUtils {
 	}
 
 	public static <D extends Data, A extends DataAccess<D>> ReadColumn<A> readColumn(Supplier<DataLoader<D>> reader,
-			Domain domain, A access) {
+			Domain domain, PrimitiveType<A> access) {
 		return new ReadColumn<A>() {
 
 			@Override
 			public Cursor<? extends A> cursor() {
-				return new DataChunkReadCursor<D, A>(reader.get(), access);
+				return new DataChunkReadCursor<D, A>(reader.get(), access.createAccess());
 			}
 
 			@Override
@@ -78,12 +78,18 @@ public class TableUtils {
 	}
 
 	public static <D extends Data, A extends DataAccess<D>> WriteColumn<A> writeColumn(DataFactory<D> factory,
-			final DataConsumer<D> consumer, A access) {
+			final DataConsumer<D> consumer, PrimitiveType<A> access) {
 		return new WriteColumn<A>() {
 			@Override
 			public Cursor<? extends A> access() {
-				return new DataChunkWriteCursor<>(factory, consumer, access);
+				return new DataChunkWriteCursor<>(factory, consumer, access.createAccess());
 			}
 		};
+	}
+
+	private static <A extends DataAccess<?>> PrimitiveType<A> cast(PrimitiveType<?> type) {
+		@SuppressWarnings("unchecked")
+		final PrimitiveType<A> access = (PrimitiveType<A>) type;
+		return access;
 	}
 }

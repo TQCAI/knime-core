@@ -15,9 +15,9 @@ public final class CachedLoadingDataStore implements LoadingDataStore {
 
 	private final List<DataCache<?>> m_caches;
 	private final TableDataReadAccess m_data;
-	private final PrimitiveType[] m_types;
+	private final PrimitiveType<?>[] m_types;
 
-	public CachedLoadingDataStore(PrimitiveType[] types, TableDataReadAccess data) {
+	public CachedLoadingDataStore(PrimitiveType<?>[] types, TableDataReadAccess data) {
 		this(types, data, new ArrayList<>((int) types.length));
 
 		for (int i = 0; i < types.length; i++) {
@@ -30,7 +30,7 @@ public final class CachedLoadingDataStore implements LoadingDataStore {
 	 * @param data
 	 * @param caches
 	 */
-	CachedLoadingDataStore(PrimitiveType[] types, TableDataReadAccess data, List<DataCache<?>> caches) {
+	CachedLoadingDataStore(PrimitiveType<?>[] types, TableDataReadAccess data, List<DataCache<?>> caches) {
 		m_data = data;
 		m_types = types;
 		m_caches = caches;
@@ -75,7 +75,7 @@ public final class CachedLoadingDataStore implements LoadingDataStore {
 	}
 
 	@Override
-	public PrimitiveType[] getPrimitiveSpec() {
+	public PrimitiveType<?>[] getPrimitiveSpec() {
 		return m_types;
 	}
 

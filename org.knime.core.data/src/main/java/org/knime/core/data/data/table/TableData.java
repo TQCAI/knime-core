@@ -13,6 +13,6 @@ public interface TableData extends AutoCloseable {
 
 	long getNumColumns();
 
-	PrimitiveType[] getPrimitiveSpec();
+	PrimitiveType<?>[] getPrimitiveSpec();
 
 }
