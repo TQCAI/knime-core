@@ -10,7 +10,6 @@ import org.knime.core.data.api.WriteableTable;
 import org.knime.core.data.api.column.domain.Domain;
 import org.knime.core.data.data.CachedDataStore;
 import org.knime.core.data.data.table.TableData;
-import org.knime.core.data.data.table.TableFormat;
 import org.knime.core.data.data.table.TableUtils;
 
 public class APIMock {
@@ -27,11 +26,13 @@ public class APIMock {
 		Map<Long, Domain> domains = null;
 		PrimitiveType[] types;
 
-		TableFormat io = null;
-		TableData store = io.createTableData(null, f);
+		// TODO make sure we load the right version of 'TableData'
+		// TODO we only need the 'Read' aspect of TableData here.
+		TableData store = null;
 
 		// we got our table back
-		ReadTable table = TableUtils.create(store.createReadAccess(), domains);
+		// TODO we only need a 'Read' Cache here.
+		ReadTable table = TableUtils.create(store, domains);
 	}
 
 	// all in memory case
