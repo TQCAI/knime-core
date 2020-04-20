@@ -33,7 +33,7 @@ public class TableUtils {
 			@Override
 			public WriteColumn<? extends WritableAccess> getWritableColumn(long columnIndex) {
 				return writeColumn(factories.getFactory(columnIndex), store.getConsumer(columnIndex),
-						m_primitiveTypes[(int) columnIndex].access());
+						m_primitiveTypes[(int) columnIndex].createAccess());
 			}
 
 			@Override
@@ -51,7 +51,7 @@ public class TableUtils {
 			@Override
 			public ReadColumn<? extends ReadAccess> getReadColumn(long columnIndex) {
 				return readColumn(() -> store.createLoader(columnIndex), domains.get(columnIndex),
-						m_primitiveTypes[(int) columnIndex].access());
+						m_primitiveTypes[(int) columnIndex].createAccess());
 			}
 
 			@Override

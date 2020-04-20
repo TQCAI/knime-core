@@ -8,7 +8,7 @@ import org.knime.core.data.data.DataLoader;
 import org.knime.core.data.data.DataWriter;
 
 // TODO thread safetey etc etc
-// TODO interface read/write
+// TODO interface read/write?
 class DataCache<D extends Data> {
 
 	private long m_flushIndex = 0;

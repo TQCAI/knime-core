@@ -1,13 +1,23 @@
 package org.knime.core.data.api;
 
-import org.knime.core.data.data.Data;
 import org.knime.core.data.data.DataAccess;
+import org.knime.core.data.data.types.DoubleData.DoubleAccess;
 
-public enum PrimitiveType {
-	STRING, DOUBLE, BOOLEAN;
+public interface PrimitiveType<A extends DataAccess<?>> {
 
-	public <D extends Data> DataAccess<D> access() {
-		// TODO Auto-generated method stub
-		return null;
+	public A createAccess();
+
+	final static class DoubleType implements PrimitiveType<DoubleAccess> {
+
+		public static DoubleType INSTANCE = new DoubleType();
+
+		private DoubleType() {
+			// noop.
+		}
+
+		@Override
+		public DoubleAccess createAccess() {
+			return new DoubleAccess();
+		}
 	}
 }
