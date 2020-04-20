@@ -20,12 +20,12 @@ import org.knime.core.data.data.table.TableDataWriteAccess;
 public final class CachedDataStore implements Flushable, ConsumingDataStore, LoadingDataStore {
 
 	private final List<DataCache<?>> m_caches;
-	private final PrimitiveType<?>[] m_types;
+	private final PrimitiveType<?, ?>[] m_types;
 
 	private final TableDataWriteAccess m_delegate;
 	private CachedLoadingDataStore m_readCache;
 
-	public CachedDataStore(PrimitiveType<?>[] types, TableDataWriteAccess writer, TableDataReadAccess reader) {
+	public CachedDataStore(PrimitiveType<?, ?>[] types, TableDataWriteAccess writer, TableDataReadAccess reader) {
 		m_delegate = writer;
 		m_readCache = new CachedLoadingDataStore(types, reader);
 		m_types = types;
@@ -82,7 +82,7 @@ public final class CachedDataStore implements Flushable, ConsumingDataStore, Loa
 	}
 
 	@Override
-	public PrimitiveType<?>[] getPrimitiveSpec() {
+	public PrimitiveType<?, ?>[] getPrimitiveSpec() {
 		return m_types;
 	}
 

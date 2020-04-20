@@ -404,7 +404,7 @@ public class DataContainer implements RowAppender {
     private void addRowToTableWrite(final DataRow row) {
         // let's do every possible sanity check
         validateSpecCompatiblity(row);
-        //        m_domainCreator.updateDomain(row);
+        m_domainCreator.updateDomain(row);
         //        addRowKeyForDuplicateCheck(row.getKey());
         m_buffer.addRow(row, false, m_forceCopyOfBlobs);
     }

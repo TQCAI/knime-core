@@ -1,13 +1,15 @@
 package org.knime.core.data;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.knime.core.data.api.PrimitiveType;
 import org.knime.core.data.api.ReadTable;
 import org.knime.core.data.api.WriteableTable;
 import org.knime.core.data.api.column.domain.Domain;
+import org.knime.core.data.data.ConsumingDataStore;
+import org.knime.core.data.data.DataDomainAdapter;
+import org.knime.core.data.data.DataStores;
 import org.knime.core.data.data.LoadingDataStore;
 import org.knime.core.data.data.cache.CachedDataStore;
 import org.knime.core.data.data.cache.CachedLoadingDataStore;
@@ -25,6 +27,8 @@ public class APIMock {
 	public void readTableFromDisc() {
 		// deserialize file & domains from somewhere
 		File f = null;
+
+		// Deserialize from somewhere
 		Map<Long, Domain> domains = null;
 		PrimitiveType[] types = null;
 
@@ -37,7 +41,7 @@ public class APIMock {
 
 		// we got our table back
 		// TODO we only need a 'Read' Cache here.
-		ReadTable table = TableUtils.create(cache, domains);
+		ReadTable table = TableUtils.create(cache);
 	}
 
 	// all in memory case
@@ -51,7 +55,7 @@ public class APIMock {
 			// TODO PrimitiveTypes are associcated with an array type.
 			// TODO Support for 'Grouped' primitive types (-> struct)
 			// TODO add config for individual columns (dict encoding, domain etc)
-			PrimitiveType[] primitiveSpec = translate(spec);
+			PrimitiveType<?, ?>[] types = translate(spec);
 
 			// Store to read/write data
 			// TODO create with primitive types. contract: delivers the correct
@@ -65,10 +69,14 @@ public class APIMock {
 
 			// Let's cache the store to gain some performance
 			// TODO register to memory alerts
-			// TODO register to gobal LRU cache
+			// TODO register to global LRU cache
 			// TODO use factory method to create cache (we may want to change the cache in
 			// the future).
-			CachedDataStore store = new CachedDataStore(primitiveSpec, data.getWriteAccess(), data.getReadAccess());
+			final CachedDataStore store = new CachedDataStore(types, data.getWriteAccess(), data.getReadAccess());
+
+			// TODO add unique value checker etc.
+			final DataDomainAdapter domainStore = new DataDomainAdapter(types);
+			final ConsumingDataStore adapted = DataStores.addAdapter(store, domainStore);
 
 			// add decoraters per column
 			// TODO domain
@@ -80,7 +88,7 @@ public class APIMock {
 
 				// TODO return whatever we declare as API here
 				// A table which can be filled with data.
-				private WriteableTable writeTable = TableUtils.create(store, data.getFactory());
+				private WriteableTable writeTable = TableUtils.create(adapted, data.getFactory());
 
 				// Similar to current API we close the container and with that create a
 				// BufferedDataTable.
@@ -92,7 +100,7 @@ public class APIMock {
 					// TODO get reader from writer instead? reader=writer?
 					// TODO maybe the ArrayIO is versioned and NOT the reader/writers themselves.
 
-					ReadTable readTable = TableUtils.create(store, new HashMap<Long, Domain>());
+					ReadTable readTable = TableUtils.create(store);
 
 					// return some wrapped BufferedDataTable providing access to data, e.g. through
 					// ReadTable table = TableUtils.create(reader, null);
@@ -104,7 +112,7 @@ public class APIMock {
 			return null;
 		}
 
-		private PrimitiveType[] translate(DataTableSpec spec) {
+		private PrimitiveType<?, ?>[] translate(DataTableSpec spec) {
 			return null;
 		}
 	}

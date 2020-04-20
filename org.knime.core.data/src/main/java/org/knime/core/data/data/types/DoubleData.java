@@ -2,13 +2,9 @@ package org.knime.core.data.data.types;
 
 import org.knime.core.data.api.column.access.DoubleReadAccess;
 import org.knime.core.data.api.column.access.DoubleWriteAccess;
-import org.knime.core.data.data.Data;
 import org.knime.core.data.data.DataAccess;
 
-public interface DoubleData extends Data {
-	double getDouble(long index);
-
-	void setDouble(long index, double val);
+public interface DoubleData extends NumericData {
 
 	// TODO if the method call here is costly, we can get rid of this call by
 	// letting the backend implement their own ArrayAccess
