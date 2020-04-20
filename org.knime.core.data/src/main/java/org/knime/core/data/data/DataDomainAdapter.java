@@ -5,18 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.knime.core.data.api.PrimitiveType;
+import org.knime.core.data.api.NativeType;
 import org.knime.core.data.api.column.domain.Domain;
 import org.knime.core.data.api.column.domain.MutableDomain;
 
-// TODO ASYNC?
-// Not guaranteed to actually have a consumer for each column
+// TODO calculate asynchronously.
 public class DataDomainAdapter implements ConsumingDataStoreAdapter {
 
-	private List<DataConsumer<?>> m_adapters;
-	private Map<Long, Domain> m_domains;
+	private final List<DataConsumer<?>> m_adapters;
+	private final Map<Long, Domain> m_domains;
 
-	public DataDomainAdapter(PrimitiveType<?, ?>[] types) {
+	public DataDomainAdapter(NativeType<?, ?>[] types) {
 		m_domains = new HashMap<Long, Domain>();
 		m_adapters = new ArrayList<DataConsumer<?>>(types.length);
 		for (long i = 0; i < types.length; i++) {
@@ -32,11 +31,7 @@ public class DataDomainAdapter implements ConsumingDataStoreAdapter {
 		return new DataConsumer<D>() {
 
 			@Override
-			public void close() throws Exception {
-			}
-
-			@Override
-			public void accept(long index, D data) {
+			public void accept(D data) {
 				// we don't care about the index here.
 				domain.update(data);
 			}

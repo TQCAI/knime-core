@@ -3,9 +3,9 @@ package org.knime.core.data.arrow;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.knime.core.data.api.PrimitiveType;
+import org.knime.core.data.api.NativeType;
 import org.knime.core.data.api.ReadTable;
-import org.knime.core.data.api.WriteableTable;
+import org.knime.core.data.api.WriteTable;
 import org.knime.core.data.api.column.ColumnType;
 import org.knime.core.data.api.column.ColumnReadCursor;
 import org.knime.core.data.api.column.ColumnWriteCursor;
@@ -15,6 +15,7 @@ import org.knime.core.data.api.row.ReadableRowCursor;
 import org.knime.core.data.api.row.ReadableRowTable;
 import org.knime.core.data.api.row.WritableRow;
 import org.knime.core.data.api.row.WritableRowTable;
+import org.knime.core.data.arrow.old.ArrowStoreFactory;
 import org.knime.core.data.store.TableBackend;
 import org.knime.core.data.store.TableUtils;
 
@@ -48,8 +49,8 @@ public class StorageTest {
 		}
 
 		@Override
-		public PrimitiveType[] getPrimitiveTypes() {
-			return new PrimitiveType[] { PrimitiveType.STRING };
+		public NativeType[] getPrimitiveTypes() {
+			return new NativeType[] { NativeType.STRING };
 		}
 	} };
 
@@ -76,10 +77,10 @@ public class StorageTest {
 				TableUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE), STRING_COLUMN))) {
 
 			// Create writable table on store. Just an access on store.
-			final WriteableTable writableTable = TableUtils.createWritableColumnTable(store);
+			final WriteTable writableTable = TableUtils.createWritableColumnTable(store);
 
 			// first column write
-			try (final ColumnWriteCursor<?> col0 = writableTable.getWritableColumn(0).access()) {
+			try (final ColumnWriteCursor<?> col0 = writableTable.getWriteColumn(0).access()) {
 				final WritableStringAccess val0 = (WritableStringAccess) col0.get();
 				for (long i = 0; i < NUM_ROWS; i++) {
 					col0.fwd();

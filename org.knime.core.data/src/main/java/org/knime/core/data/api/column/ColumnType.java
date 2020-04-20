@@ -1,10 +1,10 @@
 
 package org.knime.core.data.api.column;
 
-import org.knime.core.data.api.PrimitiveType;
+import org.knime.core.data.api.NativeType;
 
 public interface ColumnType {
-	PrimitiveType<?, ?>[] getPrimitiveTypes();
+	NativeType<?, ?>[] getPrimitiveTypes();
 
 	String name();
 }

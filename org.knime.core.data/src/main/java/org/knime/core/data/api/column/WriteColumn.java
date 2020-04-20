@@ -1,6 +1,6 @@
 package org.knime.core.data.api.column;
 
-public interface WriteColumn<A extends WritableAccess> {
+public interface WriteColumn<A extends WriteAccess> {
 
 	/**
 	 * TODO Current contract: only one writable cursor per column.

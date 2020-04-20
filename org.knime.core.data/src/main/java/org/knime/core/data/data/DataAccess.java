@@ -1,16 +1,16 @@
 package org.knime.core.data.data;
 
 import org.knime.core.data.api.column.ReadAccess;
-import org.knime.core.data.api.column.WritableAccess;
+import org.knime.core.data.api.column.WriteAccess;
 
-public interface DataAccess<A extends Data> extends ReadAccess, WritableAccess {
+public interface DataAccess<D extends Data> extends ReadAccess, WriteAccess {
 
 	/**
-	 * Updates underlying storage. Updates access.
+	 * Updates underlying data.
 	 * 
-	 * @param array
+	 * @param data
 	 */
-	void updateStorage(A array);
+	void update(D data);
 
 	void fwd();
 

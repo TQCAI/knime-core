@@ -5,7 +5,7 @@ import org.knime.core.data.data.Data;
 public interface NumericData extends Data {
 
 	// NB: Marker interface for Numeric data
-	double getDouble(long index);
+	double getDouble(int index);
 
-	void setDouble(long index, double val);
+	void setDouble(int index, double val);
 }

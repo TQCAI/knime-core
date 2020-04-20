@@ -11,11 +11,11 @@ public interface DoubleData extends NumericData {
 	public static class DoubleAccess implements DataAccess<DoubleData>, DoubleReadAccess, DoubleWriteAccess {
 
 		private DoubleData m_array;
-		private long m_index = -1;
+		private int m_index = -1;
 
 		@Override
-		public void setDouble(double val) {
-			m_array.setDouble(m_index, val);
+		public void setDouble(double value) {
+			m_array.setDouble(m_index, value);
 		}
 
 		@Override
@@ -34,7 +34,7 @@ public interface DoubleData extends NumericData {
 		}
 
 		@Override
-		public void updateStorage(DoubleData array) {
+		public void update(DoubleData array) {
 			m_array = array;
 			m_index = 0;
 		}

@@ -1,5 +1,5 @@
 
-package org.knime.core.data.arrow;
+package org.knime.core.data.arrow.old;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 import org.apache.arrow.memory.RootAllocator;
+import org.knime.core.data.arrow.Float8VectorData;
 import org.knime.core.data.store.DataStoreFactory;
 import org.knime.core.data.store.types.BooleanStore;
 import org.knime.core.data.store.types.DoubleStore;
@@ -31,7 +32,7 @@ public class ArrowStoreFactory implements DataStoreFactory {
 
 	@Override
 	public DoubleStore<?> createDoubleStore() {
-		return new Float8VectorStore(m_allocator.newChildAllocator("TODO DoubleStore", 0, m_allocator.getLimit()),
+		return new Float8VectorData(m_allocator.newChildAllocator("TODO DoubleStore", 0, m_allocator.getLimit()),
 				createFile("DoubleStore"), m_chunkSize);
 	}
 

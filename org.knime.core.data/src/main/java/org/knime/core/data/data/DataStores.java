@@ -1,6 +1,6 @@
 package org.knime.core.data.data;
 
-import org.knime.core.data.api.PrimitiveType;
+import org.knime.core.data.api.NativeType;
 
 public class DataStores {
 
@@ -21,8 +21,8 @@ public class DataStores {
 		}
 
 		@Override
-		public PrimitiveType<?, ?>[] getPrimitiveSpec() {
-			return m_store.getPrimitiveSpec();
+		public NativeType<?, ?>[] getColumnTypes() {
+			return m_store.getColumnTypes();
 		}
 
 		@Override
@@ -39,15 +39,9 @@ public class DataStores {
 					final DataConsumer<D> m_adapter = m_adapterStore.createAdapter(columnIndex);
 
 					@Override
-					public void close() throws Exception {
-						m_adapter.close();
-						consumer.close();
-					}
-
-					@Override
-					public void accept(long index, D data) {
-						m_adapter.accept(index, data);
-						consumer.accept(index, data);
+					public void accept(D data) {
+						m_adapter.accept(data);
+						consumer.accept(data);
 					}
 				};
 			} else {

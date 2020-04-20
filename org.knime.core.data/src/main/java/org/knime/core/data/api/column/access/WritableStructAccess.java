@@ -1,7 +1,7 @@
 package org.knime.core.data.api.column.access;
 
-import org.knime.core.data.api.column.WritableAccess;
+import org.knime.core.data.api.column.WriteAccess;
 
-public interface WritableStructAccess extends WritableAccess {
-	WritableAccess writableValueAt(long i);
+public interface WritableStructAccess extends WriteAccess {
+	WriteAccess writableValueAt(long i);
 }

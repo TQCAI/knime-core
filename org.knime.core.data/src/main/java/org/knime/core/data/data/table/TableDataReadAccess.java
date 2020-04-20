@@ -4,5 +4,5 @@ import org.knime.core.data.data.Data;
 import org.knime.core.data.data.DataLoader;
 
 public interface TableDataReadAccess {
-	<D extends Data> DataLoader<D> createLoader(long index);
+	<D extends Data> DataLoader<D[]> createLoader(long index);
 }

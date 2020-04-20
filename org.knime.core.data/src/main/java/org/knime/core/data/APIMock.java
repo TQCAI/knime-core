@@ -3,9 +3,9 @@ package org.knime.core.data;
 import java.io.File;
 import java.util.Map;
 
-import org.knime.core.data.api.PrimitiveType;
+import org.knime.core.data.api.NativeType;
 import org.knime.core.data.api.ReadTable;
-import org.knime.core.data.api.WriteableTable;
+import org.knime.core.data.api.WriteTable;
 import org.knime.core.data.api.column.domain.Domain;
 import org.knime.core.data.data.ConsumingDataStore;
 import org.knime.core.data.data.DataDomainAdapter;
@@ -30,7 +30,7 @@ public class APIMock {
 
 		// Deserialize from somewhere
 		Map<Long, Domain> domains = null;
-		PrimitiveType[] types = null;
+		NativeType<?, ?>[] types = null;
 
 		// TODO make sure we load the right version of 'TableData'
 		TableData store = null;
@@ -55,13 +55,13 @@ public class APIMock {
 			// TODO PrimitiveTypes are associcated with an array type.
 			// TODO Support for 'Grouped' primitive types (-> struct)
 			// TODO add config for individual columns (dict encoding, domain etc)
-			PrimitiveType<?, ?>[] types = translate(spec);
+			NativeType<?, ?>[] types = translate(spec);
 
 			// Store to read/write data
 			// TODO create with primitive types. contract: delivers the correct
 			// loader/writer/factory according to PrimitiveTypes (e.g. double -> DoubleData,
 			// byte[] -> ByteArrayData, etc).
-			//
+
 			// TODO framework has to make sure to be able to serialize and deserialize the
 			// TableData object. We'll create TableDataV2, TableDataV3, ... in the future
 			// (backwards compatibility).
@@ -75,12 +75,17 @@ public class APIMock {
 			final CachedDataStore store = new CachedDataStore(types, data.getWriteAccess(), data.getReadAccess());
 
 			// TODO add unique value checker etc.
+			// TODO async computation of adapters. data can be added to cached before all
+			// adapters are ready (?).
+
+			// TODO test design with implementing dictionary encoding either as adapter OR
+			// in DataAccess? Do we
+			// need dictionary encoding at all for in-memory representation or is parquet
+			// good enough?
 			final DataDomainAdapter domainStore = new DataDomainAdapter(types);
 			final ConsumingDataStore adapted = DataStores.addAdapter(store, domainStore);
 
 			// add decoraters per column
-			// TODO domain
-			// TODO unique value checking
 
 			// Creates a writer to write columns of a table
 			// wrap table into a TableContainer for outside access
@@ -88,7 +93,7 @@ public class APIMock {
 
 				// TODO return whatever we declare as API here
 				// A table which can be filled with data.
-				private WriteableTable writeTable = TableUtils.create(adapted, data.getFactory());
+				private WriteTable writeTable = TableUtils.create(adapted, data.getFactory());
 
 				// Similar to current API we close the container and with that create a
 				// BufferedDataTable.
@@ -112,7 +117,7 @@ public class APIMock {
 			return null;
 		}
 
-		private PrimitiveType<?, ?>[] translate(DataTableSpec spec) {
+		private NativeType<?, ?>[] translate(DataTableSpec spec) {
 			return null;
 		}
 	}

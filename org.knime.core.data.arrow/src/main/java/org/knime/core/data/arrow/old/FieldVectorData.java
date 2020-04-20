@@ -1,4 +1,4 @@
-package org.knime.core.data.arrow;
+package org.knime.core.data.arrow.old;
 
 import org.apache.arrow.vector.FieldVector;
 import org.knime.core.data.store.Data;

@@ -1,8 +1,9 @@
 package org.knime.core.data.api.column.domain;
 
-import org.knime.core.data.api.column.ReadAccess;
+import org.knime.core.data.api.column.NumericReadAccess;
 
-public interface NumericDomain<A extends ReadAccess> extends Domain {
+// TODO overdesigned?
+public interface NumericDomain<A extends NumericReadAccess> extends Domain {
 	A getMin();
 
 	A getMax();

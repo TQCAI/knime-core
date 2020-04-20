@@ -7,15 +7,15 @@ import org.knime.core.data.data.types.DoubleData;
 import org.knime.core.data.data.types.DoubleData.DoubleAccess;
 
 // looks like an enum, but isn't! We want to support nesting, complex types etc.
-public interface PrimitiveType<D extends Data, A extends DataAccess<?>> {
+public interface NativeType<D extends Data, A extends DataAccess<D>> {
 
-	public A createAccess();
+	A createAccess();
 
+	// TODO Interface 'NativeTypeWithDomain'
 	boolean hasDomain();
-
 	MutableDomain<D> createEmptyDomain();
 
-	final static class DoubleType implements PrimitiveType<DoubleData, DoubleAccess> {
+	final static class DoubleType implements NativeType<DoubleData, DoubleAccess> {
 
 		public static DoubleType INSTANCE = new DoubleType();
 

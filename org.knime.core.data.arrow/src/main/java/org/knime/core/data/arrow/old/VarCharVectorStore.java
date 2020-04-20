@@ -1,4 +1,4 @@
-package org.knime.core.data.arrow;
+package org.knime.core.data.arrow.old;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -13,7 +13,7 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.VarCharVector;
 import org.knime.core.data.api.column.access.ReadableStringAccess;
 import org.knime.core.data.api.column.access.WritableStringAccess;
-import org.knime.core.data.arrow.VarCharVectorStore.VarCharVectorAccess;
+import org.knime.core.data.arrow.old.VarCharVectorStore.VarCharVectorAccess;
 import org.knime.core.data.store.DataDomain;
 import org.knime.core.data.store.types.StringStore;
 

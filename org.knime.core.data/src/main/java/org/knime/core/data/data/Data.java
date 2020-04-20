@@ -7,18 +7,18 @@ public interface Data extends Referenced {
 	/**
 	 * @param set value missing at index. Default is false.
 	 */
-	void setMissing(long index);
+	void setMissing(int index);
 
 	/**
 	 * @param index of value
 	 * @return true, if value is missing. Default is false.
 	 */
-	boolean isMissing(long index);
+	boolean isMissing(int index);
 
 	/**
 	 * @return maximum capacity of an array
 	 */
-	long getMaxCapacity();
+	int getMaxCapacity();
 
 	/**
 	 * @return number of values set
@@ -28,5 +28,5 @@ public interface Data extends Referenced {
 	/**
 	 * @param numValues set number of written values
 	 */
-	void setNumValues(long numValues);
+	void setNumValues(int numValues);
 }

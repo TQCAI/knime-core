@@ -1,6 +1,6 @@
 package org.knime.core.data.data.table;
 
-import org.knime.core.data.api.PrimitiveType;
+import org.knime.core.data.api.NativeType;
 
 // TODO revise interface hierarchy
 public interface TableData extends AutoCloseable {
@@ -13,6 +13,6 @@ public interface TableData extends AutoCloseable {
 
 	long getNumColumns();
 
-	PrimitiveType<?, ?>[] getPrimitiveSpec();
+	NativeType<?, ?>[] getColumnTypes();
 
 }

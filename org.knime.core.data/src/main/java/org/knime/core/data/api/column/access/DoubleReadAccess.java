@@ -1,8 +1,7 @@
 package org.knime.core.data.api.column.access;
 
-import org.knime.core.data.api.column.ReadAccess;
+import org.knime.core.data.api.column.NumericReadAccess;
 
-public interface DoubleReadAccess extends ReadAccess {
-
-	double getDouble();
+public interface DoubleReadAccess extends NumericReadAccess {
+	// NB: marker interface
 }

@@ -1,4 +1,4 @@
-package org.knime.core.data.arrow;
+package org.knime.core.data.arrow.old;
 
 import java.io.File;
 
@@ -6,7 +6,7 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.BitVector;
 import org.knime.core.data.api.column.access.ReadableBooleanAccess;
 import org.knime.core.data.api.column.access.WritableBooleanAccess;
-import org.knime.core.data.arrow.BitVectorStore.BitVectorAccess;
+import org.knime.core.data.arrow.old.BitVectorStore.BitVectorAccess;
 import org.knime.core.data.store.Data;
 import org.knime.core.data.store.Data;
 import org.knime.core.data.store.types.BooleanStore;

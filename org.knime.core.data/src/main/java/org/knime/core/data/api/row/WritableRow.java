@@ -1,11 +1,11 @@
 
 package org.knime.core.data.api.row;
 
-import org.knime.core.data.api.column.WritableAccess;
+import org.knime.core.data.api.column.WriteAccess;
 
 public interface WritableRow extends AutoCloseable {
 
 	void fwd();
 
-	WritableAccess getWritableAccess(long index);
+	WriteAccess getWritableAccess(long index);
 }
