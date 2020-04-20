@@ -70,24 +70,23 @@ public class APIMock {
 
 			// Creates a writer to write columns of a table
 			// wrap table into a TableContainer for outside access
-			TableContainer container = new TableContainer() {
+			final TableContainer container = new TableContainer() {
 
 				// TODO return whatever we declare as API here
 				// A table which can be filled with data.
-				private WriteableTable writeTable = TableUtils.create(cachedStore.getWriteAccess(),
-						format.getFactory());
+				private WriteableTable writeTable = TableUtils.create(store, data);
 
 				// Similar to current API we close the container and with that create a
 				// BufferedDataTable.
 				@Override
 				public BufferedDataTable close() throws Exception {
-					// all data has been persisted. Close writer.
-					writeTable.close();
+					// all data has been persisted. Close all writers!
+					// should already be closed (WriteColumn.close())
 
 					// TODO get reader from writer instead? reader=writer?
 					// TODO maybe the ArrayIO is versioned and NOT the reader/writers themselves.
 
-					ReadTable readTable = TableUtils.create(cachedStore.createReadAccess(), new HashMap<>());
+					ReadTable readTable = TableUtils.create(store, new HashMap<Long, Domain>());
 
 					// return some wrapped BufferedDataTable providing access to data, e.g. through
 					// ReadTable table = TableUtils.create(reader, null);

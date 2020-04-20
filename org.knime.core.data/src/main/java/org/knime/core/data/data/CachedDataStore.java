@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.knime.core.data.api.PrimitiveType;
 import org.knime.core.data.data.table.TableData;
 
-// TODO interface
 // TODO thread-safety
 // TODO implement 'pre-flushing' and 'pre-loading'
 public final class CachedDataStore implements Flushable, DataStore {
@@ -52,7 +52,7 @@ public final class CachedDataStore implements Flushable, DataStore {
 	}
 
 	@Override
-	public <D extends Data> DataLoader<D> getLoader(long columnIndex) {
+	public <D extends Data> DataLoader<D> createLoader(long columnIndex) {
 		return new DataLoader<D>() {
 
 			// create new delegate per loader
@@ -100,6 +100,11 @@ public final class CachedDataStore implements Flushable, DataStore {
 		for (int i = 0; i < m_caches.size(); i++) {
 			m_caches.get(i).close();
 		}
+	}
+
+	@Override
+	public PrimitiveType[] getPrimitiveSpec() {
+		return m_data.getPrimitiveSpec();
 	}
 
 	// release all data from caches. keeps caches open until close
