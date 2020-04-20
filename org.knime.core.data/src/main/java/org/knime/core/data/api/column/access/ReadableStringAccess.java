@@ -1,9 +1,9 @@
 
 package org.knime.core.data.api.column.access;
 
-import org.knime.core.data.api.column.ReadableAccess;
+import org.knime.core.data.api.column.ReadAccess;
 
-public interface ReadableStringAccess extends ReadableAccess {
+public interface ReadableStringAccess extends ReadAccess {
 
 	String getStringValue();
 }

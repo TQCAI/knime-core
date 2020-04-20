@@ -5,29 +5,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.knime.core.data.api.ReadTable;
-import org.knime.core.data.api.column.ReadableAccess;
+import org.knime.core.data.api.column.Cursor;
+import org.knime.core.data.api.column.ReadAccess;
 import org.knime.core.data.api.column.ReadColumn;
-import org.knime.core.data.api.column.ColumnReadCursor;
 
 public final class ColumnBackedReadableRow implements ReadableRowCursor {
 
 	public static ColumnBackedReadableRow fromReadableTable(final ReadTable table) {
-		final List<ColumnReadCursor<?>> columns = new ArrayList<>(Math.toIntExact(table.getNumColumns()));
+		final List<Cursor<? extends ReadAccess>> columns = new ArrayList<>(Math.toIntExact(table.getNumColumns()));
 		for (long i = 0; i < table.getNumColumns(); i++) {
-			ReadColumn<?> col = table.getReadableColumn(i);
-			columns.addCache(col.cursor());
+			ReadColumn<?> col = table.getReadColumn(i);
+			columns.add(col.cursor());
 		}
 		return new ColumnBackedReadableRow(columns);
 	}
 
-	private final List<ColumnReadCursor<?>> m_columns;
-	private final List<ReadableAccess> m_dataValues;
+	private final List<Cursor<? extends ReadAccess>> m_columns;
+	private final List<ReadAccess> m_dataValues;
 
-	public ColumnBackedReadableRow(final List<ColumnReadCursor<?>> columns) {
+	public ColumnBackedReadableRow(final List<Cursor<? extends ReadAccess>> columns) {
 		m_columns = columns;
 		m_dataValues = new ArrayList<>(columns.size());
-		for (final ColumnReadCursor<?> column : m_columns) {
-			m_dataValues.addCache(column.get());
+		for (final Cursor<? extends ReadAccess> column : m_columns) {
+			m_dataValues.add(column.get());
 		}
 	}
 
@@ -38,19 +38,19 @@ public final class ColumnBackedReadableRow implements ReadableRowCursor {
 
 	@Override
 	public void fwd() {
-		for (final ColumnReadCursor<?> column : m_columns) {
+		for (final Cursor<?> column : m_columns) {
 			column.fwd();
 		}
 	}
 
 	@Override
-	public ReadableAccess getReadableAccess(final long index) {
+	public ReadAccess getReadableAccess(final long index) {
 		return m_dataValues.get((int) index);
 	}
 
 	@Override
 	public void close() throws Exception {
-		for (final ColumnReadCursor<?> column : m_columns) {
+		for (final Cursor<?> column : m_columns) {
 			column.close();
 		}
 	}

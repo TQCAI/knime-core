@@ -1,6 +1,8 @@
 package org.knime.core.data.array;
 
-abstract class AbstractNativeArray<A> implements Array<A> {
+import org.knime.core.data.data.Data;
+
+abstract class AbstractNativeArray<A> implements Data<A> {
 
 	private long[] m_isMissing;
 	private A m_array;

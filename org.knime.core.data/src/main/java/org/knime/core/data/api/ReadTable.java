@@ -7,5 +7,5 @@ public interface ReadTable {
 
 	long getNumColumns();
 
-	ReadColumn<?> getReadableColumn(long columnIndex);
+	ReadColumn<?> getReadColumn(long columnIndex);
 }

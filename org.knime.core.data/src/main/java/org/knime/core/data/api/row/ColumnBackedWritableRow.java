@@ -4,29 +4,29 @@ package org.knime.core.data.api.row;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.data.api.WriteTable;
+import org.knime.core.data.api.WriteableTable;
+import org.knime.core.data.api.column.Cursor;
 import org.knime.core.data.api.column.WritableAccess;
-import org.knime.core.data.api.column.ColumnWriteCursor;
 
 public final class ColumnBackedWritableRow implements WritableRow {
 
-	public static ColumnBackedWritableRow fromWritableTable(final WriteTable table) {
-		final List<ColumnWriteCursor<?>> columns = new ArrayList<>(Math.toIntExact(table.getNumColumns()));
+	public static ColumnBackedWritableRow fromWritableTable(final WriteableTable table) {
+		final List<Cursor<? extends WritableAccess>> columns = new ArrayList<>(Math.toIntExact(table.getNumColumns()));
 		for (long i = 0; i < table.getNumColumns(); i++) {
-			columns.addCache(table.getWritableColumn(i).access());
+			columns.add(table.getWritableColumn(i).access());
 		}
 		return new ColumnBackedWritableRow(columns);
 	}
 
-	private final List<ColumnWriteCursor<?>> m_columns;
+	private final List<Cursor<? extends WritableAccess>> m_columns;
 
-	public ColumnBackedWritableRow(final List<ColumnWriteCursor<?>> columns) {
+	public ColumnBackedWritableRow(final List<Cursor<? extends WritableAccess>> columns) {
 		m_columns = columns;
 	}
 
 	@Override
 	public void fwd() {
-		for (final ColumnWriteCursor<?> column : m_columns) {
+		for (final Cursor<?> column : m_columns) {
 			column.fwd();
 		}
 	}
@@ -38,7 +38,7 @@ public final class ColumnBackedWritableRow implements WritableRow {
 
 	@Override
 	public void close() throws Exception {
-		for (final ColumnWriteCursor<?> column : m_columns) {
+		for (final Cursor<?> column : m_columns) {
 			column.close();
 		}
 	}

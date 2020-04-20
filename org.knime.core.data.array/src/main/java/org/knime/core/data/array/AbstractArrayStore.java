@@ -8,7 +8,7 @@ import org.knime.core.data.store.DataAccess;
 import org.knime.core.data.store.Data;
 import org.knime.core.data.store.WritableDataStore;
 
-abstract class AbstractArrayStore<T extends Array<?>, V extends DataAccess<T>> implements WritableDataStore<T, V> {
+abstract class AbstractArrayStore<T extends Data<?>, V extends DataAccess<T>> implements WritableDataStore<T, V> {
 
 	private final long m_maxCapacity;
 	private final List<Data<T>> m_list = new ArrayList<>();
@@ -30,7 +30,7 @@ abstract class AbstractArrayStore<T extends Array<?>, V extends DataAccess<T>> i
 	@Override
 	public void add(Data<T> data) {
 		// TODO of course flush is more appropriate here
-		m_list.add(data);
+		m_list.consume(data);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ abstract class AbstractArrayStore<T extends Array<?>, V extends DataAccess<T>> i
 			@Override
 			public Data<T> get() {
 				// TODO load from disc if required!
-				return m_list.get((int) m_index);
+				return m_list.load((int) m_index);
 			}
 
 			@Override
@@ -63,7 +63,7 @@ abstract class AbstractArrayStore<T extends Array<?>, V extends DataAccess<T>> i
 
 			@Override
 			public boolean canFwd() {
-				return m_index < m_list.size() - 1;
+				return m_index < m_list.getNumArrays() - 1;
 			}
 
 			@Override

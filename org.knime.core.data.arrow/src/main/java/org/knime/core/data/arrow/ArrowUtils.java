@@ -8,8 +8,8 @@ import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
+import org.knime.core.data.api.PrimitiveType;
 import org.knime.core.data.api.column.ColumnType;
-import org.knime.core.data.api.column.PrimitiveType;
 
 import io.netty.buffer.ArrowBuf;
 

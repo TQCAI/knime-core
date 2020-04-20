@@ -1,31 +1,30 @@
-package org.knime.core.data.array;
-
-import java.util.function.Supplier;
+package org.knime.core.data.data;
 
 import org.knime.core.data.api.column.Cursor;
 
-public class ArrayWriteCursor<A extends Array, T extends ArrayAccess<A>> implements Cursor<T> {
+public class DataChunkWriteCursor<A extends Data, T extends DataAccess<A>> implements Cursor<T> {
 
-	private final ArrayWriteStore<A> m_store;
-	private final Supplier<A> m_factory;
+	private final DataConsumer<A> m_consumer;
+	private final DataFactory<A> m_factory;
 
 	private A m_currentArray;
 	private T m_access;
 
 	private long m_currentDataMaxIndex;
 	private long m_index;
+	private int m_currentIndex = 0;
 
-	public ArrayWriteCursor(final Supplier<A> factory, final ArrayWriteStore<A> store, final T access) {
+	public DataChunkWriteCursor(final DataFactory<A> factory, final DataConsumer<A> consumer, final T access) {
 		switchToNextArray();
+		m_consumer = consumer;
 		m_factory = factory;
-		m_store = store;
 		m_access = access;
 	}
 
 	private void switchToNextArray() {
 		try {
 			releaseCurrentData();
-			m_currentArray = m_factory.get();
+			m_currentArray = m_factory.create();
 			m_access.updateStorage(m_currentArray);
 			m_currentDataMaxIndex = m_currentArray.getMaxCapacity() - 1;
 		} catch (final Exception e) {
@@ -36,7 +35,7 @@ public class ArrayWriteCursor<A extends Array, T extends ArrayAccess<A>> impleme
 
 	private void releaseCurrentData() {
 		m_currentArray.setNumValues(m_index);
-		m_store.add(m_currentArray);
+		m_consumer.accept(m_currentIndex++, m_currentArray);
 		m_currentArray.release();
 	}
 
@@ -55,7 +54,6 @@ public class ArrayWriteCursor<A extends Array, T extends ArrayAccess<A>> impleme
 	@Override
 	public void close() throws Exception {
 		releaseCurrentData();
-		m_store.closeWriteStore();
 	}
 
 	@Override

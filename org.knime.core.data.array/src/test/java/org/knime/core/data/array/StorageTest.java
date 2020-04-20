@@ -3,10 +3,10 @@ package org.knime.core.data.array;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.knime.core.data.api.PrimitiveType;
 import org.knime.core.data.api.ReadTable;
-import org.knime.core.data.api.WriteTable;
+import org.knime.core.data.api.WriteableTable;
 import org.knime.core.data.api.column.ColumnType;
-import org.knime.core.data.api.column.PrimitiveType;
 import org.knime.core.data.api.column.ColumnReadCursor;
 import org.knime.core.data.api.column.ColumnWriteCursor;
 import org.knime.core.data.api.column.access.ReadableStringAccess;
@@ -60,7 +60,7 @@ public class StorageTest {
 				STRING_COLUMN)) {
 
 			// Create writable table on store. Just an access on store.
-			final WriteTable writableTable = TableUtils.createWritableColumnTable(store);
+			final WriteableTable writableTable = TableUtils.createWritableColumnTable(store);
 
 			// first column write
 			try (final ColumnWriteCursor<?> col0 = writableTable.getWritableColumn(0).access()) {
@@ -75,7 +75,7 @@ public class StorageTest {
 			final ReadTable readableTable = TableUtils.createReadableTable(store);
 
 			// then read
-			try (final ColumnReadCursor<?> col0 = readableTable.getReadableColumn(0).createReadableCursor()) {
+			try (final ColumnReadCursor<?> col0 = readableTable.getReadColumn(0).createReadableCursor()) {
 				final ReadableStringAccess val0 = (ReadableStringAccess) col0.get();
 				for (long i = 0; col0.canFwd(); i++) {
 					col0.fwd();

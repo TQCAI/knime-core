@@ -1,9 +1,9 @@
-package org.knime.core.data.array;
+package org.knime.core.data.data;
 
-import org.knime.core.data.api.column.ReadableAccess;
+import org.knime.core.data.api.column.ReadAccess;
 import org.knime.core.data.api.column.WritableAccess;
 
-public interface ArrayAccess<A extends Array> extends ReadableAccess, WritableAccess {
+public interface DataAccess<A extends Data> extends ReadAccess, WritableAccess {
 
 	/**
 	 * Updates underlying storage. Updates access.

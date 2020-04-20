@@ -2,7 +2,7 @@ package org.knime.core.data.array;
 
 import org.knime.core.data.store.Data;
 
-class ArrayData<V extends Array<?>> implements Data<V> {
+class ArrayData<V extends Data<?>> implements Data<V> {
 
 	private V m_array;
 	private long m_valueCount;

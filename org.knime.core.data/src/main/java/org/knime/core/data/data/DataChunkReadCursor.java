@@ -1,28 +1,28 @@
-package org.knime.core.data.array;
+package org.knime.core.data.data;
 
 import org.knime.core.data.api.column.Cursor;
 
-public class ArrayReadCursor<A extends Array, T extends ArrayAccess<A>> implements Cursor<T> {
+public class DataChunkReadCursor<A extends Data, T extends DataAccess<A>> implements Cursor<T> {
 
-	private final ArrayReadStore<A> m_store;
+	private final DataLoader<A> m_loader;
 
 	private long m_arrayIndex = 0;
 	private long m_currentDataMaxIndex;
 	private long m_index;
 
-	private Array m_currentArray;
+	private Data m_currentArray;
 	private T m_access;
 
-	public ArrayReadCursor(ArrayReadStore<A> store, T access) {
+	public DataChunkReadCursor(DataLoader<A> loader, T access) {
 		switchToNextArray();
-		m_store = store;
+		m_loader = loader;
 		m_access = access;
 	}
 
 	private void switchToNextArray() {
 		try {
 			releaseCurrentData();
-			m_currentArray = m_store.get(m_arrayIndex++);
+			m_currentArray = m_loader.load(m_arrayIndex++);
 			m_currentDataMaxIndex = m_currentArray.getNumValues() - 1;
 		} catch (final Exception e) {
 			// TODO
@@ -59,6 +59,6 @@ public class ArrayReadCursor<A extends Array, T extends ArrayAccess<A>> implemen
 
 	@Override
 	public boolean canFwd() {
-		return m_index < m_currentDataMaxIndex || m_arrayIndex < m_store.size();
+		return m_index < m_currentDataMaxIndex || m_arrayIndex < m_loader.size();
 	}
 }

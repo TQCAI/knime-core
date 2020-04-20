@@ -1,13 +1,8 @@
-package org.knime.core.data.array;
+package org.knime.core.data.data;
 
-import org.knime.core.data.api.column.PrimitiveType;
+import org.knime.core.data.api.Referenced;
 
-public interface Array {
-
-	/**
-	 * @return primitive type associated with this array
-	 */
-	PrimitiveType getPrimitiveType();
+public interface Data extends Referenced {
 
 	/**
 	 * @param set value missing at index. Default is false.
@@ -34,14 +29,4 @@ public interface Array {
 	 * @param numValues set number of written values
 	 */
 	void setNumValues(long numValues);
-
-	/**
-	 * Release reference on array
-	 */
-	void release();
-
-	/**
-	 * Retain reference on array
-	 */
-	void retain();
 }

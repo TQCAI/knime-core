@@ -1,10 +1,11 @@
 
 package org.knime.core.data.array;
 
+import org.knime.core.data.data.Data;
 import org.knime.core.data.store.DataAccess;
 
 // TODO composition over inheritance? :-(
-abstract class AbstractNativeArrayAccess<A, N extends Array<A>> //
+abstract class AbstractNativeArrayAccess<A, N extends Data<A>> //
 		implements DataAccess<N> {
 
 	protected int m_index = -1;

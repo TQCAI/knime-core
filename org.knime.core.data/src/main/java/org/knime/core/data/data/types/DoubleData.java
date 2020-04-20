@@ -1,20 +1,20 @@
-package org.knime.core.data.array.types;
+package org.knime.core.data.data.types;
 
 import org.knime.core.data.api.column.access.DoubleReadAccess;
 import org.knime.core.data.api.column.access.DoubleWriteAccess;
-import org.knime.core.data.array.Array;
-import org.knime.core.data.array.ArrayAccess;
+import org.knime.core.data.data.Data;
+import org.knime.core.data.data.DataAccess;
 
-public interface DoubleArray extends Array {
+public interface DoubleData extends Data {
 	double getDouble(long index);
 
 	void setDouble(long index, double val);
 
 	// TODO if the method call here is costly, we can get rid of this call by
 	// letting the backend implement their own ArrayAccess
-	public static class DoubleArrayAccess implements ArrayAccess<DoubleArray>, DoubleReadAccess, DoubleWriteAccess {
+	public static class DoubleAccess implements DataAccess<DoubleData>, DoubleReadAccess, DoubleWriteAccess {
 
-		private DoubleArray m_array;
+		private DoubleData m_array;
 		private long m_index = -1;
 
 		@Override
@@ -38,7 +38,7 @@ public interface DoubleArray extends Array {
 		}
 
 		@Override
-		public void updateStorage(DoubleArray array) {
+		public void updateStorage(DoubleData array) {
 			m_array = array;
 			m_index = 0;
 		}
@@ -52,7 +52,5 @@ public interface DoubleArray extends Array {
 		public void reset() {
 			m_index = -1;
 		}
-
 	}
-
 }

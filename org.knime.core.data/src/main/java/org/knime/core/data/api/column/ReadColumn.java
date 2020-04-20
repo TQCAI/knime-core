@@ -3,7 +3,7 @@ package org.knime.core.data.api.column;
 
 import org.knime.core.data.api.column.domain.Domain;
 
-public interface ReadColumn<A extends ReadableAccess> {
+public interface ReadColumn<A extends ReadAccess> {
 
 	/**
 	 * @return a new cursor over the column. Must be closed when done.

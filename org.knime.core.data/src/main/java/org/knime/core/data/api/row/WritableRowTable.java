@@ -4,4 +4,5 @@ public interface WritableRowTable {
 	long getNumColumns();
 
 	WritableRow getWritableRow();
+
 }

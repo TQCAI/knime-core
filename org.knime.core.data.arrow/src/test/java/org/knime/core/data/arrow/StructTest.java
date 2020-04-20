@@ -3,14 +3,14 @@ package org.knime.core.data.arrow;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.knime.core.data.api.PrimitiveType;
 import org.knime.core.data.api.ReadTable;
-import org.knime.core.data.api.WriteTable;
+import org.knime.core.data.api.WriteableTable;
 import org.knime.core.data.api.access.ReadableDoubleAccess;
 import org.knime.core.data.api.access.ReadableStructAccess;
 import org.knime.core.data.api.access.WritableDoubleAccess;
 import org.knime.core.data.api.access.WritableStructAccess;
 import org.knime.core.data.api.column.ColumnType;
-import org.knime.core.data.api.column.PrimitiveType;
 import org.knime.core.data.api.column.ColumnReadCursor;
 import org.knime.core.data.api.column.ColumnWriteCursor;
 import org.knime.core.data.api.column.access.ReadableStringAccess;
@@ -48,7 +48,7 @@ public class StructTest {
 			StorageTest.OFFHEAP_SIZE), STRUCT_COLUMN);
 
 		// Create writable table on store. Just an access on store.
-		final WriteTable writableTable = TableUtils.createWritableColumnTable(store);
+		final WriteableTable writableTable = TableUtils.createWritableColumnTable(store);
 
 		// first column write
 		try (final ColumnWriteCursor<?> col0 = writableTable.getWritableColumn(0).access()) {
@@ -69,7 +69,7 @@ public class StructTest {
 		final ReadTable readableTable = TableUtils.createReadableTable(store);
 
 		// then read
-		try (final ColumnReadCursor<?> col0 = readableTable.getReadableColumn(0).createReadableCursor()) {
+		try (final ColumnReadCursor<?> col0 = readableTable.getReadColumn(0).createReadableCursor()) {
 			final ReadableStructAccess val0 = (ReadableStructAccess) col0.get();
 			final ReadableStringAccess stringValue = (ReadableStringAccess) val0.readableValueAt(0);
 			final ReadableDoubleAccess doubleValue = (ReadableDoubleAccess) val0.readableValueAt(1);
