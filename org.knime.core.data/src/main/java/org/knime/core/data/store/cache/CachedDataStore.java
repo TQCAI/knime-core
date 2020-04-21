@@ -2,11 +2,11 @@ package org.knime.core.data.store.cache;
 
 import java.io.Flushable;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 import org.knime.core.data.Data;
 import org.knime.core.data.DataReader;
 import org.knime.core.data.DataWriter;
-import org.knime.core.data.store.DataReaderConfig;
 import org.knime.core.data.store.DataStore;
 
 /*
@@ -14,18 +14,16 @@ import org.knime.core.data.store.DataStore;
  * TODO implement 'pre-flushing' and 'pre-loading'
  * TODO cache interface
  */
-public final class CachedDataStore<D extends Data, C extends DataReaderConfig> implements Flushable, DataStore<D, C> {
+public final class CachedDataStore<D extends Data> implements Flushable, DataStore<D> {
 
-	private final CachedDataReadStore<D, C> m_readCache;
+	private final CachedDataReadStore<D> m_readCache;
 	private final DataCache<D> m_cache;
 
 	private final DataWriter<D> m_writer;
 	private final DataWriter<D> m_cachedWriter;
-	private final DataStore<D, C> m_store;
 
-	public CachedDataStore(DataStore<D, C> store, C config) {
-		m_store = store;
-		m_writer = store.getWriter();
+	public CachedDataStore(final DataWriter<D> writer, Supplier<DataReader<D>> readers) {
+		m_writer = writer;
 		m_cachedWriter = new DataWriter<D>() {
 
 			@Override
@@ -39,7 +37,7 @@ public final class CachedDataStore<D extends Data, C extends DataReaderConfig> i
 			}
 		};
 		m_cache = new DataCache<>();
-		m_readCache = new CachedDataReadStore<>(() -> store.createReader(config));
+		m_readCache = new CachedDataReadStore<>(readers);
 	}
 
 	@Override
@@ -50,17 +48,12 @@ public final class CachedDataStore<D extends Data, C extends DataReaderConfig> i
 	}
 
 	@Override
-	public DataReader<D> createReader(C config) {
-		return m_readCache.createReader(config);
+	public DataReader<D> createReader() {
+		return m_readCache.createReader();
 	}
 
 	@Override
 	public DataWriter<D> getWriter() {
 		return m_cachedWriter;
-	}
-
-	@Override
-	public void close() throws Exception {
-		m_store.close();
 	}
 }

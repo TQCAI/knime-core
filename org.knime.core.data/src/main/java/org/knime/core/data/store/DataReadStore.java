@@ -1,7 +1,8 @@
 package org.knime.core.data.store;
 
+import org.knime.core.data.Data;
 import org.knime.core.data.DataReader;
 
-public interface DataReadStore<D, C extends DataReaderConfig> {
-	DataReader<D> createReader(C config);
+public interface DataReadStore<D extends Data> {
+	DataReader<D> createReader();
 }

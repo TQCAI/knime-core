@@ -11,9 +11,6 @@ import org.knime.core.data.record.Record;
 import org.knime.core.data.record.RecordFactory;
 import org.knime.core.data.record.RecordFormat;
 import org.knime.core.data.row.RowWriteTable;
-import org.knime.core.data.store.ColumnConsumingDataStore;
-import org.knime.core.data.store.DataDomainAdapter;
-import org.knime.core.data.store.DataStores;
 import org.knime.core.data.store.LoadingDataStore;
 import org.knime.core.data.store.cache.CachedDataReadStore;
 import org.knime.core.data.store.cache.CachedDataStore;
@@ -111,7 +108,7 @@ public class APIMock {
 					// TODO get reader from writer instead? reader=writer?
 					// TODO maybe the ArrayIO is versioned and NOT the reader/writers themselves.
 
-					ColumnReadableTable readTable = TableUtils.create(store);
+					ColumnReadableTable readTable = TableUtils.create(store, store.createReader());
 
 					// return some wrapped BufferedDataTable providing access to data, e.g. through
 					// ReadTable table = TableUtils.create(reader, null);

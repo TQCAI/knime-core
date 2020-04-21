@@ -1,10 +1,11 @@
 package org.knime.core.data.record;
 
-import org.knime.core.data.store.DataReaderConfig;
-
-public interface RecordReaderConfig extends DataReaderConfig {
-	int[] getSelectedColumnIndices();
-
-	// TODO RowRange Object instead of long[]?
-	long[] getRowRange();
+public interface RecordReaderConfig {
+	/**
+	 * TODO implement as ranges, e.g. return a ColumnIndicesSelection with a method
+	 * called 'contains(int i)'?
+	 * 
+	 * @return the selected column indices in ascending order
+	 */
+	int[] getColumnIndices();
 }
