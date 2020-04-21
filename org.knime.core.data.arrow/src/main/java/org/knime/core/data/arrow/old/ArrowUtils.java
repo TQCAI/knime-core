@@ -8,8 +8,7 @@ import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
-import org.knime.core.data.api.NativeType;
-import org.knime.core.data.api.column.ColumnType;
+import org.knime.core.data.column.ColumnType;
 
 import io.netty.buffer.ArrowBuf;
 
@@ -30,7 +29,7 @@ public final class ArrowUtils {
 		}
 	}
 
-	public static Field toField(String name, NativeType type) {
+	public static Field toField(String name, ColumnType type) {
 		switch (type) {
 		case BOOLEAN:
 			return Field.nullablePrimitive(name, new ArrowType.Binary());
@@ -45,7 +44,7 @@ public final class ArrowUtils {
 
 	public static List<Field> toFieldList(String name, ColumnType colType) {
 		final List<Field> fields = new ArrayList<>();
-		final NativeType[] types = colType.getPrimitiveTypes();
+		final ColumnType[] types = colType.getPrimitiveTypes();
 		for (int i = 0; i < types.length; i++) {
 			// TODO no idea about good naming
 			fields.add(toField(name + ", index " + i + ", type, " + types[i], types[i]));

@@ -4,11 +4,10 @@ import java.io.File;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.BitVector;
-import org.knime.core.data.api.access.ReadableBooleanAccess;
-import org.knime.core.data.api.access.WritableBooleanAccess;
+import org.knime.core.data.Data;
+import org.knime.core.data.access.ReadableBooleanAccess;
+import org.knime.core.data.access.WritableBooleanAccess;
 import org.knime.core.data.arrow.old.BitVectorStore.BitVectorAccess;
-import org.knime.core.data.store.Data;
-import org.knime.core.data.store.Data;
 import org.knime.core.data.store.types.BooleanStore;
 
 public class BitVectorStore extends AbstractArrowStore<BitVector, BitVectorAccess>

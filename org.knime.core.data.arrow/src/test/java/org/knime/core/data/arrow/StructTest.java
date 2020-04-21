@@ -3,19 +3,18 @@ package org.knime.core.data.arrow;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.knime.core.data.api.NativeType;
-import org.knime.core.data.api.access.ReadableDoubleAccess;
-import org.knime.core.data.api.access.ReadableStringAccess;
-import org.knime.core.data.api.access.ReadableStructAccess;
-import org.knime.core.data.api.access.WritableDoubleAccess;
-import org.knime.core.data.api.access.WritableStringAccess;
-import org.knime.core.data.api.access.WritableStructAccess;
-import org.knime.core.data.api.column.ColumnType;
-import org.knime.core.data.api.column.ColumnReadCursor;
-import org.knime.core.data.api.column.ColumnWriteCursor;
-import org.knime.core.data.api.column.TableColumnReadAccess;
-import org.knime.core.data.api.column.TableColumnWriteAccess;
+import org.knime.core.data.access.ReadableDoubleAccess;
+import org.knime.core.data.access.ReadableStringAccess;
+import org.knime.core.data.access.ReadableStructAccess;
+import org.knime.core.data.access.WritableDoubleAccess;
+import org.knime.core.data.access.WritableStringAccess;
+import org.knime.core.data.access.WritableStructAccess;
 import org.knime.core.data.arrow.old.ArrowStoreFactory;
+import org.knime.core.data.column.ColumnReadCursor;
+import org.knime.core.data.column.ColumnReadableTable;
+import org.knime.core.data.column.ColumnType;
+import org.knime.core.data.column.ColumnWriteTable;
+import org.knime.core.data.column.ColumnWriteCursor;
 import org.knime.core.data.store.TableBackend;
 import org.knime.core.data.store.TableUtils;
 
@@ -32,8 +31,8 @@ public class StructTest {
 		}
 
 		@Override
-		public NativeType[] getPrimitiveTypes() {
-			return new NativeType[] { NativeType.STRING, NativeType.DOUBLE };
+		public ColumnType[] getPrimitiveTypes() {
+			return new ColumnType[] { ColumnType.STRING, ColumnType.DOUBLE };
 		}
 	} };
 
@@ -49,7 +48,7 @@ public class StructTest {
 			StorageTest.OFFHEAP_SIZE), STRUCT_COLUMN);
 
 		// Create writable table on store. Just an access on store.
-		final TableColumnWriteAccess writableTable = TableUtils.createWritableColumnTable(store);
+		final ColumnWriteTable writableTable = TableUtils.createWritableColumnTable(store);
 
 		// first column write
 		try (final ColumnWriteCursor<?> col0 = writableTable.getWriteColumn(0).access()) {
@@ -67,7 +66,7 @@ public class StructTest {
 		}
 
 		// Done writing?
-		final TableColumnReadAccess readableTable = TableUtils.createReadableTable(store);
+		final ColumnReadableTable readableTable = TableUtils.createReadableTable(store);
 
 		// then read
 		try (final ColumnReadCursor<?> col0 = readableTable.getReadColumn(0).createReadableCursor()) {

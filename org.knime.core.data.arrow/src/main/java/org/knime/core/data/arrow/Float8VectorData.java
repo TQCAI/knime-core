@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.Float8Vector;
-import org.knime.core.data.data.types.DoubleData;
+import org.knime.core.data.DoubleData;
 
 public class Float8VectorData implements DoubleData {
 

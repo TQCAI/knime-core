@@ -11,8 +11,8 @@ import java.nio.charset.CodingErrorAction;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.VarCharVector;
-import org.knime.core.data.api.access.ReadableStringAccess;
-import org.knime.core.data.api.access.WritableStringAccess;
+import org.knime.core.data.access.ReadableStringAccess;
+import org.knime.core.data.access.WritableStringAccess;
 import org.knime.core.data.arrow.old.VarCharVectorStore.VarCharVectorAccess;
 import org.knime.core.data.store.DataDomain;
 import org.knime.core.data.store.types.StringStore;

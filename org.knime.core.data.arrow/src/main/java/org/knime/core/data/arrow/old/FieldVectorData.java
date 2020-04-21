@@ -1,7 +1,7 @@
 package org.knime.core.data.arrow.old;
 
 import org.apache.arrow.vector.FieldVector;
-import org.knime.core.data.store.Data;
+import org.knime.core.data.Data;
 
 class FieldVectorData<V extends FieldVector> implements Data<V> {
 
