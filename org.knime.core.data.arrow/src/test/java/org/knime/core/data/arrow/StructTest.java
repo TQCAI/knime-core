@@ -4,17 +4,17 @@ package org.knime.core.data.arrow;
 import org.junit.Assert;
 import org.junit.Test;
 import org.knime.core.data.api.NativeType;
-import org.knime.core.data.api.ReadTable;
-import org.knime.core.data.api.WriteTable;
 import org.knime.core.data.api.access.ReadableDoubleAccess;
+import org.knime.core.data.api.access.ReadableStringAccess;
 import org.knime.core.data.api.access.ReadableStructAccess;
 import org.knime.core.data.api.access.WritableDoubleAccess;
+import org.knime.core.data.api.access.WritableStringAccess;
 import org.knime.core.data.api.access.WritableStructAccess;
 import org.knime.core.data.api.column.ColumnType;
 import org.knime.core.data.api.column.ColumnReadCursor;
 import org.knime.core.data.api.column.ColumnWriteCursor;
-import org.knime.core.data.api.column.access.ReadableStringAccess;
-import org.knime.core.data.api.column.access.WritableStringAccess;
+import org.knime.core.data.api.column.TableColumnReadAccess;
+import org.knime.core.data.api.column.TableColumnWriteAccess;
 import org.knime.core.data.arrow.old.ArrowStoreFactory;
 import org.knime.core.data.store.TableBackend;
 import org.knime.core.data.store.TableUtils;
@@ -49,7 +49,7 @@ public class StructTest {
 			StorageTest.OFFHEAP_SIZE), STRUCT_COLUMN);
 
 		// Create writable table on store. Just an access on store.
-		final WriteTable writableTable = TableUtils.createWritableColumnTable(store);
+		final TableColumnWriteAccess writableTable = TableUtils.createWritableColumnTable(store);
 
 		// first column write
 		try (final ColumnWriteCursor<?> col0 = writableTable.getWriteColumn(0).access()) {
@@ -67,7 +67,7 @@ public class StructTest {
 		}
 
 		// Done writing?
-		final ReadTable readableTable = TableUtils.createReadableTable(store);
+		final TableColumnReadAccess readableTable = TableUtils.createReadableTable(store);
 
 		// then read
 		try (final ColumnReadCursor<?> col0 = readableTable.getReadColumn(0).createReadableCursor()) {

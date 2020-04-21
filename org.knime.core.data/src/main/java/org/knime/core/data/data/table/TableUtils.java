@@ -3,29 +3,33 @@ package org.knime.core.data.data.table;
 import java.util.function.Supplier;
 
 import org.knime.core.data.api.NativeType;
-import org.knime.core.data.api.ReadTable;
-import org.knime.core.data.api.WriteTable;
 import org.knime.core.data.api.column.Cursor;
 import org.knime.core.data.api.column.ReadAccess;
 import org.knime.core.data.api.column.ReadColumn;
+import org.knime.core.data.api.column.TableColumnReadAccess;
+import org.knime.core.data.api.column.TableColumnWriteAccess;
 import org.knime.core.data.api.column.WriteAccess;
 import org.knime.core.data.api.column.WriteColumn;
+import org.knime.core.data.api.row.RowWriteCursor;
+import org.knime.core.data.api.row.TableRowWriteAccess;
 import org.knime.core.data.data.ConsumingDataStore;
 import org.knime.core.data.data.Data;
 import org.knime.core.data.data.DataAccess;
-import org.knime.core.data.data.DataChunkReadCursor;
-import org.knime.core.data.data.DataChunkWriteCursor;
 import org.knime.core.data.data.DataConsumer;
 import org.knime.core.data.data.DataFactory;
 import org.knime.core.data.data.DataLoader;
+import org.knime.core.data.data.DataReadCursor;
+import org.knime.core.data.data.DataRecordWriteCursor;
+import org.knime.core.data.data.DataWriteCursor;
 import org.knime.core.data.data.LoadingDataStore;
 
 public class TableUtils {
 
 	// Strong assumption is that cached datastore delivers the right data
-	// TODO get rid of 'TableDataFactory' in this class...
-	public static WriteTable create(ConsumingDataStore store, final TableDataFactory factories) {
-		return new WriteTable() {
+	// TODO get rid of 'TableDataFactory' in this method...
+	public static TableColumnWriteAccess createColumnarTableWriteAccess(ConsumingDataStore store,
+			final TableDataFactory factories) {
+		return new TableColumnWriteAccess() {
 			private final NativeType<?, ?>[] m_primitiveTypes = store.getColumnTypes();
 
 			@Override
@@ -41,9 +45,28 @@ public class TableUtils {
 		};
 	}
 
+	// Strong assumption is that cached data-store delivers the right data
+	// TODO get rid of 'TableDataFactory' in this method...
+	public static TableRowWriteAccess createRowTableWriteAccess(ConsumingDataStore store,
+			final TableDataFactory factories) {
+		return new TableRowWriteAccess() {
+			private final NativeType<?, ?>[] m_primitiveTypes = store.getColumnTypes();
+
+			@Override
+			public long getNumColumns() {
+				return m_primitiveTypes.length;
+			}
+
+			@Override
+			public RowWriteCursor getRowCursor() {
+				return new DataRecordWriteCursor(store, factories);
+			}
+		};
+	}
+
 	// Strong assumption is that cached datastore delivers the right data
-	public static ReadTable create(LoadingDataStore store) {
-		return new ReadTable() {
+	public static TableColumnReadAccess create(LoadingDataStore store) {
+		return new TableColumnReadAccess() {
 			private final NativeType<?, ?>[] m_primitiveTypes = store.getColumnTypes();
 
 			@Override
@@ -64,7 +87,7 @@ public class TableUtils {
 
 			@Override
 			public Cursor<? extends A> cursor() {
-				return new DataChunkReadCursor<D, A>(reader.get(), access.createAccess());
+				return new DataReadCursor<D, A>(reader.get(), access.createAccess());
 			}
 		};
 	}
@@ -74,7 +97,7 @@ public class TableUtils {
 		return new WriteColumn<A>() {
 			@Override
 			public Cursor<? extends A> access() {
-				return new DataChunkWriteCursor<>(factory, consumer, access.createAccess());
+				return new DataWriteCursor<>(factory, consumer, access.createAccess());
 			}
 		};
 	}

@@ -1,6 +1,6 @@
 package org.knime.core.data.api;
 
-import org.knime.core.data.api.column.domain.MutableDomain;
+import org.knime.core.data.api.domain.MutableDomain;
 import org.knime.core.data.data.Data;
 import org.knime.core.data.data.DataAccess;
 import org.knime.core.data.data.types.DoubleData;

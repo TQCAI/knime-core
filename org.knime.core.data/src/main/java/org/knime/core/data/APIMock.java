@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.Map;
 
 import org.knime.core.data.api.NativeType;
-import org.knime.core.data.api.ReadTable;
-import org.knime.core.data.api.WriteTable;
-import org.knime.core.data.api.column.domain.Domain;
+import org.knime.core.data.api.column.TableColumnReadAccess;
+import org.knime.core.data.api.column.TableColumnWriteAccess;
+import org.knime.core.data.api.domain.Domain;
 import org.knime.core.data.data.ConsumingDataStore;
 import org.knime.core.data.data.DataDomainAdapter;
 import org.knime.core.data.data.DataStores;
@@ -41,7 +41,7 @@ public class APIMock {
 
 		// we got our table back
 		// TODO we only need a 'Read' Cache here.
-		ReadTable table = TableUtils.create(cache);
+		TableColumnReadAccess table = TableUtils.create(cache);
 	}
 
 	// all in memory case
@@ -93,7 +93,7 @@ public class APIMock {
 
 				// TODO return whatever we declare as API here
 				// A table which can be filled with data.
-				private WriteTable writeTable = TableUtils.create(adapted, data.getFactory());
+				private TableColumnWriteAccess writeTable = TableUtils.createColumnarTableWriteAccess(adapted, data.getFactory());
 
 				// Similar to current API we close the container and with that create a
 				// BufferedDataTable.
@@ -105,7 +105,7 @@ public class APIMock {
 					// TODO get reader from writer instead? reader=writer?
 					// TODO maybe the ArrayIO is versioned and NOT the reader/writers themselves.
 
-					ReadTable readTable = TableUtils.create(store);
+					TableColumnReadAccess readTable = TableUtils.create(store);
 
 					// return some wrapped BufferedDataTable providing access to data, e.g. through
 					// ReadTable table = TableUtils.create(reader, null);
@@ -128,7 +128,7 @@ public class APIMock {
 
 	interface BufferedDataTable {
 		/* TODO whatever is our API here later with iteratorUnsafe etc */
-		ReadTable getReadTable();
+		TableColumnReadAccess getReadTable();
 	}
 
 	interface DataTableSpec {

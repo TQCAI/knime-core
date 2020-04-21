@@ -50,7 +50,7 @@ public final class CachedDataStore implements Flushable, ConsumingDataStore, Loa
 			public void accept(D data) {
 				@SuppressWarnings("unchecked")
 				final DataCache<D> cache = (DataCache<D>) m_caches.get((int) columnIndex);
-				cache.put(index, data);
+				cache.put(data);
 			}
 
 		};

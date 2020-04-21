@@ -3,7 +3,7 @@ package org.knime.core.data.api.row;
 
 import org.knime.core.data.api.column.ReadAccess;
 
-public interface ReadableRowCursor extends AutoCloseable {
+public interface RowReadCursor extends AutoCloseable {
 
 	boolean canFwd();
 

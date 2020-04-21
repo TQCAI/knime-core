@@ -2,7 +2,11 @@ package org.knime.core.data.data;
 
 import org.knime.core.data.api.column.Cursor;
 
-public class DataChunkWriteCursor<D extends Data, T extends DataAccess<D>> implements Cursor<T> {
+/*
+* TODO at the moment we have a lot of redundant checks/logic per column (e.g. when to load the next chunk of data, forward etc).
+* We could do this on a table level for each column synchronously.
+*/
+public class DataWriteCursor<D extends Data, T extends DataAccess<D>> implements Cursor<T> {
 
 	private final DataConsumer<D> m_consumer;
 	private final DataFactory<D> m_factory;
@@ -13,11 +17,12 @@ public class DataChunkWriteCursor<D extends Data, T extends DataAccess<D>> imple
 	private long m_currentDataMaxIndex;
 	private int m_index;
 
-	public DataChunkWriteCursor(final DataFactory<D> factory, final DataConsumer<D> consumer, final T access) {
-		switchToNextData();
+	public DataWriteCursor(final DataFactory<D> factory, final DataConsumer<D> consumer, final T access) {
 		m_consumer = consumer;
 		m_factory = factory;
 		m_access = access;
+
+		switchToNextData();
 	}
 
 	private void switchToNextData() {
@@ -38,6 +43,7 @@ public class DataChunkWriteCursor<D extends Data, T extends DataAccess<D>> imple
 		m_currentData.release();
 	}
 
+	@Override
 	public void fwd() {
 		if (++m_index > m_currentDataMaxIndex) {
 			switchToNextData();

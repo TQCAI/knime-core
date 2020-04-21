@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.knime.core.data.api.NativeType;
-import org.knime.core.data.api.column.domain.Domain;
-import org.knime.core.data.api.column.domain.MutableDomain;
+import org.knime.core.data.api.domain.Domain;
+import org.knime.core.data.api.domain.MutableDomain;
 
 // TODO calculate asynchronously.
 public class DataDomainAdapter implements ConsumingDataStoreAdapter {

@@ -1,4 +1,4 @@
-package org.knime.core.data.api.column.domain;
+package org.knime.core.data.api.domain;
 
 import org.knime.core.data.api.column.NumericReadAccess;
 
