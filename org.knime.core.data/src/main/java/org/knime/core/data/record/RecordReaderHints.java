@@ -1,6 +1,7 @@
 package org.knime.core.data.record;
 
-public interface RecordReaderConfig {
+// TODO we could also provide pre-loading hints here?
+public interface RecordReaderHints {
 	/**
 	 * TODO implement as ranges, e.g. return a ColumnIndicesSelection with a method
 	 * called 'contains(int i)'?

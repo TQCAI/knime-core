@@ -1,13 +1,16 @@
 package org.knime.core.data;
 
-public class DataWriteCursor<D extends Data, A extends DataAccess<D>> implements Cursor<A> {
+import org.knime.core.data.access.WriteAccess;
+
+// TODO type on ReadAccess?
+public class DataWriteCursor<D extends Data, A extends DataAccess<D>> implements Cursor<WriteAccess> {
 
 	private final DataWriter<D> m_writer;
 	private final DataFactory<D> m_factory;
+	private final WriteAccess m_writeAccess;
 	private final A m_access;
 
 	private D m_currentData;
-
 	private long m_currentDataMaxIndex;
 	private int m_index;
 
@@ -15,6 +18,7 @@ public class DataWriteCursor<D extends Data, A extends DataAccess<D>> implements
 		m_writer = writer;
 		m_factory = factory;
 		m_access = access;
+		m_writeAccess = m_access.write();
 
 		switchToNextData();
 	}
@@ -29,8 +33,8 @@ public class DataWriteCursor<D extends Data, A extends DataAccess<D>> implements
 	}
 
 	@Override
-	public A get() {
-		return m_access;
+	public WriteAccess get() {
+		return m_writeAccess;
 	}
 
 	@Override

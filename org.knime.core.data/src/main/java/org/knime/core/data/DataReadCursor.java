@@ -1,23 +1,27 @@
 package org.knime.core.data;
 
+import org.knime.core.data.access.ReadAccess;
+
 /*
 * TODO at the moment we have a lot of redundant checks/logic per column (e.g. when to load the next chunk of data, forward etc).
 * We could do this on a table level for each column synchronously.
 */
-public class DataReadCursor<D extends Data, T extends DataAccess<D>> implements Cursor<T> {
+public class DataReadCursor<D extends Data, A extends DataAccess<D>> implements Cursor<ReadAccess> {
 
 	private final DataReader<D> m_loader;
+	private final ReadAccess m_readAccess;
+	private final A m_access;
 
 	private long m_dataIndex = 0;
 	private long m_currentDataMaxIndex;
 	private long m_index;
 
 	private Data m_currentData;
-	private T m_access;
 
-	public DataReadCursor(DataReader<D> loader, T access) {
+	public DataReadCursor(DataReader<D> loader, A access) {
 		m_loader = loader;
 		m_access = access;
+		m_readAccess = access.read();
 
 		switchToNextData();
 	}
@@ -32,8 +36,8 @@ public class DataReadCursor<D extends Data, T extends DataAccess<D>> implements 
 	}
 
 	@Override
-	public T get() {
-		return m_access;
+	public ReadAccess get() {
+		return m_readAccess;
 	}
 
 	@Override

@@ -1,7 +1,8 @@
 package org.knime.core.data.record;
 
-import org.knime.core.data.DataReader;
+public interface RecordReader {
 
-public interface RecordReader extends DataReader<Record> {
-	// NB: Marker interface
+	Record read(int chunkIndex, RecordReaderHints hints);
+
+	int getNumChunks();
 }

@@ -1,5 +1,7 @@
 package org.knime.core.data.column.logical;
 
+import org.knime.core.data.access.ReadAccess;
+import org.knime.core.data.access.WriteAccess;
 import org.knime.core.data.column.ColumnData;
 import org.knime.core.data.column.ColumnDataAccess;
 import org.knime.core.data.column.ColumnType;
@@ -36,18 +38,6 @@ public interface LogicalType<L extends LogicalData, A extends LogicalDataAccess<
 			}
 
 			@Override
-			public void setMissing() {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public boolean isMissing() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
 			public long getNumColumns() {
 				// TODO Auto-generated method stub
 				return 0;
@@ -55,6 +45,18 @@ public interface LogicalType<L extends LogicalData, A extends LogicalDataAccess<
 
 			@Override
 			public ColumnDataAccess<?> getColumnAccess(int index) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public ReadAccess read() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public WriteAccess write() {
 				// TODO Auto-generated method stub
 				return null;
 			}

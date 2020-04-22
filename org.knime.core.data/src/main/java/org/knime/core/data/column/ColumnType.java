@@ -2,6 +2,7 @@ package org.knime.core.data.column;
 
 import org.knime.core.data.access.DoubleReadAccess;
 import org.knime.core.data.access.DoubleWriteAccess;
+import org.knime.core.data.access.WriteAccess;
 import org.knime.core.data.column.ColumnType.DoubleType.DoubleAccess;
 import org.knime.core.data.column.ColumnType.DoubleType.DoubleData;
 
@@ -27,30 +28,10 @@ public interface ColumnType<D extends ColumnData, A extends ColumnDataAccess<D>>
 			// NB: data. get/set double. inherited from NumericData
 		}
 
-		public static class DoubleAccess implements ColumnDataAccess<DoubleData>, DoubleReadAccess, DoubleWriteAccess {
+		public static class DoubleAccess implements ColumnDataAccess<DoubleData> {
 
 			private DoubleData m_data;
 			private int m_index = -1;
-			
-			@Override
-			public void setDouble(double value) {
-				m_data.setDouble(m_index, value);
-			}
-
-			@Override
-			public double getDouble() {
-				return m_data.getDouble(m_index);
-			}
-
-			@Override
-			public boolean isMissing() {
-				return m_data.isMissing(m_index);
-			}
-
-			@Override
-			public void setMissing() {
-				m_data.setMissing(m_index);
-			}
 
 			@Override
 			public void update(DoubleData array) {
@@ -66,6 +47,39 @@ public interface ColumnType<D extends ColumnData, A extends ColumnDataAccess<D>>
 			@Override
 			public void reset() {
 				m_index = -1;
+			}
+
+			@Override
+			public DoubleReadAccess read() {
+				// TODO slow?
+				return new DoubleReadAccess() {
+					@Override
+					public boolean isMissing() {
+						return m_data.isMissing(m_index);
+					}
+
+					@Override
+					public double getDouble() {
+						return m_data.getDouble(m_index);
+					}
+				};
+			}
+
+			@Override
+			public WriteAccess write() {
+				// TODO slow?
+				return new DoubleWriteAccess() {
+
+					@Override
+					public void setMissing() {
+						m_data.setMissing(m_index);
+					}
+
+					@Override
+					public void setDouble(double value) {
+						m_data.setDouble(m_index, value);
+					}
+				};
 			}
 		}
 	}

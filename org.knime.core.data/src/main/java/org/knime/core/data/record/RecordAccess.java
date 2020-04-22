@@ -5,10 +5,8 @@ import org.knime.core.data.access.ReadAccess;
 import org.knime.core.data.access.WriteAccess;
 import org.knime.core.data.column.ColumnData;
 import org.knime.core.data.column.ColumnDataAccess;
-import org.knime.core.data.row.RowReadAccess;
-import org.knime.core.data.row.RowWriteAccess;
 
-public class RecordAccess implements DataAccess<Record>, RowWriteAccess, RowReadAccess {
+public class RecordAccess implements DataAccess<Record> {
 
 	private ColumnDataAccess<ColumnData>[] m_accesses;
 
@@ -43,12 +41,12 @@ public class RecordAccess implements DataAccess<Record>, RowWriteAccess, RowRead
 	}
 
 	@Override
-	public ReadAccess getReadAccess(int index) {
-		return m_accesses[index];
+	public ReadAccess read() {
+		return null;
 	}
 
 	@Override
-	public WriteAccess getWriteAccess(int index) {
-		return m_accesses[index];
+	public WriteAccess write() {
+		return null;
 	}
 }
