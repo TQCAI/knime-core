@@ -38,8 +38,11 @@ public class CachedRecordStore implements RecordStore, Flushable {
 
 	private RecordReader m_reader;
 
+	private RecordStore m_delegate;
+
 	public CachedRecordStore(final RecordStore delegate) {
 		m_types = delegate.getColumnTypes();
+		m_delegate = delegate;
 		m_caches = new ArrayList<>();
 		for (int i = 0; i < m_types.length; i++) {
 			m_caches.add(new TreeMap<Integer, ColumnData>());
@@ -69,6 +72,9 @@ public class CachedRecordStore implements RecordStore, Flushable {
 		};
 	}
 
+	/**
+	 * BIG TODO: implement flush differently for read-only scenario!!!!
+	 */
 	@Override
 	public void flush() throws IOException {
 		// in the writing scenario, we know that batches are complete, e.g. no columns
@@ -170,5 +176,11 @@ public class CachedRecordStore implements RecordStore, Flushable {
 	@Override
 	public ColumnType<?, ?>[] getColumnTypes() {
 		return m_types;
+	}
+
+	@Override
+	public void close() throws Exception {
+		// TODO close open reader/writer?
+		m_delegate.close();
 	}
 }

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.arrow.vector.FieldVector;
@@ -14,26 +14,30 @@ import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.ipc.ArrowFileWriter;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
+import org.apache.arrow.vector.types.pojo.Field;
 
 import io.netty.buffer.ArrowBuf;
 
-public class FieldVectorWriter<F extends FieldVector> implements AutoCloseable {
+public class FieldVectorWriter implements AutoCloseable {
 
 	private final File m_file;
 	private ArrowFileWriter m_writer;
 	private VectorLoader m_vectorLoader;
 	private VectorSchemaRoot m_root;
 
-	public FieldVectorWriter(final File file) throws IOException {
+	public FieldVectorWriter(final File file) {
 		m_file = file;
 	}
 
 	@SuppressWarnings("resource")
-	public void flush(F vector) throws IOException {
+	public void flush(FieldVector[] vecs) throws IOException {
 
 		if (m_writer == null) {
-			m_root = new VectorSchemaRoot(Collections.singletonList(vector.getField()),
-					Collections.singletonList(vector));
+			final ArrayList<Field> fields = new ArrayList<>(vecs.length);
+			for (final FieldVector v : vecs) {
+				fields.add(v.getField());
+			}
+			m_root = new VectorSchemaRoot(fields, Arrays.asList(vecs));
 			m_vectorLoader = new VectorLoader(m_root);
 			m_writer = new ArrowFileWriter(m_root, null, new RandomAccessFile(m_file, "rw").getChannel());
 		}
@@ -41,11 +45,13 @@ public class FieldVectorWriter<F extends FieldVector> implements AutoCloseable {
 		// TODO there must be a better way?!
 		final List<ArrowFieldNode> nodes = new ArrayList<>();
 		final List<ArrowBuf> buffers = new ArrayList<>();
-		appendNodes(vector, nodes, buffers);
+		for (FieldVector vec : vecs) {
+			appendNodes(vec, nodes, buffers);
+		}
 
 		// Auto-closing makes sure that ArrowRecordBatch actually releases the buffers
 		// again
-		try (final ArrowRecordBatch batch = new ArrowRecordBatch((int) vector.getValueCount(), nodes, buffers)) {
+		try (final ArrowRecordBatch batch = new ArrowRecordBatch((int) vecs[0].getValueCount(), nodes, buffers)) {
 			m_vectorLoader.load(batch);
 			m_writer.writeBatch();
 		}

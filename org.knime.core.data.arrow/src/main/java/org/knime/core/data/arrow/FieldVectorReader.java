@@ -15,7 +15,7 @@ import org.apache.arrow.vector.util.TransferPair;
 /* NB: This reader has best performance when data is accessed sequentially row-wise.
 * TODO Maybe different flush / loader combinations are configurable per node later?
 */
-public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
+public class FieldVectorReader implements AutoCloseable {
 
 	// some constants
 	private final BufferAllocator m_alloc;
@@ -33,30 +33,34 @@ public class FieldVectorReader<V extends FieldVector> implements AutoCloseable {
 	// only load required columns / rows from disc. Rows should be easily possible
 	// by using 'ArrowBlock'
 	// TODO maybe easier with parquet backend?
+	@SuppressWarnings("resource")
 	public FieldVectorReader(final File file, final BufferAllocator alloc) throws IOException {
 		m_alloc = alloc;
 		m_file = file;
+		m_reader = new ArrowFileReader(new RandomAccessFile(m_file, "rw").getChannel(), m_alloc);
+		m_root = m_reader.getVectorSchemaRoot();
+		m_blocks = m_reader.getRecordBlocks();
 	}
 
 	// Assumption for this reader: sequential loading.
-	@SuppressWarnings("resource")
-	public V load(long index) throws IOException {
-		if (m_reader == null) {
-			m_reader = new ArrowFileReader(new RandomAccessFile(m_file, "rw").getChannel(), m_alloc);
-			m_root = m_reader.getVectorSchemaRoot();
-			m_blocks = m_reader.getRecordBlocks();
-		}
-
+	public FieldVector[] read(long index) throws IOException {
 		// load next
 		m_reader.loadRecordBatch(m_blocks.get((int) index));
 
 		// TODO Check if there is a faster way
-		final FieldVector vector = m_root.getVector(0);
-		final TransferPair transferPair = vector.getTransferPair(m_alloc);
-		transferPair.transfer();
-		@SuppressWarnings("unchecked")
-		final V newVector = (V) transferPair.getTo();
-		return (V) newVector;
+		final List<FieldVector> fieldVectors = m_root.getFieldVectors();
+		final FieldVector[] res = new FieldVector[fieldVectors.size()];
+		for (int i = 0; i < res.length; i++) {
+			final FieldVector v = fieldVectors.get(i);
+			final TransferPair transferPair = v.getTransferPair(m_alloc);
+			transferPair.transfer();
+			res[i] = (FieldVector) transferPair.getTo();
+		}
+		return res;
+	}
+
+	public int size() {
+		return m_blocks.size();
 	}
 
 	@Override

@@ -1,37 +1,31 @@
 
 package org.knime.core.data.arrow;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.util.UUID;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.knime.core.data.WriteRowTable;
-import org.knime.core.data.arrow.old.ArrowStoreFactory;
-import org.knime.core.data.column.ColumnReadCursor;
-import org.knime.core.data.column.ColumnReadableTable;
 import org.knime.core.data.column.ColumnType;
-import org.knime.core.data.column.ColumnWriteTable;
-import org.knime.core.data.column.ColumnWriteCursor;
+import org.knime.core.data.record.RecordStore;
 import org.knime.core.data.row.RowReadCursor;
 import org.knime.core.data.row.RowReadTable;
+import org.knime.core.data.row.RowTableUtils;
 import org.knime.core.data.row.RowWriteCursor;
-import org.knime.core.data.store.TableBackend;
-import org.knime.core.data.store.TableUtils;
-import org.knime.core.data.value.ReadableStringValue;
-import org.knime.core.data.value.WritableStringValue;
+import org.knime.core.data.row.RowWriteTable;
+import org.knime.core.data.value.DoubleReadValue;
+import org.knime.core.data.value.DoubleWriteValue;
 
 public class StorageTest {
-
-	public static void main(final String[] args) throws Exception {
-		final StorageTest storageTest = new StorageTest();
-		for (int i = 0; i < 2; i++) {
-			storageTest.columnwiseWriteReadSingleColumnIdentityTest();
-		}
-	}
 
 	/**
 	 * Some variables
 	 */
 	// in numValues per vector
-	public static final int BATCH_SIZE = 4;
+	public static final int RECORDBATCH_SIZE = 4;
 
 	// in bytes
 	public static final long OFFHEAP_SIZE = 2000_000_000;
@@ -40,18 +34,7 @@ public class StorageTest {
 	public static final long NUM_ROWS = 6;
 
 	// some schema
-	private static final ColumnType[] STRING_COLUMN = new ColumnType[] { new ColumnType() {
-
-		@Override
-		public String name() {
-			return "My String Column";
-		}
-
-		@Override
-		public ColumnType[] getPrimitiveTypes() {
-			return new ColumnType[] { ColumnType.STRING };
-		}
-	} };
+	private static final ColumnType<?, ?>[] SCHEMA = new ColumnType[] { ColumnType.DoubleType.INSTANCE };
 
 	/**
 	 * TESTS
@@ -71,61 +54,36 @@ public class StorageTest {
 	}
 
 	@Test
-	public void columnwiseWriteReadSingleColumnIdentityTest() throws Exception {
-		try (final TableBackend store = TableUtils.cache(
-				TableUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE), STRING_COLUMN))) {
+	public void identityTest() throws Exception {
 
-			// Create writable table on store. Just an access on store.
-			final ColumnWriteTable writableTable = TableUtils.createWritableColumnTable(store);
+		// file
+		final File f = Files.createTempFile("KNIME-" + UUID.randomUUID().toString(), ".knarrow").toFile();
+		f.deleteOnExit();
 
-			// first column write
-			try (final ColumnWriteCursor<?> col0 = writableTable.getWriteColumn(0).access()) {
-				final WritableStringValue val0 = (WritableStringValue) col0.get();
-				for (long i = 0; i < NUM_ROWS; i++) {
-					col0.fwd();
-					val0.setStringValue("Entry" + i);
-				}
+		// TODO do we need both (format and store?)
+		ArrowRecordFormat format = new ArrowRecordFormat(RECORDBATCH_SIZE);
+		RecordStore store = format.create(SCHEMA, f, null);
+
+		RowWriteTable writeTable = RowTableUtils.createRowWriteTable(format.createFactory(SCHEMA), store.getWriter());
+		RowWriteCursor writeCursor = writeTable.cursor();
+		DoubleWriteValue doubleWriteValue = (DoubleWriteValue) writeCursor.get(0);
+		for (int i = 0; i < NUM_ROWS; i++) {
+			writeCursor.fwd();
+			if (i % 100 == 0) {
+				doubleWriteValue.setMissing();
 			}
-
-			// Done writing?
-			final ColumnReadableTable readableTable = TableUtils.createReadableTable(store);
-
-			// then read
-			try (final ColumnReadCursor<?> col0 = readableTable.getReadColumn(0).createReadableCursor()) {
-				final ReadableStringValue val0 = (ReadableStringValue) col0.get();
-				for (long i = 0; col0.canFwd(); i++) {
-					col0.fwd();
-					Assert.assertEquals("Entry" + i, val0.getStringValue());
-				}
-			}
+			doubleWriteValue.setDouble(i);
 		}
-	}
 
-	@Test
-	public void rowwiseWriteReadSingleDoubleColumnIdentityTest() throws Exception {
-		try (final TableBackend store = TableUtils.createTableStore(new ArrowStoreFactory(BATCH_SIZE, OFFHEAP_SIZE),
-				STRING_COLUMN)) {
-
-			// Create writable table on store. Just an access on store.
-			final WriteRowTable writableTable = TableUtils.createWritableRowTable(store);
-
-			try (final RowWriteCursor row = writableTable.getWritableRow()) {
-				final WritableStringValue val0 = (WritableStringValue) row.getWriteAccess(0);
-				for (long i = 0; i < NUM_ROWS; i++) {
-					row.fwd();
-					val0.setStringValue("Entry " + i);
-				}
+		RowReadTable readTable = RowTableUtils.createRowReadTable(SCHEMA, store, null);
+		RowReadCursor readCursor = readTable.newCursor();
+		DoubleReadValue doubleReadValue = (DoubleReadValue) readCursor.get(0);
+		for (int i = 0; i < NUM_ROWS; i++) {
+			readCursor.fwd();
+			if (i % 100 == 0) {
+				Assert.assertTrue(doubleReadValue.isMissing());
 			}
-
-			final RowReadTable readableTable = TableUtils.createReadableRowTable(store);
-
-			try (final RowReadCursor row = readableTable.getRowCursor()) {
-				final ReadableStringValue val0 = (ReadableStringValue) row.getReadableAccess(0);
-				for (long i = 0; row.canFwd(); i++) {
-					row.fwd();
-					Assert.assertEquals("Entry " + i, val0.getStringValue());
-				}
-			}
+			assertEquals(i, doubleReadValue.getDouble(), 0.00000000000000001);
 		}
 	}
 }

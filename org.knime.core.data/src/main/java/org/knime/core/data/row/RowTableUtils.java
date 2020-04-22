@@ -36,7 +36,7 @@ public class RowTableUtils {
 			}
 
 			@Override
-			public RowReadCursor createReadCursor() {
+			public RowReadCursor newCursor() {
 				return new RowReadCursor(store.createReader(), RecordUtils.createAccess(types), config);
 			}
 		};

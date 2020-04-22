@@ -14,10 +14,6 @@ public class RecordAccess implements DataAccess<Record> {
 		m_accesses = accesses;
 	}
 
-	public ColumnDataAccess<ColumnData>[] getAccesses() {
-		return m_accesses;
-	}
-
 	public ReadValue read(int index) {
 		return m_accesses[index].read();
 	}
@@ -26,6 +22,7 @@ public class RecordAccess implements DataAccess<Record> {
 		return m_accesses[index].write();
 	}
 
+	@Override
 	public void fwd() {
 		// TODO could we optimize this method call away?
 		for (int i = 0; i < m_accesses.length; i++) {
@@ -35,6 +32,7 @@ public class RecordAccess implements DataAccess<Record> {
 
 	// TODO even if only called on 'chunk-switch': Can we get rid of the
 	// 'record.getData()' method call
+	@Override
 	public void update(final Record record) {
 		final ColumnData[] data = record.getData();
 		for (int i = 0; i < m_accesses.length; i++) {
@@ -42,6 +40,7 @@ public class RecordAccess implements DataAccess<Record> {
 		}
 	}
 
+	@Override
 	public void reset() {
 		for (int i = 0; i < m_accesses.length; i++) {
 			m_accesses[i].reset();
