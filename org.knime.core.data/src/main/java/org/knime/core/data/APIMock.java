@@ -3,18 +3,20 @@ package org.knime.core.data;
 import java.io.File;
 import java.util.Map;
 
-import org.knime.core.data.access.DoubleWriteAccess;
 import org.knime.core.data.column.ColumnReadableTable;
 import org.knime.core.data.column.ColumnType;
 import org.knime.core.data.domain.Domain;
 import org.knime.core.data.record.CachedRecordStore;
-import org.knime.core.data.record.Record;
 import org.knime.core.data.record.RecordFactory;
 import org.knime.core.data.record.RecordFormat;
 import org.knime.core.data.record.RecordStore;
 import org.knime.core.data.record.RecordUtils;
-import org.knime.core.data.row.RowWriteAccess;
+import org.knime.core.data.record.RecordWriter;
+import org.knime.core.data.row.RowTableUtils;
+import org.knime.core.data.row.RowWriteCursor;
 import org.knime.core.data.row.RowWriteTable;
+import org.knime.core.data.value.DoubleWriteValue;
+import org.knime.core.data.value.WriteValue;
 
 public class APIMock {
 
@@ -41,7 +43,7 @@ public class APIMock {
 
 		// we got our table back
 		// TODO we only need a 'Read' Cache here.
-		ColumnReadableTable table = TableUtils.create(cache);
+		ColumnReadableTable table = RowTableUtils.create(cache);
 	}
 
 	// all in memory case
@@ -122,20 +124,32 @@ public class APIMock {
 //						data.getFactory());
 
 				final RecordFactory factory = null;
-				final DataWriter<Record> consumer = null;
+				final RecordWriter writer = null;
 
-				private RowWriteTable rowWriteTable = TableUtils.createRowWriteTable(factory, consumer);
+				private RowWriteTable writeTable = RowTableUtils.createRowWriteTable(factory, writer);
 
 				// Similar to current API we close the container and with that create a
 				// BufferedDataTable.
 				@Override
 				public BufferedDataTable close() throws Exception {
 
-					Cursor<? extends RowWriteAccess> rowCursor = rowWriteTable.getRowCursor();
-					
-					// you're not allowed to ever return a different access than this one. 
-					DoubleWriteAccess access = (DoubleWriteAccess) rowCursor.get().getWriteAccess(0);
-					for(;;)
+					final RowWriteCursor writeCursor = writeTable.cursor();
+					WriteValue writeAccess0 = writeCursor.get(0);
+					WriteValue writeAccess1 = writeCursor.get(1);
+					WriteValue writeAccess2 = writeCursor.get(2);
+					WriteValue writeAccess3 = writeCursor.get(3);
+
+					for (int i = 0; i < 1000; i++) {
+						writeCursor.fwd();
+						writeAccess0.setMissing();
+						writeAccess1.setMissing();
+						writeAccess2.setMissing();
+						writeAccess3.setMissing();
+					}
+
+					// you're not allowed to ever return a different access than this one.
+					DoubleWriteValue access = (DoubleWriteValue) rowCursor.get().getWriteAccess(0);
+					for (;;)
 						rowCursor.fwd();
 
 					// all data has been persisted. Close all writers!

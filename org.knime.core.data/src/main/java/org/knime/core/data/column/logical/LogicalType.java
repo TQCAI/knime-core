@@ -1,12 +1,12 @@
 package org.knime.core.data.column.logical;
 
-import org.knime.core.data.access.ReadAccess;
-import org.knime.core.data.access.WriteAccess;
 import org.knime.core.data.column.ColumnData;
 import org.knime.core.data.column.ColumnDataAccess;
 import org.knime.core.data.column.ColumnType;
 import org.knime.core.data.column.logical.LogicalType.DateTimeType.DateTimeAccess;
 import org.knime.core.data.column.logical.LogicalType.DateTimeType.DateTimeData;
+import org.knime.core.data.value.ReadValue;
+import org.knime.core.data.value.WriteValue;
 
 /**
  * A logical type representing a composition of multiple physical types, e.g.
@@ -50,13 +50,13 @@ public interface LogicalType<L extends LogicalData, A extends LogicalDataAccess<
 			}
 
 			@Override
-			public ReadAccess read() {
+			public ReadValue read() {
 				// TODO Auto-generated method stub
 				return null;
 			}
 
 			@Override
-			public WriteAccess write() {
+			public WriteValue write() {
 				// TODO Auto-generated method stub
 				return null;
 			}
@@ -129,8 +129,24 @@ public interface LogicalType<L extends LogicalData, A extends LogicalDataAccess<
 
 		@Override
 		public DateTimeAccess createAccess() {
-			// TODO Auto-generated method stub
-			return null;
+			return new DateTimeAccess();
+		}
+
+		public static class DateTimeReadValue implements ReadValue {
+			@Override
+			public boolean isMissing() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+		}
+
+		public static class DateTimeWriteValue implements WriteValue {
+			@Override
+			public void setMissing() {
+				// TODO Auto-generated method stub
+
+			}
 		}
 	}
 }

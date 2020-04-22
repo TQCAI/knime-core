@@ -3,12 +3,6 @@ package org.knime.core.data.arrow;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.knime.core.data.access.ReadableDoubleAccess;
-import org.knime.core.data.access.ReadableStringAccess;
-import org.knime.core.data.access.ReadableStructAccess;
-import org.knime.core.data.access.WritableDoubleAccess;
-import org.knime.core.data.access.WritableStringAccess;
-import org.knime.core.data.access.WritableStructAccess;
 import org.knime.core.data.arrow.old.ArrowStoreFactory;
 import org.knime.core.data.column.ColumnReadCursor;
 import org.knime.core.data.column.ColumnReadableTable;
@@ -17,6 +11,12 @@ import org.knime.core.data.column.ColumnWriteTable;
 import org.knime.core.data.column.ColumnWriteCursor;
 import org.knime.core.data.store.TableBackend;
 import org.knime.core.data.store.TableUtils;
+import org.knime.core.data.value.ReadableDoubleAccess;
+import org.knime.core.data.value.ReadableStringValue;
+import org.knime.core.data.value.ReadableStructAccess;
+import org.knime.core.data.value.WritableDoubleAccess;
+import org.knime.core.data.value.WritableStringValue;
+import org.knime.core.data.value.WritableStructAccess;
 
 public class StructTest {
 
@@ -56,7 +56,7 @@ public class StructTest {
 			// TODO we could offer convenience API with reflection to operate on
 			// POJO
 			// structs :-)
-			final WritableStringAccess stringValue = (WritableStringAccess) val0.writableValueAt(0);
+			final WritableStringValue stringValue = (WritableStringValue) val0.writableValueAt(0);
 			final WritableDoubleAccess doubleValue = (WritableDoubleAccess) val0.writableValueAt(1);
 			for (long i = 0; i < NUM_ROWS; i++) {
 				col0.fwd();
@@ -71,7 +71,7 @@ public class StructTest {
 		// then read
 		try (final ColumnReadCursor<?> col0 = readableTable.getReadColumn(0).createReadableCursor()) {
 			final ReadableStructAccess val0 = (ReadableStructAccess) col0.get();
-			final ReadableStringAccess stringValue = (ReadableStringAccess) val0.readableValueAt(0);
+			final ReadableStringValue stringValue = (ReadableStringValue) val0.readableValueAt(0);
 			final ReadableDoubleAccess doubleValue = (ReadableDoubleAccess) val0.readableValueAt(1);
 			for (long i = 0; col0.canFwd(); i++) {
 				col0.fwd();

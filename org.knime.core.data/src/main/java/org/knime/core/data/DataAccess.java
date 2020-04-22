@@ -1,8 +1,5 @@
 package org.knime.core.data;
 
-import org.knime.core.data.access.ReadAccess;
-import org.knime.core.data.access.WriteAccess;
-
 // TODO type on ReadAcces / WriteAccess?
 public interface DataAccess<D> {
 
@@ -22,15 +19,4 @@ public interface DataAccess<D> {
 	 * resets internal cursor to -1
 	 */
 	void reset();
-
-	// TODO interface?
-	/**
-	 * @return read access on values of the data
-	 */
-	ReadAccess read();
-
-	/**
-	 * @return write access on values of data
-	 */
-	WriteAccess write();
 }

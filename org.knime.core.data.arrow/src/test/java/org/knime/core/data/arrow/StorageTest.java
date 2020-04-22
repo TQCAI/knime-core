@@ -4,8 +4,6 @@ package org.knime.core.data.arrow;
 import org.junit.Assert;
 import org.junit.Test;
 import org.knime.core.data.WriteRowTable;
-import org.knime.core.data.access.ReadableStringAccess;
-import org.knime.core.data.access.WritableStringAccess;
 import org.knime.core.data.arrow.old.ArrowStoreFactory;
 import org.knime.core.data.column.ColumnReadCursor;
 import org.knime.core.data.column.ColumnReadableTable;
@@ -17,6 +15,8 @@ import org.knime.core.data.row.RowReadTable;
 import org.knime.core.data.row.RowWriteCursor;
 import org.knime.core.data.store.TableBackend;
 import org.knime.core.data.store.TableUtils;
+import org.knime.core.data.value.ReadableStringValue;
+import org.knime.core.data.value.WritableStringValue;
 
 public class StorageTest {
 
@@ -80,7 +80,7 @@ public class StorageTest {
 
 			// first column write
 			try (final ColumnWriteCursor<?> col0 = writableTable.getWriteColumn(0).access()) {
-				final WritableStringAccess val0 = (WritableStringAccess) col0.get();
+				final WritableStringValue val0 = (WritableStringValue) col0.get();
 				for (long i = 0; i < NUM_ROWS; i++) {
 					col0.fwd();
 					val0.setStringValue("Entry" + i);
@@ -92,7 +92,7 @@ public class StorageTest {
 
 			// then read
 			try (final ColumnReadCursor<?> col0 = readableTable.getReadColumn(0).createReadableCursor()) {
-				final ReadableStringAccess val0 = (ReadableStringAccess) col0.get();
+				final ReadableStringValue val0 = (ReadableStringValue) col0.get();
 				for (long i = 0; col0.canFwd(); i++) {
 					col0.fwd();
 					Assert.assertEquals("Entry" + i, val0.getStringValue());
@@ -110,7 +110,7 @@ public class StorageTest {
 			final WriteRowTable writableTable = TableUtils.createWritableRowTable(store);
 
 			try (final RowWriteCursor row = writableTable.getWritableRow()) {
-				final WritableStringAccess val0 = (WritableStringAccess) row.getWriteAccess(0);
+				final WritableStringValue val0 = (WritableStringValue) row.getWriteAccess(0);
 				for (long i = 0; i < NUM_ROWS; i++) {
 					row.fwd();
 					val0.setStringValue("Entry " + i);
@@ -120,7 +120,7 @@ public class StorageTest {
 			final RowReadTable readableTable = TableUtils.createReadableRowTable(store);
 
 			try (final RowReadCursor row = readableTable.getRowCursor()) {
-				final ReadableStringAccess val0 = (ReadableStringAccess) row.getReadableAccess(0);
+				final ReadableStringValue val0 = (ReadableStringValue) row.getReadableAccess(0);
 				for (long i = 0; row.canFwd(); i++) {
 					row.fwd();
 					Assert.assertEquals("Entry " + i, val0.getStringValue());

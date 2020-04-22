@@ -1,6 +1,8 @@
 package org.knime.core.data.row;
 
-public interface RowWriteTable extends AutoCloseable {
+public interface RowWriteTable {
 
-	long getNumColumns();
+	int getNumColumns();
+
+	RowWriteCursor cursor();
 }

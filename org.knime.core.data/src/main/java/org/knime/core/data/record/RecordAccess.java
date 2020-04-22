@@ -1,10 +1,10 @@
 package org.knime.core.data.record;
 
 import org.knime.core.data.DataAccess;
-import org.knime.core.data.access.ReadAccess;
-import org.knime.core.data.access.WriteAccess;
 import org.knime.core.data.column.ColumnData;
 import org.knime.core.data.column.ColumnDataAccess;
+import org.knime.core.data.value.ReadValue;
+import org.knime.core.data.value.WriteValue;
 
 public class RecordAccess implements DataAccess<Record> {
 
@@ -16,6 +16,14 @@ public class RecordAccess implements DataAccess<Record> {
 
 	public ColumnDataAccess<ColumnData>[] getAccesses() {
 		return m_accesses;
+	}
+
+	public ReadValue read(int index) {
+		return m_accesses[index].read();
+	}
+
+	public WriteValue write(int index) {
+		return m_accesses[index].write();
 	}
 
 	public void fwd() {
@@ -38,15 +46,5 @@ public class RecordAccess implements DataAccess<Record> {
 		for (int i = 0; i < m_accesses.length; i++) {
 			m_accesses[i].reset();
 		}
-	}
-
-	@Override
-	public ReadAccess read() {
-		return null;
-	}
-
-	@Override
-	public WriteAccess write() {
-		return null;
 	}
 }

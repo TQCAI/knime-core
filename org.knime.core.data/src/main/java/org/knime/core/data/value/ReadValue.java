@@ -1,10 +1,10 @@
 
-package org.knime.core.data.access;
+package org.knime.core.data.value;
 
 /**
  * Base interface for proxies through which data values are read.
  */
-public interface ReadAccess {
+public interface ReadValue {
 
 	boolean isMissing();
 }

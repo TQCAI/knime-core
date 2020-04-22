@@ -11,11 +11,11 @@ import java.nio.charset.CodingErrorAction;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.VarCharVector;
-import org.knime.core.data.access.ReadableStringAccess;
-import org.knime.core.data.access.WritableStringAccess;
 import org.knime.core.data.arrow.old.VarCharVectorStore.VarCharVectorAccess;
 import org.knime.core.data.store.DataDomain;
 import org.knime.core.data.store.types.StringStore;
+import org.knime.core.data.value.ReadableStringValue;
+import org.knime.core.data.value.WritableStringValue;
 
 public class VarCharVectorStore extends AbstractArrowStore<VarCharVector, VarCharVectorAccess>
 		implements StringStore<VarCharVector, VarCharVectorAccess> {
@@ -43,7 +43,7 @@ public class VarCharVectorStore extends AbstractArrowStore<VarCharVector, VarCha
 	// TODO we don't have to encode anything in case we stay on the same system
 	final class VarCharVectorAccess //
 			extends AbstractFieldVectorAccess<VarCharVector> //
-			implements ReadableStringAccess, WritableStringAccess {
+			implements ReadableStringValue, WritableStringValue {
 
 		private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder()
 				.onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE);

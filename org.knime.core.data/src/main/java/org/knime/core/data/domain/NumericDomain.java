@@ -1,9 +1,9 @@
 package org.knime.core.data.domain;
 
-import org.knime.core.data.access.NumericReadAccess;
+import org.knime.core.data.value.NumericReadValue;
 
 // TODO overdesigned?
-public interface NumericDomain<A extends NumericReadAccess> extends Domain {
+public interface NumericDomain<A extends NumericReadValue> extends Domain {
 	A getMin();
 
 	A getMax();

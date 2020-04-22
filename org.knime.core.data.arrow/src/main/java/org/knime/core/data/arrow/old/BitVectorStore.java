@@ -5,10 +5,10 @@ import java.io.File;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.BitVector;
 import org.knime.core.data.Data;
-import org.knime.core.data.access.ReadableBooleanAccess;
-import org.knime.core.data.access.WritableBooleanAccess;
 import org.knime.core.data.arrow.old.BitVectorStore.BitVectorAccess;
 import org.knime.core.data.store.types.BooleanStore;
+import org.knime.core.data.value.ReadableBooleanValue;
+import org.knime.core.data.value.WritableBooleanValue;
 
 public class BitVectorStore extends AbstractArrowStore<BitVector, BitVectorAccess>
 		implements BooleanStore<BitVector, BitVectorAccess> {
@@ -31,7 +31,7 @@ public class BitVectorStore extends AbstractArrowStore<BitVector, BitVectorAcces
 
 	static final class BitVectorAccess //
 			extends AbstractFieldVectorAccess<BitVector> //
-			implements ReadableBooleanAccess, WritableBooleanAccess {
+			implements ReadableBooleanValue, WritableBooleanValue {
 
 		@Override
 		public boolean getBooleanValue() {

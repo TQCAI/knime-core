@@ -1,16 +1,24 @@
 package org.knime.core.data.column;
 
-import org.knime.core.data.access.DoubleReadAccess;
-import org.knime.core.data.access.DoubleWriteAccess;
-import org.knime.core.data.access.WriteAccess;
 import org.knime.core.data.column.ColumnType.DoubleType.DoubleAccess;
 import org.knime.core.data.column.ColumnType.DoubleType.DoubleData;
+import org.knime.core.data.value.DoubleReadValue;
+import org.knime.core.data.value.DoubleWriteValue;
+import org.knime.core.data.value.WriteValue;
 
 // looks like an enum, but isn't! We want to support nesting, complex types etc.
 // TODO Allow to create empty domains for types. Interface. Not every type has a domain currently.
 public interface ColumnType<D extends ColumnData, A extends ColumnDataAccess<D>> {
 
 	A createAccess();
+
+	// NB: Marker interface for Numeric data
+	public static interface NumericData extends ColumnData {
+
+		double getDouble(int index);
+
+		void setDouble(int index, double val);
+	}
 
 	final static class DoubleType implements ColumnType<DoubleData, DoubleAccess> {
 
@@ -50,9 +58,9 @@ public interface ColumnType<D extends ColumnData, A extends ColumnDataAccess<D>>
 			}
 
 			@Override
-			public DoubleReadAccess read() {
+			public DoubleReadValue read() {
 				// TODO slow?
-				return new DoubleReadAccess() {
+				return new DoubleReadValue() {
 					@Override
 					public boolean isMissing() {
 						return m_data.isMissing(m_index);
@@ -66,9 +74,9 @@ public interface ColumnType<D extends ColumnData, A extends ColumnDataAccess<D>>
 			}
 
 			@Override
-			public WriteAccess write() {
+			public WriteValue write() {
 				// TODO slow?
-				return new DoubleWriteAccess() {
+				return new DoubleWriteValue() {
 
 					@Override
 					public void setMissing() {
