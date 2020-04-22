@@ -1,18 +1,15 @@
 package org.knime.core.data.column;
 
-import org.knime.core.data.DoubleData;
-import org.knime.core.data.DoubleData.DoubleAccess;
-import org.knime.core.data.domain.MutableDomain;
+import org.knime.core.data.access.DoubleReadAccess;
+import org.knime.core.data.access.DoubleWriteAccess;
+import org.knime.core.data.column.ColumnType.DoubleType.DoubleAccess;
+import org.knime.core.data.column.ColumnType.DoubleType.DoubleData;
 
 // looks like an enum, but isn't! We want to support nesting, complex types etc.
+// TODO Allow to create empty domains for types. Interface. Not every type has a domain currently.
 public interface ColumnType<D extends ColumnData, A extends ColumnDataAccess<D>> {
 
 	A createAccess();
-
-	// TODO Interface 'NativeTypeWithDomain'
-	boolean hasDomain();
-
-	MutableDomain<D> createEmptyDomain();
 
 	final static class DoubleType implements ColumnType<DoubleData, DoubleAccess> {
 
@@ -26,15 +23,50 @@ public interface ColumnType<D extends ColumnData, A extends ColumnDataAccess<D>>
 			return new DoubleAccess();
 		}
 
-		@Override
-		public boolean hasDomain() {
-			return true;
+		public static interface DoubleData extends NumericData {
+			// NB: data. get/set double. inherited from NumericData
 		}
 
-		@Override
-		public MutableDomain<DoubleData> createEmptyDomain() {
-			// TODO Auto-generated method stub
-			return null;
+		public static class DoubleAccess implements ColumnDataAccess<DoubleData>, DoubleReadAccess, DoubleWriteAccess {
+
+			private DoubleData m_data;
+			private int m_index = -1;
+			
+			@Override
+			public void setDouble(double value) {
+				m_data.setDouble(m_index, value);
+			}
+
+			@Override
+			public double getDouble() {
+				return m_data.getDouble(m_index);
+			}
+
+			@Override
+			public boolean isMissing() {
+				return m_data.isMissing(m_index);
+			}
+
+			@Override
+			public void setMissing() {
+				m_data.setMissing(m_index);
+			}
+
+			@Override
+			public void update(DoubleData array) {
+				m_data = array;
+				m_index = 0;
+			}
+
+			@Override
+			public void fwd() {
+				m_index++;
+			}
+
+			@Override
+			public void reset() {
+				m_index = -1;
+			}
 		}
 	}
 }

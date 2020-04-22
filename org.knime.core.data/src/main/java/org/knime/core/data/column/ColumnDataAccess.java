@@ -6,5 +6,5 @@ import org.knime.core.data.access.WriteAccess;
 
 public interface ColumnDataAccess<D extends ColumnData>
 		extends DataAccess<D>, WriteAccess, ReadAccess {
-	// NB: Marker interface for column data.
+	// NB: Marker interface for DataAccess with ColumnData
 }

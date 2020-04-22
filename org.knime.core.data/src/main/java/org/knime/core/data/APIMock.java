@@ -3,17 +3,18 @@ package org.knime.core.data;
 import java.io.File;
 import java.util.Map;
 
+import org.knime.core.data.access.DoubleWriteAccess;
 import org.knime.core.data.column.ColumnReadableTable;
 import org.knime.core.data.column.ColumnType;
-import org.knime.core.data.column.ColumnWriteTable;
 import org.knime.core.data.domain.Domain;
+import org.knime.core.data.record.CachedRecordStore;
 import org.knime.core.data.record.Record;
 import org.knime.core.data.record.RecordFactory;
 import org.knime.core.data.record.RecordFormat;
+import org.knime.core.data.record.RecordStore;
+import org.knime.core.data.record.RecordUtils;
+import org.knime.core.data.row.RowWriteAccess;
 import org.knime.core.data.row.RowWriteTable;
-import org.knime.core.data.store.LoadingDataStore;
-import org.knime.core.data.store.cache.CachedDataReadStore;
-import org.knime.core.data.store.cache.CachedDataStore;
 
 public class APIMock {
 
@@ -36,7 +37,7 @@ public class APIMock {
 
 		// TODO attach memory listeners
 		// TODO add to managed caches.
-		LoadingDataStore cache = new CachedDataReadStore(types, store.getReadAccess());
+//		LoadingDataStore cache = new CachedDataReadStore(types, store.getReadAccess());
 
 		// we got our table back
 		// TODO we only need a 'Read' Cache here.
@@ -66,23 +67,50 @@ public class APIMock {
 			// (backwards compatibility).
 			RecordFormat data = null;
 
-			// Let's cache the store to gain some performance
-			// TODO register to memory alerts
-			// TODO register to global LRU cache
-			// TODO use factory method to create cache (we may want to change the cache in
-			// the future).
-			CachedDataStore store = new CachedDataStore(types, data.getWriter(), data.getReadAccess());
+			// Create a new store which can actually deal with Read / Write. For
+			// deserialized tables we only need the 'read' aspect.
+			RecordStore store = data.create(types);
 
-			// TODO add unique value checker etc.
-			// TODO async computation of adapters. data can be added to cached before all
-			// adapters are ready (?).
-			// TODO test design with implementing dictionary encoding either as adapter OR
-			// in DataAccess? Do we
-			// need dictionary encoding at all for in-memory representation or is parquet
-			// good enough?
-			// -> IMPLEMENT DOMAIN
-			
-			// add decorators per column
+			/*
+			 * Cache the store.
+			 * 
+			 * TODO register to global cache management (register to memory alerts, in case
+			 * of off-heap also to that).
+			 */
+			CachedRecordStore cached = RecordUtils.cache(store);
+
+			/*
+			 * Add preprocessors for data
+			 * 
+			 * TODO add unique value checker etc.
+			 * 
+			 * TODO async computation of adapters. data can be added to cached before all
+			 * adapters are ready (?).
+			 * 
+			 * TODO test design with implementing dictionary encoding either as adapter OR
+			 * in DataAccess? Do we need dictionary encoding at all for in-memory
+			 * representation or is parquet good enough?
+			 */
+
+			// general idea: this guy takes a recordbatch, splits it into columns and
+			// processes each column individually according to the assigned preprocessors
+			// which are just Consumer<RecordBatch>. When all parallel column workers are
+			// synced again we pass the record batch to the cache.
+			//
+			// IDEA: We could streamline the implementation and not pass a record batch to
+			// the
+			// cache, but the split column. as the cache likely caches each column
+			// individually anyways and just reassembles record batches as needed. Like that
+			// we wouldn't have to sync on all columns.
+
+			// Forseeable Problems:
+			// - If data is requested while domain is still calculated we have to block the
+			// cache (we can't fall back on writer, nothing has been written). Flush index
+			// can help to detect these situations, however, we would have to implement a
+			// flush index per column (which might be just fine).
+
+			// Preferred approach: Implementation without streamlining, learn something and
+			// refactor in second step as needed.
 
 			// Creates a writer to write columns of a table
 			// wrap table into a TableContainer for outside access
@@ -90,8 +118,8 @@ public class APIMock {
 
 				// TODO return whatever we declare as API here
 				// A table which can be filled with data.
-				private ColumnWriteTable columnWriteTable = TableUtils.createColumnWriteTable(adapted,
-						data.getFactory());
+//				private ColumnWriteTable columnWriteTable = TableUtils.createColumnWriteTable(adapted,
+//						data.getFactory());
 
 				final RecordFactory factory = null;
 				final DataWriter<Record> consumer = null;
@@ -102,13 +130,21 @@ public class APIMock {
 				// BufferedDataTable.
 				@Override
 				public BufferedDataTable close() throws Exception {
+
+					Cursor<? extends RowWriteAccess> rowCursor = rowWriteTable.getRowCursor();
+					
+					// you're not allowed to ever return a different access than this one. 
+					DoubleWriteAccess access = (DoubleWriteAccess) rowCursor.get().getWriteAccess(0);
+					for(;;)
+						rowCursor.fwd();
+
 					// all data has been persisted. Close all writers!
 					// should already be closed (WriteColumn.close())
 
 					// TODO get reader from writer instead? reader=writer?
 					// TODO maybe the ArrayIO is versioned and NOT the reader/writers themselves.
 
-					ColumnReadableTable readTable = TableUtils.create(store, store.createReader());
+//					ColumnReadableTable readTable = TableUtils.create(store, store.createReader());
 
 					// return some wrapped BufferedDataTable providing access to data, e.g. through
 					// ReadTable table = TableUtils.create(reader, null);

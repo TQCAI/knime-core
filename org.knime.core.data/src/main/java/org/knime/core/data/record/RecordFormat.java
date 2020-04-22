@@ -7,8 +7,8 @@ import org.knime.core.data.column.ColumnType;
 
 public interface RecordFormat extends AutoCloseable {
 
-	RecordStore create(final ColumnType<?, ?> types);
-	
+	RecordStore create(final ColumnType<?, ?>[] types);
+
 	<D extends ColumnData, A extends ColumnDataAccess<D>> DataFactory<D> createFactory(final ColumnType<D, A> factory);
 
 }

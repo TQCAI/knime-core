@@ -14,6 +14,7 @@ public final class Record implements Data {
 		m_data = data;
 	}
 
+	// TODO share interface with nested types
 	public ColumnData[] getData() {
 		return m_data;
 	}

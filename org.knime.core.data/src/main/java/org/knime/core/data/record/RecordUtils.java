@@ -18,4 +18,9 @@ public final class RecordUtils {
 		}
 		return new RecordAccess(accesses);
 	}
+
+	public static CachedRecordStore cache(final RecordStore store) {
+		// TODO
+		return null;
+	}
 }

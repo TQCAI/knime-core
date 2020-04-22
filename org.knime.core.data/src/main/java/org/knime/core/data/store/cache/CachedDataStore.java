@@ -32,7 +32,7 @@ public final class CachedDataStore<D extends Data> implements Flushable, DataSto
 			}
 
 			@Override
-			public void close() {
+			public void close() throws Exception {
 				m_writer.close();
 			}
 		};

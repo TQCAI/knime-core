@@ -6,5 +6,6 @@ package org.knime.core.data.access;
  */
 public interface WriteAccess {
 
+	// TODO what is the default?
 	void setMissing();
 }

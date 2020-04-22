@@ -1,11 +1,10 @@
-package org.knime.core.data;
+package org.knime.core.data.column;
 
-import org.knime.core.data.column.ColumnData;
-
+// NB: Marker interface for Numeric data
 public interface NumericData extends ColumnData {
 
-	// NB: Marker interface for Numeric data
 	double getDouble(int index);
 
 	void setDouble(int index, double val);
 }
+

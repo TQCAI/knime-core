@@ -1,17 +1,22 @@
 package org.knime.core.data.record;
 
 import java.io.Flushable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.knime.core.data.DataReader;
-import org.knime.core.data.DataWriter;
 import org.knime.core.data.column.ColumnData;
 import org.knime.core.data.column.ColumnType;
-import org.knime.core.data.store.cache.CachedDataStore;
 import org.knime.core.data.store.cache.DataCache;
 
-class CachedRecordStore implements RecordStore, Flushable {
+/*
+ * TODO implement cache on column-data level. Use-case two readers with different (but overlapping) column selections in RecordReaderConfig.  
+ * 1. Flush is no problem, we always write the entire table at once (as of Apr 22 '20 ;-)).
+ * 2. Read should work as follows: Check what's in the cache and retain available data. Create new RecordBatchReader for missing data. Depending on some heuristics we can also read-in all requested columns in following requests. 
+ * -- (Counter example: Cursor A requires 1 column, Cursor B 2,3,4,5,6,7,8... Cursor A is at chunk index 1, Cursor B at size-1. We should only read in 1,2,3,4,5,6,7,8 for the last request of Cursor B. It's a union of columns for each chunk index somehow.
+ */
+// TODO interface for cache
+public class CachedRecordStore implements RecordStore, Flushable {
 
 	private final RecordStore m_delegate;
 
@@ -75,13 +80,13 @@ class CachedRecordStore implements RecordStore, Flushable {
 			@Override
 			public void close() throws Exception {
 				for (int i = 0; i < m_colIndices.length; i++) {
-					m_caches[m_colIndices[i]].close();
+//					m_caches[m_colIndices[i]].close();
 				}
 			}
 
 			@Override
 			public long size() {
-				return m_caches[m_colIndices[0]]
+				return -1;
 			}
 
 			@Override
@@ -89,7 +94,6 @@ class CachedRecordStore implements RecordStore, Flushable {
 				// TODO reuse array.
 				final ColumnData[] data = new ColumnData[m_colIndices.length];
 				for (int i = 0; i < m_colIndices.length; i++) {
-					data[i] = m_selectedCaches[m_colIndices[i]].getOrLoad(index, ????????);
 				}
 
 				// TODO don't create a new object each time. reuse and update.
@@ -107,6 +111,12 @@ class CachedRecordStore implements RecordStore, Flushable {
 	public RecordReader createReader() {
 		// TODO
 		return createReader(null);
+	}
+
+	@Override
+	public void flush() throws IOException {
+		// TODO Auto-generated method stub
+
 	}
 
 }
